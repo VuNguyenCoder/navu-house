@@ -1,0 +1,825 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: navu-house\n"
+"POT-Creation-Date: 2026-05-29 00:00+0700\n"
+"PO-Revision-Date: 2026-05-29 00:00+0700\n"
+"Last-Translator: Codex\n"
+"Language-Team: Vietnamese\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "English"
+msgstr "English"
+
+msgid "Vietnamese"
+msgstr "Tiếng Việt"
+
+msgid "Signed in as"
+msgstr "Đăng nhập với tên"
+
+msgid "Notifications"
+msgstr "Thông báo"
+
+msgid "Sent"
+msgstr "Đã gửi"
+
+msgid "Failed"
+msgstr "Thất bại"
+
+msgid "Pending"
+msgstr "Đang chờ"
+
+msgid "No notifications."
+msgstr "Không có thông báo."
+
+msgid "Home"
+msgstr "Trang chủ"
+
+msgid "Settings"
+msgstr "Cài đặt"
+
+msgid "Price template"
+msgstr "Bảng giá"
+
+msgid "Tools"
+msgstr "Công cụ"
+
+msgid "Admin tool"
+msgstr "Công cụ quản trị"
+
+msgid "Sign out"
+msgstr "Đăng xuất"
+
+msgid "Sign Out"
+msgstr "Đăng xuất"
+
+msgid "Welcome to Navu House"
+msgstr "Chào mừng đến với Navu House"
+
+msgid "Hello"
+msgstr "Xin chào"
+
+msgid "This is your home page."
+msgstr "Đây là trang chủ của bạn."
+
+msgid "A simple Django application template with user authentication, notifications, and API integration."
+msgstr "Mẫu ứng dụng Django đơn giản với xác thực người dùng, thông báo và tích hợp API."
+
+msgid "Account Settings"
+msgstr "Cài đặt tài khoản"
+
+msgid "Manage your account details"
+msgstr "Quản lý thông tin tài khoản của bạn"
+
+msgid "Go"
+msgstr "Mở"
+
+msgid "Security"
+msgstr "Bảo mật"
+
+msgid "Change your password"
+msgstr "Đổi mật khẩu của bạn"
+
+msgid "Profile"
+msgstr "Hồ sơ"
+
+msgid "View your profile"
+msgstr "Xem hồ sơ của bạn"
+
+msgid "Coming Soon"
+msgstr "Sắp ra mắt"
+
+msgid "Account Information"
+msgstr "Thông tin tài khoản"
+
+msgid "Username:"
+msgstr "Tên đăng nhập:"
+
+msgid "Email:"
+msgstr "Email:"
+
+msgid "Full Name:"
+msgstr "Họ và tên:"
+
+msgid "Member Since:"
+msgstr "Tham gia từ:"
+
+msgid "Access your account"
+msgstr "Truy cập tài khoản của bạn"
+
+msgid "Create Account"
+msgstr "Tạo tài khoản"
+
+msgid "Join our community"
+msgstr "Tham gia cùng chúng tôi"
+
+msgid "Sign Up"
+msgstr "Đăng ký"
+
+msgid "Sign In"
+msgstr "Đăng nhập"
+
+msgid "Change Email"
+msgstr "Đổi email"
+
+msgid "Change Password"
+msgstr "Đổi mật khẩu"
+
+msgid "Sign in with a passkey"
+msgstr "Đăng nhập bằng passkey"
+
+msgid "Mail me a sign-in code"
+msgstr "Gửi cho tôi mã đăng nhập"
+
+msgid "Shared price template"
+msgstr "Bảng giá chung"
+
+msgid "Manage the default pricing for rooms and shared services."
+msgstr "Quản lý mức giá mặc định cho phòng và các dịch vụ chung."
+
+msgid "Last updated:"
+msgstr "Cập nhật lần cuối:"
+
+msgid "Save price template"
+msgstr "Lưu bảng giá"
+
+msgid "Back"
+msgstr "Quay lại"
+
+msgid "Current pricing"
+msgstr "Mức giá hiện tại"
+
+msgid "Room price"
+msgstr "Giá phòng"
+
+msgid "Electricity price"
+msgstr "Giá điện"
+
+msgid "Water price"
+msgstr "Giá nước"
+
+msgid "Internet price"
+msgstr "Giá internet"
+
+msgid "Cleaning price"
+msgstr "Giá vệ sinh"
+
+msgid "Laundry price"
+msgstr "Giá giặt"
+
+msgid "VND / room"
+msgstr "VND / phòng"
+
+msgid "VND / kWh"
+msgstr "VND / số"
+
+msgid "VND / m3"
+msgstr "VND / khối"
+
+msgid "VND / person"
+msgstr "VND / người"
+
+msgid "Room price (VND / room)"
+msgstr "Giá phòng (VND / phòng)"
+
+msgid "Electricity price (VND / kWh)"
+msgstr "Giá điện (VND / số)"
+
+msgid "Water price (VND / m3)"
+msgstr "Giá nước (VND / khối)"
+
+msgid "Internet price (VND / room)"
+msgstr "Giá internet (VND / phòng)"
+
+msgid "Cleaning price (VND / person)"
+msgstr "Giá vệ sinh (VND / người)"
+
+msgid "Laundry price (VND / person)"
+msgstr "Giá giặt (VND / người)"
+
+msgid "You do not have permission to access the price template page."
+msgstr "Bạn không có quyền truy cập trang bảng giá."
+
+msgid "Price template updated successfully."
+msgstr "Cập nhật bảng giá thành công."
+
+msgid "Rooms"
+msgstr "Phòng"
+
+msgid "Subscriptions"
+msgstr "Hợp đồng thuê"
+
+msgid "Vehicles"
+msgstr "Phương tiện"
+
+msgid "Usages"
+msgstr "Khai báo sử dụng"
+
+msgid "Image paths must be stored as a list."
+msgstr "Đường dẫn ảnh phải được lưu dưới dạng danh sách."
+
+msgid "A room can store at most 5 images."
+msgstr "Mỗi phòng chỉ được lưu tối đa 5 ảnh."
+
+msgid "Each image path must be a non-empty string."
+msgstr "Mỗi đường dẫn ảnh phải là một chuỗi không rỗng."
+
+msgid "Enabled"
+msgstr "Đang dùng"
+
+msgid "Disabled"
+msgstr "Ngưng dùng"
+
+msgid "Please select month and year only."
+msgstr "Vui lòng chỉ chọn tháng và năm."
+
+msgid "Water price (VND / cubic meter)"
+msgstr "Giá nước (VND / khối)"
+
+msgid "Electricity price (VND / number)"
+msgstr "Giá điện (VND / số)"
+
+msgid "You do not have permission to access this page."
+msgstr "Bạn không có quyền truy cập trang này."
+
+msgid "Deleted successfully."
+msgstr "Xóa thành công."
+
+msgid "Room created successfully."
+msgstr "Tạo phòng thành công."
+
+msgid "Add room"
+msgstr "Thêm phòng"
+
+msgid "Create room"
+msgstr "Tạo phòng"
+
+msgid "Room updated successfully."
+msgstr "Cập nhật phòng thành công."
+
+msgid "Room details"
+msgstr "Chi tiết phòng"
+
+msgid "Save changes"
+msgstr "Lưu thay đổi"
+
+msgid "Delete room"
+msgstr "Xóa phòng"
+
+msgid "Room deleted successfully."
+msgstr "Xóa phòng thành công."
+
+msgid "Subscription created successfully."
+msgstr "Tạo hợp đồng thuê thành công."
+
+msgid "Add subscription"
+msgstr "Thêm hợp đồng thuê"
+
+msgid "Create subscription"
+msgstr "Tạo hợp đồng thuê"
+
+msgid "Subscription updated successfully."
+msgstr "Cập nhật hợp đồng thuê thành công."
+
+msgid "Subscription details"
+msgstr "Chi tiết hợp đồng thuê"
+
+msgid "Subscription deleted successfully."
+msgstr "Xóa hợp đồng thuê thành công."
+
+msgid "Vehicle created successfully."
+msgstr "Tạo phương tiện thành công."
+
+msgid "Add vehicle"
+msgstr "Thêm phương tiện"
+
+msgid "Create vehicle"
+msgstr "Tạo phương tiện"
+
+msgid "Vehicle updated successfully."
+msgstr "Cập nhật phương tiện thành công."
+
+msgid "Vehicle details"
+msgstr "Chi tiết phương tiện"
+
+msgid "Vehicle deleted successfully."
+msgstr "Xóa phương tiện thành công."
+
+msgid "Delete vehicle"
+msgstr "Xóa phương tiện"
+
+msgid "Delete subscription"
+msgstr "Xóa hợp đồng thuê"
+
+msgid "Usage record created successfully."
+msgstr "Tạo bản ghi sử dụng thành công."
+
+msgid "Add usage record"
+msgstr "Thêm bản ghi sử dụng"
+
+msgid "Create usage record"
+msgstr "Tạo bản ghi sử dụng"
+
+msgid "Usage record updated successfully."
+msgstr "Cập nhật bản ghi sử dụng thành công."
+
+msgid "Usage record details"
+msgstr "Chi tiết bản ghi sử dụng"
+
+msgid "Usage record deleted successfully."
+msgstr "Xóa bản ghi sử dụng thành công."
+
+msgid "Delete usage record"
+msgstr "Xóa bản ghi sử dụng"
+
+msgid "Fill in the information below and save your changes."
+msgstr "Điền thông tin bên dưới và lưu thay đổi."
+
+msgid "Cancel"
+msgstr "Hủy"
+
+msgid "Are you sure you want to delete \"%(label)s\"?"
+msgstr "Bạn có chắc muốn xóa \"%(label)s\" không?"
+
+msgid "Delete"
+msgstr "Xóa"
+
+msgid "Room management"
+msgstr "Quản lý phòng"
+
+msgid "Manage room information, image paths and the latest utility readings."
+msgstr "Quản lý thông tin phòng, đường dẫn ảnh và chỉ số điện nước mới nhất."
+
+msgid "Manage room information, uploaded images and the latest utility readings."
+msgstr "Quản lý thông tin phòng, ảnh đã tải lên và chỉ số điện nước mới nhất."
+
+msgid "Floor"
+msgstr "Tầng"
+
+msgid "Description"
+msgstr "Mô tả"
+
+msgid "Image paths"
+msgstr "Đường dẫn ảnh"
+
+msgid "Images"
+msgstr "Ảnh"
+
+msgid "Electricity"
+msgstr "Điện"
+
+msgid "Water"
+msgstr "Nước"
+
+msgid "Actions"
+msgstr "Thao tác"
+
+msgid "Details"
+msgstr "Chi tiết"
+
+msgid "No rooms yet."
+msgstr "Chưa có phòng nào."
+
+msgid "Subscription management"
+msgstr "Quản lý hợp đồng thuê"
+
+msgid "Manage active rentals and snapshot the pricing from the shared price template."
+msgstr "Quản lý hợp đồng thuê đang hoạt động và chụp lại đơn giá từ bảng giá chung."
+
+msgid "Vehicle management"
+msgstr "Quản lý phương tiện"
+
+msgid "Manage vehicles and search them by license plate."
+msgstr "Quản lý phương tiện và tìm kiếm theo biển số."
+
+msgid "Manage vehicles for this subscription from here."
+msgstr "Quản lý các phương tiện của hợp đồng thuê này ngay tại đây."
+
+msgid "Start date"
+msgstr "Ngày bắt đầu"
+
+msgid "Tenants"
+msgstr "Số người thuê"
+
+msgid "Contact email"
+msgstr "Email liên hệ"
+
+msgid "Contact phone number"
+msgstr "Số điện thoại liên hệ"
+
+msgid "Start electricity reading"
+msgstr "Chỉ số điện đầu kỳ"
+
+msgid "Start water reading"
+msgstr "Chỉ số nước đầu kỳ"
+
+msgid "Add usage"
+msgstr "Thêm sử dụng"
+
+msgid "Usage records"
+msgstr "Bản ghi sử dụng"
+
+msgid "Manage usage"
+msgstr "Quản lý sử dụng"
+
+msgid "No."
+msgstr "STT"
+
+msgid "Time"
+msgstr "Thời gian"
+
+msgid "Payment amount"
+msgstr "Số tiền thanh toán"
+
+msgid "Search by license plate"
+msgstr "Tìm theo biển số"
+
+msgid "Enter a license plate"
+msgstr "Nhập biển số"
+
+msgid "Search"
+msgstr "Tìm kiếm"
+
+msgid "Clear"
+msgstr "Xóa lọc"
+
+msgid "Flat rate"
+msgstr "Mức cố định"
+
+msgid "Basic information"
+msgstr "Thông tin cơ bản"
+
+msgid "Start readings"
+msgstr "Chỉ số đầu kỳ"
+
+msgid "Contact information"
+msgstr "Thông tin liên hệ"
+
+msgid "Please review the meter readings."
+msgstr "Vui lòng kiểm tra lại chỉ số đồng hồ."
+
+msgid "Current electricity reading cannot be lower than the previous month's reading."
+msgstr "Chỉ số điện hiện tại không được nhỏ hơn chỉ số của tháng trước."
+
+msgid "Current water reading cannot be lower than the previous month's reading."
+msgstr "Chỉ số nước hiện tại không được nhỏ hơn chỉ số của tháng trước."
+
+msgid "Manage usage records for this subscription from here."
+msgstr "Quản lý các bản ghi sử dụng của hợp đồng thuê này ngay tại đây."
+
+msgid "records"
+msgstr "bản ghi"
+
+msgid "No subscriptions yet."
+msgstr "Chưa có hợp đồng thuê nào."
+
+msgid "Usage management"
+msgstr "Quản lý sử dụng"
+
+msgid "Track monthly usage snapshots for each subscription."
+msgstr "Theo dõi bản chụp sử dụng theo tháng cho từng hợp đồng thuê."
+
+msgid "Billing month"
+msgstr "Tháng tính tiền"
+
+msgid "Electricity reading"
+msgstr "Chỉ số điện"
+
+msgid "Water reading"
+msgstr "Chỉ số nước"
+
+msgid "Meter images"
+msgstr "Ảnh đồng hồ"
+
+msgid "Electricity:"
+msgstr "Điện:"
+
+msgid "Water:"
+msgstr "Nước:"
+
+msgid "No usage records yet."
+msgstr "Chưa có bản ghi sử dụng nào."
+
+msgid "No usage records for this subscription yet."
+msgstr "Hợp đồng thuê này chưa có bản ghi sử dụng nào."
+
+msgid "Save this subscription first, then you can add usage records."
+msgstr "Hãy lưu hợp đồng thuê này trước, sau đó bạn có thể thêm các bản ghi sử dụng."
+
+msgid "Room name"
+msgstr "Tên phòng"
+
+msgid "License plate"
+msgstr "Biển số"
+
+msgid "Created at"
+msgstr "Thời gian tạo"
+
+msgid "No vehicles yet."
+msgstr "Chưa có phương tiện nào."
+
+msgid "No vehicles for this subscription yet."
+msgstr "Hợp đồng thuê này chưa có phương tiện nào."
+
+msgid "Save this subscription first, then you can add vehicles."
+msgstr "Hãy lưu hợp đồng thuê này trước, sau đó bạn có thể thêm phương tiện."
+
+msgid "Room number"
+msgstr "Số phòng"
+
+msgid "Latest electricity reading"
+msgstr "Chỉ số điện mới nhất"
+
+msgid "Latest water reading"
+msgstr "Chỉ số nước mới nhất"
+
+msgid "Enter one file path per line. Maximum 5 images."
+msgstr "Mỗi dòng nhập một đường dẫn ảnh. Tối đa 5 ảnh."
+
+msgid "Room images"
+msgstr "Ảnh phòng"
+
+msgid "Upload up to 5 images in total."
+msgstr "Tải lên tối đa 5 ảnh cho mỗi phòng."
+
+msgid "Upload up to 5 images in total. On supported devices, you can also capture from the camera."
+msgstr "Tải lên tối đa 5 ảnh cho mỗi phòng. Trên thiết bị hỗ trợ, bạn cũng có thể chụp trực tiếp từ camera."
+
+msgid "Remove existing images"
+msgstr "Xóa ảnh hiện có"
+
+msgid "Current images"
+msgstr "Ảnh hiện có"
+
+msgid "Tick the images you want to delete, then save."
+msgstr "Chọn các ảnh bạn muốn xóa rồi bấm lưu."
+
+msgid "Delete this image"
+msgstr "Xóa ảnh này"
+
+msgid "No images uploaded yet."
+msgstr "Chưa có ảnh nào được tải lên."
+
+msgid "Room"
+msgstr "Phòng"
+
+msgid "Status"
+msgstr "Trạng thái"
+
+msgid "Rental start date"
+msgstr "Ngày bắt đầu thuê"
+
+msgid "Number of tenants"
+msgstr "Số người thuê"
+
+msgid "Subscription"
+msgstr "Hợp đồng thuê"
+
+msgid "Electricity meter image path"
+msgstr "Đường dẫn ảnh đồng hồ điện"
+
+msgid "Water meter image path"
+msgstr "Đường dẫn ảnh đồng hồ nước"
+
+msgid "This room cannot be deleted because it still has subscriptions attached."
+msgstr "Không thể xóa phòng này vì vẫn còn hợp đồng thuê đang gắn với nó."
+
+msgid "This room already has an active subscription. Disable the current one first."
+msgstr "Phòng này đã có một hợp đồng thuê đang hoạt động. Hãy ngưng hợp đồng hiện tại trước."
+
+msgid "Electricity meter image"
+msgstr "Ảnh đồng hồ điện"
+
+msgid "Water meter image"
+msgstr "Ảnh đồng hồ nước"
+
+msgid "Billing setup"
+msgstr "Thiết lập kỳ tính tiền"
+
+msgid "Pricing snapshot"
+msgstr "Đơn giá đang áp dụng"
+
+msgid "Current electricity meter image"
+msgstr "Ảnh đồng hồ điện hiện tại"
+
+msgid "Current water meter image"
+msgstr "Ảnh đồng hồ nước hiện tại"
+
+msgid "Choose an existing image or capture one from the camera on supported devices."
+msgstr "Chọn ảnh có sẵn hoặc chụp trực tiếp từ camera trên thiết bị được hỗ trợ."
+
+msgid "Format: MM/YYYY"
+msgstr "Định dạng: MM/YYYY"
+
+msgid "Billing month is required."
+msgstr "Tháng tính tiền là bắt buộc."
+
+msgid "Use MM/YYYY format, for example 06/2026."
+msgstr "Dùng định dạng MM/YYYY, ví dụ 06/2026."
+
+msgid "Choose billing month"
+msgstr "Chọn tháng tính tiền"
+
+msgid "Month"
+msgstr "Tháng"
+
+msgid "Year"
+msgstr "Năm"
+
+msgid "Invalid billing month selection."
+msgstr "Lựa chọn tháng tính tiền không hợp lệ."
+
+msgid "Delete current electricity meter image"
+msgstr "Xóa ảnh đồng hồ điện hiện tại"
+
+msgid "Delete current water meter image"
+msgstr "Xóa ảnh đồng hồ nước hiện tại"
+
+msgid "Image will be deleted after you save changes."
+msgstr "Ảnh sẽ bị xóa sau khi bạn lưu thay đổi."
+
+msgid "Undo"
+msgstr "Hoàn tác"
+
+msgid "Click the red text below an image to mark it for deletion, then save."
+msgstr "Bấm vào dòng chữ đỏ dưới ảnh để đánh dấu xóa, rồi lưu thay đổi."
+
+msgid "Total amount"
+msgstr "Tổng tiền"
+
+msgid "This amount is updated in real time from your pricing and meter inputs."
+msgstr "Giá trị này được cập nhật theo thời gian thực từ đơn giá và chỉ số bạn nhập."
+
+msgid "Estimated total"
+msgstr "Tổng dự kiến"
+
+msgid "Previous electricity reading"
+msgstr "Chỉ số điện tháng trước"
+
+msgid "Electricity consumed"
+msgstr "Số điện tiêu thụ"
+
+msgid "Previous water reading"
+msgstr "Chỉ số nước tháng trước"
+
+msgid "Water consumed"
+msgstr "Số nước tiêu thụ"
+
+msgid "Electricity cost"
+msgstr "Tiền điện"
+
+msgid "Water cost"
+msgstr "Tiền nước"
+
+msgid "Internet cost"
+msgstr "Tiền internet"
+
+msgid "Cleaning cost"
+msgstr "Tiền vệ sinh"
+
+msgid "Laundry cost"
+msgstr "Tiền giặt"
+
+msgid "For the first month of a subscription, previous readings are taken from the subscription's start readings."
+msgstr "Nếu đây là tháng đầu tiên của hợp đồng thuê, chỉ số tháng trước sẽ lấy từ chỉ số đầu kỳ của hợp đồng thuê."
+
+msgid "Deposit amount (VND)"
+msgstr "Tiền cọc (VND)"
+
+msgid "Deposit amount"
+msgstr "Tiền cọc"
+
+msgid "Deactivate"
+msgstr "Ngừng hợp đồng"
+
+msgid "Subscription deactivated successfully."
+msgstr "Ngừng hợp đồng thành công."
+
+msgid "A deactivated subscription cannot be activated again."
+msgstr "Hợp đồng đã ngừng thì không thể kích hoạt lại."
+
+msgid "Deactivate subscription"
+msgstr "Ngừng hợp đồng thuê"
+
+msgid "Are you sure you want to deactivate the subscription for %(room_name)s?"
+msgstr "Bạn có chắc muốn ngừng hợp đồng thuê của %(room_name)s không?"
+
+msgid "All rooms"
+msgstr "Tất cả phòng"
+
+msgid "From date"
+msgstr "Từ ngày"
+
+msgid "To date"
+msgstr "Đến ngày"
+
+msgid "Apply filters"
+msgstr "Lọc"
+
+msgid "Time range"
+msgstr "Khoảng thời gian"
+
+msgid "All the time"
+msgstr "Toàn thời gian"
+
+msgid "Custom range"
+msgstr "Khoảng tùy chọn"
+
+msgid "All"
+msgstr "Tất cả"
+
+msgid "Content"
+msgstr "Nội dung"
+
+msgid "Quantity"
+msgstr "Số lượng"
+
+msgid "Unit price"
+msgstr "Đơn giá"
+
+msgid "Amount"
+msgstr "Thành tiền"
+
+msgid "Notes"
+msgstr "Chú thích"
+
+msgid "Sum of all rows"
+msgstr "Tổng cộng tất cả các dòng"
+
+msgid "room"
+msgstr "phòng"
+
+msgid "person"
+msgstr "người"
+
+msgid "kWh"
+msgstr "số"
+
+msgid "m3"
+msgstr "khối"
+
+msgid "Copy as image"
+msgstr "Sao chép thành ảnh"
+
+msgid "Copy image is not supported in this browser."
+msgstr "Trình duyệt này không hỗ trợ sao chép ảnh."
+
+msgid "Preparing image..."
+msgstr "Đang chuẩn bị ảnh..."
+
+msgid "Copied image to clipboard."
+msgstr "Đã sao chép ảnh vào clipboard."
+
+msgid "Could not copy image. Please try again."
+msgstr "Không thể sao chép ảnh. Vui lòng thử lại."
+
+msgid "Breadcrumb"
+msgstr "Điều hướng"
+
+msgid "Tiếng Việt"
+msgstr "Tiếng Việt"
+
+msgid "Open menu"
+msgstr "Mở menu"
+
+msgid "Toggle navigation"
+msgstr "Chuyển điều hướng"
+
+msgid "Menu"
+msgstr "Menu"
+
+msgid "Quick actions"
+msgstr "Thao tác nhanh"
+
+msgid "Switch to English"
+msgstr "Chuyển sang English"
+
+msgid "Chuyen sang Tieng Viet"
+msgstr "Chuyển sang Tiếng Việt"
+
+msgid "Toggle dark mode"
+msgstr "Chuyển chế độ tối"
+
+msgid "Account settings"
+msgstr "Cài đặt tài khoản"
+
+msgid "Change password"
+msgstr "Đổi mật khẩu"
+
+msgid "Confirm delete"
+msgstr "Xác nhận xóa"
+
+msgid "Close"
+msgstr "Đóng"
+
+msgid "This action cannot be undone."
+msgstr "Hành động này không thể hoàn tác."
+
+msgid "Are you sure you want to delete this item?"
+msgstr "Bạn có chắc muốn xóa mục này không?"
+
+msgid "Are you sure you want to delete %s?"
+msgstr "Bạn có chắc muốn xóa %s không?"

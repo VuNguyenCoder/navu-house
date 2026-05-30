@@ -1,0 +1,558 @@
+from datetime import date
+from decimal import Decimal
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import PermissionDenied
+from django.db.models.deletion import ProtectedError
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+
+from .forms import PriceTemplateForm, RoomForm, SubscriptionForm, UsageForm, VehicleForm
+from .models import PriceTemplate, Room, Subscription, Usage, Vehicle
+
+
+def user_can_manage_pricing(user):
+    return user.is_authenticated and (user.is_superuser or getattr(user, 'role', None) == 'operator')
+
+
+def get_previous_usage_context(subscription, period, exclude_usage_id=None):
+    previous_usage = (
+        Usage.objects.filter(subscription=subscription, period__lt=period)
+        .exclude(pk=exclude_usage_id)
+        .order_by('-period', '-updated_at', '-id')
+        .first()
+    )
+
+    if previous_usage:
+        return {
+            'previous_electricity_reading': previous_usage.latest_electricity_reading,
+            'previous_water_reading': previous_usage.latest_water_reading,
+            'is_first_month': False,
+        }
+
+    return {
+        'previous_electricity_reading': subscription.start_electricity_reading,
+        'previous_water_reading': subscription.start_water_reading,
+        'is_first_month': True,
+    }
+
+
+def get_subscription_edit_url(subscription_id=None):
+    base_url = reverse('subscription_list')
+    if subscription_id:
+        return f"{reverse('subscription_details', kwargs={'pk': subscription_id})}#usage-records"
+    return base_url
+
+
+def get_subscription_vehicle_url(subscription_id=None):
+    base_url = reverse('subscription_list')
+    if subscription_id:
+        return f"{reverse('subscription_details', kwargs={'pk': subscription_id})}#vehicle-records"
+    return base_url
+
+
+def get_usage_period_from_form(form, fallback=None):
+    if form is None:
+        return fallback or date.today().replace(day=1)
+
+    if form.is_bound:
+        month_value = form.data.get('billing_month')
+        year_value = form.data.get('billing_year')
+        try:
+            if month_value and year_value:
+                return date(year=int(year_value), month=int(month_value), day=1)
+        except ValueError:
+            pass
+
+    if getattr(form.instance, 'pk', None) and form.instance.period:
+        return form.instance.period
+
+    field_initial = form.fields.get('period').initial if form.fields.get('period') else None
+    if field_initial:
+        return field_initial
+
+    return fallback or date.today().replace(day=1)
+
+
+def build_subscription_usage_rows(subscription):
+    usages = list(subscription.usages.order_by('-period', '-updated_at', '-id'))
+    usage_rows = []
+
+    for index, usage in enumerate(usages, start=1):
+        previous_context = get_previous_usage_context(subscription, usage.period, exclude_usage_id=usage.pk)
+        previous_electricity = previous_context['previous_electricity_reading']
+        previous_water = previous_context['previous_water_reading']
+        electricity_consumed = max(usage.latest_electricity_reading - previous_electricity, 0)
+        water_consumed = max(usage.latest_water_reading - previous_water, 0)
+        total_amount = (
+            Decimal(usage.room_price)
+            + Decimal(electricity_consumed) * Decimal(usage.electricity_price)
+            + Decimal(water_consumed) * Decimal(usage.water_price)
+            + Decimal(usage.internet_price)
+            + Decimal(usage.tenant_count) * Decimal(usage.cleaning_price)
+            + Decimal(usage.tenant_count) * Decimal(usage.laundry_price)
+        )
+        usage_rows.append({
+            'index': index,
+            'usage': usage,
+            'electricity_consumed': electricity_consumed,
+            'water_consumed': water_consumed,
+            'total_amount': total_amount,
+        })
+
+    return usage_rows
+
+
+class OperatorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    login_url = 'account_login'
+    raise_exception = True
+
+    def test_func(self):
+        return user_can_manage_pricing(self.request.user)
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            raise PermissionDenied(_("You do not have permission to access this page."))
+        return super().handle_no_permission()
+
+
+class ManagementDeleteView(OperatorRequiredMixin, DeleteView):
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, self.get_success_message())
+        return response
+
+    def get_success_message(self):
+        return _("Deleted successfully.")
+
+
+class RoomListView(OperatorRequiredMixin, ListView):
+    model = Room
+    template_name = 'main/room_list.html'
+    context_object_name = 'rooms'
+
+
+class RoomCreateView(OperatorRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Room
+    form_class = RoomForm
+    template_name = 'main/room_form.html'
+    success_url = reverse_lazy('room_list')
+    success_message = _('Room created successfully.')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': _('Add room'),
+            'submit_label': _('Create room'),
+            'cancel_url': self.success_url,
+        })
+        return context
+
+
+class RoomUpdateView(OperatorRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = Room
+    form_class = RoomForm
+    template_name = 'main/room_form.html'
+    success_message = _('Room updated successfully.')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': _('Room details'),
+            'submit_label': _('Save changes'),
+            'cancel_url': reverse('room_list'),
+        })
+        return context
+
+    def get_success_url(self):
+        return reverse('room_details', kwargs={'pk': self.object.pk})
+
+
+class RoomDeleteView(ManagementDeleteView):
+    model = Room
+    template_name = 'main/confirm_delete.html'
+    success_url = reverse_lazy('room_list')
+
+    def get_success_message(self):
+        return _('Room deleted successfully.')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': _('Delete room'),
+            'object_label': self.object.room_name,
+            'cancel_url': self.success_url,
+            'breadcrumb_list_url': reverse('room_list'),
+            'breadcrumb_list_label': _('Rooms'),
+        })
+        return context
+
+    def form_valid(self, form):
+        try:
+            return super().form_valid(form)
+        except ProtectedError:
+            messages.error(
+                self.request,
+                _('This room cannot be deleted because it still has subscriptions attached.'),
+            )
+            return redirect(self.success_url)
+
+
+class VehicleListView(OperatorRequiredMixin, ListView):
+    model = Vehicle
+    template_name = 'main/vehicle_list.html'
+    context_object_name = 'vehicles'
+
+    def get_queryset(self):
+        queryset = Vehicle.objects.select_related('subscription', 'subscription__room')
+        query = self.request.GET.get('q', '').strip()
+        if query:
+            queryset = queryset.filter(license_plate__icontains=query)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('q', '').strip()
+        return context
+
+
+class VehicleCreateView(OperatorRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Vehicle
+    form_class = VehicleForm
+    template_name = 'main/vehicle_form.html'
+    success_url = reverse_lazy('vehicle_list')
+    success_message = _('Vehicle created successfully.')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        subscription_id = self.request.GET.get('subscription')
+        if subscription_id:
+            initial['subscription'] = subscription_id
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        subscription_id = self.request.GET.get('subscription')
+        selected_subscription = None
+        if subscription_id:
+            selected_subscription = Subscription.objects.select_related('room').filter(pk=subscription_id).first()
+        context.update({
+            'page_title': _('Add vehicle'),
+            'submit_label': _('Create vehicle'),
+            'cancel_url': get_subscription_vehicle_url(subscription_id) if subscription_id else self.success_url,
+            'selected_subscription': selected_subscription,
+        })
+        return context
+
+    def get_success_url(self):
+        return get_subscription_vehicle_url(self.object.subscription_id)
+
+
+class VehicleUpdateView(OperatorRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = Vehicle
+    form_class = VehicleForm
+    template_name = 'main/vehicle_form.html'
+    success_message = _('Vehicle updated successfully.')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': _('Vehicle details'),
+            'submit_label': _('Save changes'),
+            'cancel_url': get_subscription_vehicle_url(self.object.subscription_id),
+            'selected_subscription': self.object.subscription,
+        })
+        return context
+
+    def get_success_url(self):
+        return reverse('vehicle_details', kwargs={'pk': self.object.pk})
+
+
+class VehicleDeleteView(ManagementDeleteView):
+    model = Vehicle
+    template_name = 'main/confirm_delete.html'
+    success_url = reverse_lazy('vehicle_list')
+
+    def get_success_message(self):
+        return _('Vehicle deleted successfully.')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': _('Delete vehicle'),
+            'object_label': self.object.license_plate,
+            'cancel_url': get_subscription_vehicle_url(self.object.subscription_id),
+            'breadcrumb_list_url': reverse('subscription_details', kwargs={'pk': self.object.subscription_id}),
+            'breadcrumb_list_label': _('Subscription details'),
+            'breadcrumb_parent_label': self.object.subscription.room.room_name,
+        })
+        return context
+
+    def get_success_url(self):
+        return get_subscription_vehicle_url(self.object.subscription_id)
+
+
+class SubscriptionListView(OperatorRequiredMixin, ListView):
+    model = Subscription
+    template_name = 'main/subscription_list.html'
+    context_object_name = 'subscriptions'
+
+    def get_queryset(self):
+        queryset = Subscription.objects.select_related('room').prefetch_related('vehicles')
+
+        room_id = self.request.GET.get('room', '').strip()
+        status = self.request.GET.get('status', Subscription.Status.ENABLED).strip() or Subscription.Status.ENABLED
+        date_from = self.request.GET.get('date_from', '').strip()
+        date_to = self.request.GET.get('date_to', '').strip()
+
+        if room_id:
+            queryset = queryset.filter(room_id=room_id)
+        if status in {Subscription.Status.ENABLED, Subscription.Status.DISABLED}:
+            queryset = queryset.filter(status=status)
+        if date_from:
+            queryset = queryset.filter(start_date__gte=date_from)
+        if date_to:
+            queryset = queryset.filter(start_date__lte=date_to)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'filter_rooms': Room.objects.order_by('room_name'),
+            'selected_room': self.request.GET.get('room', '').strip(),
+            'selected_status': self.request.GET.get('status', Subscription.Status.ENABLED).strip() or Subscription.Status.ENABLED,
+            'selected_date_from': self.request.GET.get('date_from', '').strip(),
+            'selected_date_to': self.request.GET.get('date_to', '').strip(),
+        })
+        return context
+
+
+class SubscriptionCreateView(OperatorRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Subscription
+    form_class = SubscriptionForm
+    template_name = 'main/subscription_form.html'
+    success_url = reverse_lazy('subscription_list')
+    success_message = _('Subscription created successfully.')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': _('Add subscription'),
+            'submit_label': _('Create subscription'),
+            'cancel_url': self.success_url,
+        })
+        return context
+
+    def form_valid(self, form):
+        form.instance.status = Subscription.Status.ENABLED
+        return super().form_valid(form)
+
+
+class SubscriptionUpdateView(OperatorRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = Subscription
+    form_class = SubscriptionForm
+    template_name = 'main/subscription_form.html'
+    success_message = _('Subscription updated successfully.')
+
+    def get_queryset(self):
+        return Subscription.objects.select_related('room').prefetch_related('usages')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': _('Subscription details'),
+            'submit_label': _('Save changes'),
+            'cancel_url': reverse('subscription_list'),
+            'subscription_usage_rows': build_subscription_usage_rows(self.object),
+            'subscription_vehicles': self.object.vehicles.order_by('license_plate'),
+        })
+        return context
+
+    def get_success_url(self):
+        return reverse('subscription_details', kwargs={'pk': self.object.pk})
+
+
+class SubscriptionDeleteView(ManagementDeleteView):
+    model = Subscription
+    template_name = 'main/confirm_delete.html'
+    success_url = reverse_lazy('subscription_list')
+
+    def get_success_message(self):
+        return _('Subscription deleted successfully.')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': _('Delete subscription'),
+            'object_label': str(self.object),
+            'cancel_url': self.success_url,
+            'breadcrumb_list_url': reverse('subscription_list'),
+            'breadcrumb_list_label': _('Subscriptions'),
+            'breadcrumb_parent_label': self.object.room.room_name,
+        })
+        return context
+
+
+@login_required(login_url='account_login')
+def subscription_deactivate(request, pk):
+    if not user_can_manage_pricing(request.user):
+        raise PermissionDenied(_("You do not have permission to access this page."))
+    if request.method != 'POST':
+        return redirect('subscription_details', pk=pk)
+
+    subscription = get_object_or_404(Subscription, pk=pk)
+    if subscription.status == Subscription.Status.ENABLED:
+        subscription.status = Subscription.Status.DISABLED
+        subscription.save(update_fields=['status', 'updated_at'])
+        messages.success(request, _('Subscription deactivated successfully.'))
+
+    return redirect('subscription_details', pk=subscription.pk)
+
+
+class UsageListView(OperatorRequiredMixin, ListView):
+    model = Usage
+    template_name = 'main/usage_list.html'
+    context_object_name = 'usages'
+
+    def get(self, request, *args, **kwargs):
+        return redirect('subscription_list')
+
+
+class UsageCreateView(OperatorRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Usage
+    form_class = UsageForm
+    template_name = 'main/usage_form.html'
+    success_message = _('Usage record created successfully.')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        subscription_id = self.request.GET.get('subscription')
+        if subscription_id:
+            initial['subscription'] = subscription_id
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form = context.get('form')
+        subscription = form._get_selected_subscription() if form else None
+        period = get_usage_period_from_form(form)
+        usage_context = get_previous_usage_context(subscription, period) if subscription else None
+        context.update({
+            'page_title': _('Add usage record'),
+            'submit_label': _('Create usage record'),
+            'cancel_url': get_subscription_edit_url(subscription.pk if subscription else None),
+            'usage_previous_context': usage_context,
+            'selected_subscription': subscription,
+        })
+        return context
+
+    def get_success_url(self):
+        return get_subscription_edit_url(self.object.subscription_id)
+
+
+class UsageUpdateView(OperatorRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = Usage
+    form_class = UsageForm
+    template_name = 'main/usage_form.html'
+    success_message = _('Usage record updated successfully.')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form = context.get('form')
+        period = get_usage_period_from_form(form, fallback=self.object.period)
+        usage_context = get_previous_usage_context(self.object.subscription, period, exclude_usage_id=self.object.pk)
+        context.update({
+            'page_title': _('Usage record details'),
+            'submit_label': _('Save changes'),
+            'cancel_url': get_subscription_edit_url(self.object.subscription_id),
+            'usage_previous_context': usage_context,
+            'selected_subscription': self.object.subscription,
+        })
+        return context
+
+    def get_success_url(self):
+        return reverse('usage_details', kwargs={'pk': self.object.pk})
+
+
+class UsageDeleteView(ManagementDeleteView):
+    model = Usage
+    template_name = 'main/confirm_delete.html'
+
+    def get_success_message(self):
+        return _('Usage record deleted successfully.')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': _('Delete usage record'),
+            'object_label': str(self.object),
+            'cancel_url': get_subscription_edit_url(self.object.subscription_id),
+            'breadcrumb_list_url': reverse('subscription_details', kwargs={'pk': self.object.subscription_id}),
+            'breadcrumb_list_label': _('Subscription details'),
+            'breadcrumb_parent_label': self.object.subscription.room.room_name,
+        })
+        return context
+
+    def get_success_url(self):
+        return get_subscription_edit_url(self.object.subscription_id)
+
+
+@login_required(login_url='account_login')
+def price_template(request):
+    if not (request.user.is_superuser or request.user.role == 'operator'):
+        raise PermissionDenied(_("You do not have permission to access the price template page."))
+
+    instance = PriceTemplate.get_solo()
+
+    if request.method == 'POST':
+        form = PriceTemplateForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _('Price template updated successfully.'))
+            return redirect('price_template')
+    else:
+        form = PriceTemplateForm(instance=instance)
+
+    return render(
+        request,
+        'price_template.html',
+        {
+            'form': form,
+            'price_template': instance,
+        },
+    )
+
+
+@login_required(login_url='account_login')
+def usage_pricing_context(request):
+    if not user_can_manage_pricing(request.user):
+        raise PermissionDenied(_("You do not have permission to access this page."))
+
+    subscription_id = request.GET.get('subscription')
+    month = request.GET.get('month')
+    year = request.GET.get('year')
+    usage_id = request.GET.get('usage_id')
+
+    if not subscription_id or not month or not year:
+        return JsonResponse({'error': 'missing_parameters'}, status=400)
+
+    try:
+        subscription = Subscription.objects.select_related('room').get(pk=subscription_id)
+        period = date(year=int(year), month=int(month), day=1)
+    except (Subscription.DoesNotExist, ValueError):
+        return JsonResponse({'error': 'invalid_parameters'}, status=400)
+
+    context = get_previous_usage_context(subscription, period, exclude_usage_id=usage_id)
+    return JsonResponse(context)
+
+
+@login_required(login_url='account_login')
+def usage_list_redirect(request):
+    return redirect('subscription_list')

@@ -1,0 +1,158 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block head_title %}{% endblock head_title %} - NAVU HOUSE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: var(--bs-body-bg);
+        }
+        .auth-wrap {
+            min-height: calc(100vh - 64px);
+        }
+        .auth-card {
+            border: 0;
+            border-radius: 1rem;
+        }
+        .auth-card .form-control,
+        .auth-card select,
+        .auth-card textarea {
+            border-radius: .6rem;
+        }
+        .auth-card button,
+        .auth-card .btn {
+            border-radius: .6rem;
+        }
+        .auth-card h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .auth-card form p {
+            margin-bottom: 1rem;
+        }
+        .auth-card form label {
+            display: block;
+            margin-bottom: .35rem;
+            font-weight: 600;
+        }
+        .auth-card form input,
+        .auth-card form textarea,
+        .auth-card form select {
+            width: 100%;
+            padding: .5rem .75rem;
+            border: 1px solid var(--bs-border-color);
+            border-radius: .6rem;
+            background: var(--bs-body-bg);
+            color: var(--bs-body-color);
+        }
+        .auth-card form input[type="checkbox"],
+        .auth-card form input[type="radio"] {
+            width: auto;
+            margin-right: .4rem;
+        }
+        .auth-card form button,
+        .auth-card form a[href] {
+            display: inline-block;
+            padding: .5rem .85rem;
+            border-radius: .6rem;
+            text-decoration: none;
+        }
+        .auth-card form button {
+            border: 1px solid transparent;
+            background: var(--bs-primary);
+            color: #fff;
+        }
+        .auth-card form button:hover {
+            filter: brightness(.95);
+        }
+        .auth-card a {
+            color: var(--bs-primary);
+        }
+        .auth-menu .nav-link {
+            border-radius: 999px;
+        }
+    </style>
+    {% block extra_head %}{% endblock extra_head %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-shield-check"></i> NAVU HOUSE
+            </a>
+            <div class="dropdown ms-auto">
+                <a class="nav-link dropdown-toggle text-white p-0" href="#" role="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-translate"></i>
+                    <span id="currentLang">
+                        {% if LANGUAGE_CODE == 'vi' %}{% trans "Tiếng Việt" %}{% else %}{% trans "English" %}{% endif %}
+                    </span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage(event, 'en')">{% trans "English" %}</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage(event, 'vi')">{% trans "Tiếng Việt" %}</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% block body %}
+    <div class="container auth-wrap py-4 py-md-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                {% if messages %}
+                <div class="mb-3">
+                    {% for message in messages %}
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <ul class="nav nav-pills auth-menu gap-2 mb-4">
+                    {% if user.is_authenticated %}
+                        {% url 'account_email' as email_url_ %}
+                        {% if email_url_ %}<li class="nav-item"><a class="nav-link" href="{{ email_url_ }}">{% trans "Change Email" %}</a></li>{% endif %}
+                        {% url 'account_change_password' as change_password_url_ %}
+                        {% if change_password_url_ %}<li class="nav-item"><a class="nav-link" href="{{ change_password_url_ }}">{% trans "Change Password" %}</a></li>{% endif %}
+                        {% url 'account_logout' as logout_url_ %}
+                        {% if logout_url_ %}<li class="nav-item"><a class="nav-link" href="{{ logout_url_ }}">{% trans "Sign Out" %}</a></li>{% endif %}
+                    {% else %}
+                        {% url 'account_login' as login_url_ %}
+                        {% if login_url_ and request.path != login_url_ %}<li class="nav-item"><a class="nav-link" href="{{ login_url_ }}">{% trans "Sign In" %}</a></li>{% endif %}
+                    {% endif %}
+                </ul>
+
+                <div class="card shadow auth-card">
+                    <div class="card-body p-4 p-md-5">
+                        {% block content %}{% endblock content %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock body %}
+
+    <form id="languageForm" action="{% url 'set_language' %}" method="post" class="d-none">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <input type="hidden" name="language" id="languageInput" value="{{ LANGUAGE_CODE }}">
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function changeLanguage(event, lang) {
+            event.preventDefault();
+            document.getElementById('languageInput').value = lang;
+            document.getElementById('languageForm').submit();
+        }
+    </script>
+    {% block extra_body %}{% endblock extra_body %}
+</body>
+</html>

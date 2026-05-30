@@ -1,0 +1,520 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Navu House{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar {
+            min-height: calc(100vh - 56px);
+            background-color: var(--bs-light);
+            border-right: 1px solid var(--bs-border-color);
+        }
+        .sidebar.offcanvas-md {
+            --bs-offcanvas-width: min(82vw, 320px);
+        }
+        [data-bs-theme="dark"] .sidebar {
+            background-color: var(--bs-dark);
+        }
+        .sidebar .nav-link {
+            color: var(--bs-body-color);
+            padding: 0.75rem 1rem;
+            border-radius: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+        .sidebar .nav-link:hover {
+            background-color: var(--bs-secondary-bg);
+        }
+        .sidebar .nav-link.active {
+            background-color: var(--bs-primary);
+            color: white;
+        }
+        .sidebar .nav-link.nav-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sidebar .submenu {
+            padding-left: 1rem;
+        }
+        .sidebar .submenu .nav-link {
+            font-size: 0.95rem;
+        }
+        .sidebar .nav-link .toggle-icon {
+            transition: transform 0.2s ease;
+        }
+        .sidebar .nav-link[aria-expanded="true"] .toggle-icon {
+            transform: rotate(180deg);
+        }
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+        }
+        .page-breadcrumb {
+            margin-bottom: 1.5rem;
+        }
+        .page-breadcrumb .breadcrumb {
+            margin-bottom: 0;
+            padding: 0.75rem 1rem;
+            border-radius: 0.85rem;
+            background: var(--bs-tertiary-bg);
+        }
+        .btn {
+            border-radius: 10px;
+            font-weight: 500;
+
+            box-shadow:
+                0 2px 4px rgba(0,0,0,0.08),
+                0 6px 12px rgba(0,0,0,0.06);
+
+            transition: 
+                transform 0.15s ease,
+                box-shadow 0.15s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 6px 12px rgba(0,0,0,0.12),
+                0 12px 24px rgba(0,0,0,0.08);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+
+            box-shadow:
+                0 2px 4px rgba(0,0,0,0.1);
+        }
+        .notifications-dropdown {
+            width: 380px;
+            max-width: calc(100vw - 2rem);
+        }
+        .notifications-item {
+            white-space: normal;
+        }
+        .mobile-utility-list .nav-link,
+        .mobile-utility-list .btn-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            color: var(--bs-body-color);
+            text-decoration: none;
+            border: 0;
+            background: transparent;
+            border-radius: 0.25rem;
+        }
+        .mobile-utility-list .nav-link:hover,
+        .mobile-utility-list .btn-link:hover {
+            background-color: var(--bs-secondary-bg);
+        }
+        .mobile-utility-list form {
+            margin: 0;
+        }
+        @media (max-width: 767.98px) {
+            .main-content {
+                padding: 1.25rem;
+            }
+            .sidebar.offcanvas-md {
+                min-height: 100vh;
+            }
+            .navbar-brand {
+                font-size: 1rem;
+            }
+        }
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            {% if user.is_authenticated %}
+            <button
+                class="btn btn-outline-light btn-sm d-md-none me-2"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#appSidebar"
+                aria-controls="appSidebar"
+                aria-label="{% trans 'Open menu' %}"
+            >
+                <i class="bi bi-list"></i>
+            </button>
+            {% endif %}
+            <a class="navbar-brand" href="{% url 'home' %}">
+              NAVU HOUSE
+            </a>
+            <div class="ms-auto d-none d-lg-flex align-items-center gap-3 flex-wrap py-2 py-lg-0">
+                    {% if user.is_authenticated %}
+                    <div class="d-flex align-items-center text-white">
+                        <i class="bi bi-person-circle me-2"></i>
+                        <span>{% trans "Signed in as" %} <span class="fw-bold">{{ user.username|default:user.email }}</span></span>
+                    </div>
+                    {% endif %}
+                    <!-- Language Selector -->
+                    <div class="dropdown">
+                        <a class="nav-link dropdown-toggle text-white p-0" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-translate"></i>
+                            <span id="currentLang">
+                                {% if LANGUAGE_CODE == 'vi' %}{% trans "Tiếng Việt" %}{% else %}{% trans "English" %}{% endif %}
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage(event, 'en')">{% trans "English" %}</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage(event, 'vi')">{% trans "Tiếng Việt" %}</a></li>
+                        </ul>
+                    </div>
+                    {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <a class="nav-link text-white p-0 position-relative" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bell-fill"></i>
+                            {% if navbar_notifications_count > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ navbar_notifications_count }}
+                            </span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end notifications-dropdown">
+                            <li class="dropdown-header d-flex justify-content-between align-items-center">
+                                <span>{% trans "Notifications" %}</span>
+                                <span class="badge bg-secondary">{{ navbar_notifications_count }}</span>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            {% for n in navbar_notifications %}
+                                <li>
+                                    <div class="dropdown-item notifications-item">
+                                        <div class="d-flex justify-content-between align-items-start gap-2">
+                                            <strong class="me-2">{{ n.subject }}</strong>
+                                            {% if n.status == 'sent' %}
+                                                <span class="badge bg-success">{% trans "Sent" %}</span>
+                                            {% elif n.status == 'failed' %}
+                                                <span class="badge bg-danger">{% trans "Failed" %}</span>
+                                            {% else %}
+                                                <span class="badge bg-warning text-dark">{% trans "Pending" %}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="small text-muted mt-1">{{ n.message }}</div>
+                                        <div class="small text-muted mt-1">{{ n.created_at|date:'Y-m-d H:i:s' }}</div>
+                                    </div>
+                                </li>
+                            {% empty %}
+                                <li><span class="dropdown-item text-muted">{% trans "No notifications." %}</span></li>
+                            {% endfor %}
+                            <li><hr class="dropdown-divider"></li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                    <!-- Dark Mode Toggle -->
+                    <div>
+                        <a class="nav-link text-white p-0" href="#" onclick="toggleDarkMode()" id="darkModeToggle">
+                            <i class="bi bi-moon-fill"></i>
+                        </a>
+                    </div>
+                    {% if user.is_authenticated %}
+                    <div>
+                        <form method="post" action="{% url 'account_logout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-light btn-sm">
+                                <i class="bi bi-box-arrow-right"></i> {% trans "Sign out" %}
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="container-fluid mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Left Sidebar -->
+            <nav class="sidebar offcanvas-md offcanvas-start col-md-2 col-lg-2" tabindex="-1" id="appSidebar" aria-labelledby="appSidebarLabel">
+                <div class="offcanvas-header border-bottom d-md-none">
+                    <h5 class="offcanvas-title" id="appSidebarLabel">{% trans "Menu" %}</h5>
+                    <button type="button" class="btn-close" data-sidebar-close aria-label="{% trans 'Close' %}"></button>
+                </div>
+                <div class="offcanvas-body p-0 d-md-block">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">
+                                <i class="bi bi-house-door"></i> {% trans "Home" %}
+                            </a>
+                        </li>
+                        {% if user.is_authenticated %}
+                            {% if user.role == 'operator' or user.is_superuser %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path|slice:':15' == '/subscriptions/' %}active{% endif %}" href="{% url 'subscription_list' %}">
+                                    <i class="bi bi-person-vcard"></i> {% trans "Subscriptions" %}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path|slice:':7' == '/rooms/' %}active{% endif %}" href="{% url 'room_list' %}">
+                                    <i class="bi bi-door-open"></i> {% trans "Rooms" %}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path|slice:':10' == '/vehicles/' %}active{% endif %}" href="{% url 'vehicle_list' %}">
+                                    <i class="bi bi-bicycle"></i> {% trans "Vehicles" %}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == '/price-template/' %}active{% endif %}" href="{% url 'price_template' %}">
+                                    <i class="bi bi-cash-coin"></i> {% trans "Price template" %}
+                                </a>
+                            </li>
+                            {% endif %}
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-gear"></i> {% trans "Settings" %}
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="border-top mt-3 pt-3 d-md-none">
+                        <div class="px-3 pb-2 text-uppercase text-muted small fw-semibold">{% trans "Quick actions" %}</div>
+                        <ul class="nav flex-column mobile-utility-list">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#"
+                                   onclick="changeLanguage(event, '{% if LANGUAGE_CODE == 'en' %}vi{% else %}en{% endif %}')">
+                                    <i class="bi bi-translate"></i>
+                                    <span>
+                                        {% if LANGUAGE_CODE == 'vi' %}
+                                            {% trans "Switch to English" %}
+                                        {% else %}
+                                            {% trans "Chuyen sang Tieng Viet" %}
+                                        {% endif %}
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <button type="button" class="btn-link text-start" onclick="toggleDarkMode()">
+                                    <i class="bi bi-moon-stars"></i>
+                                    <span>{% trans "Toggle dark mode" %}</span>
+                                </button>
+                            </li>
+                            {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'account_email' %}">
+                                    <i class="bi bi-person-circle"></i>
+                                    <span>{% trans "Account settings" %}</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'account_change_password' %}">
+                                    <i class="bi bi-shield-lock"></i>
+                                    <span>{% trans "Change password" %}</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <form method="post" action="{% url 'account_logout' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-link text-start">
+                                        <i class="bi bi-box-arrow-right"></i>
+                                        <span>{% trans "Sign out" %}</span>
+                                    </button>
+                                </form>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-12 col-md-10 ms-sm-auto col-lg-10 main-content">
+                {% block breadcrumbs %}{% endblock %}
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header">
+                    <h5
+                        class="modal-title"
+                        id="confirmDeleteModalLabel"
+                        data-default-title="{% trans 'Confirm delete' %}"
+                    >{% trans "Confirm delete" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
+                </div>
+                <div
+                    class="modal-body"
+                    data-delete-message-default="{% trans 'Are you sure you want to delete this item?' %}"
+                    data-delete-message-with-label="{% trans 'Are you sure you want to delete %s?' %}"
+                >
+                    <p class="mb-2" id="confirmDeleteMessage">{% trans "Are you sure you want to delete this item?" %}</p>
+                    <p class="text-muted small mb-0">{% trans "This action cannot be undone." %}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <form method="post" id="confirmDeleteForm" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <form id="languageForm" action="{% url 'set_language' %}" method="post" class="d-none">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <input type="hidden" name="language" id="languageInput" value="{{ LANGUAGE_CODE }}">
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-bs-theme', newTheme);
+            
+            const toggleBtn = document.getElementById('darkModeToggle');
+            if (newTheme === 'dark') {
+                toggleBtn.innerHTML = '<i class="bi bi-sun-fill"></i>';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                toggleBtn.innerHTML = '<i class="bi bi-moon-fill"></i>';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+            const toggleBtn = document.getElementById('darkModeToggle');
+            if (savedTheme === 'dark') {
+                toggleBtn.innerHTML = '<i class="bi bi-sun-fill"></i>';
+            }
+        });
+
+        // Language Selector
+        function changeLanguage(event, lang) {
+            event.preventDefault();
+            document.getElementById('languageInput').value = lang;
+            document.getElementById('languageForm').submit();
+        }
+
+        // Load saved language
+        window.addEventListener('DOMContentLoaded', () => {
+            const currentLang = document.documentElement.lang || 'en';
+            document.getElementById('currentLang').textContent = currentLang === 'vi' ? 'Tiếng Việt' : 'English';
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const toolsToggle = document.getElementById('toolsSubmenuToggle');
+            const toolsSubmenu = document.getElementById('toolsSubmenu');
+            if (!toolsToggle || !toolsSubmenu) {
+                return;
+            }
+
+            const savedState = localStorage.getItem('toolsSubmenuExpanded');
+            const hasActiveChild = toolsSubmenu.querySelector('.nav-link.active') !== null;
+            const shouldExpand = savedState === 'true' || (savedState === null && hasActiveChild);
+
+            toolsSubmenu.classList.toggle('show', shouldExpand);
+            toolsToggle.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
+
+            toolsSubmenu.addEventListener('shown.bs.collapse', () => {
+                localStorage.setItem('toolsSubmenuExpanded', 'true');
+                toolsToggle.setAttribute('aria-expanded', 'true');
+            });
+
+            toolsSubmenu.addEventListener('hidden.bs.collapse', () => {
+                localStorage.setItem('toolsSubmenuExpanded', 'false');
+                toolsToggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+            const confirmDeleteForm = document.getElementById('confirmDeleteForm');
+            const confirmDeleteMessage = document.getElementById('confirmDeleteMessage');
+            const confirmDeleteTitle = document.getElementById('confirmDeleteModalLabel');
+            const deleteMessageContainer = confirmDeleteMessage ? confirmDeleteMessage.parentElement : null;
+            if (!confirmDeleteModal || !confirmDeleteForm || !confirmDeleteMessage || !deleteMessageContainer || !confirmDeleteTitle) {
+                return;
+            }
+
+            const defaultDeleteMessage = deleteMessageContainer.dataset.deleteMessageDefault || 'Are you sure you want to delete this item?';
+            const labelledDeleteMessage = deleteMessageContainer.dataset.deleteMessageWithLabel || 'Are you sure you want to delete "%s"?';
+            const defaultDeleteTitle = confirmDeleteTitle.dataset.defaultTitle || 'Confirm delete';
+
+            confirmDeleteModal.addEventListener('show.bs.modal', (event) => {
+                const trigger = event.relatedTarget;
+                if (!trigger) {
+                    return;
+                }
+
+                const deleteUrl = trigger.getAttribute('data-delete-url');
+                const deleteLabel = trigger.getAttribute('data-delete-label') || '';
+                const dialogTitle = trigger.getAttribute('data-dialog-title') || '';
+                const dialogMessage = trigger.getAttribute('data-dialog-message') || '';
+                confirmDeleteForm.setAttribute('action', deleteUrl || '#');
+                confirmDeleteTitle.textContent = dialogTitle || defaultDeleteTitle;
+
+                if (dialogMessage) {
+                    confirmDeleteMessage.textContent = dialogMessage;
+                    return;
+                }
+
+                if (deleteLabel) {
+                    confirmDeleteMessage.textContent = labelledDeleteMessage.replace('%s', deleteLabel);
+                    return;
+                }
+
+                confirmDeleteMessage.textContent = defaultDeleteMessage;
+            });
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const sidebarElement = document.getElementById('appSidebar');
+            if (!sidebarElement) {
+                return;
+            }
+
+            const sidebarCloseButton = sidebarElement.querySelector('[data-sidebar-close]');
+            if (!sidebarCloseButton) {
+                return;
+            }
+
+            sidebarCloseButton.addEventListener('click', () => {
+                const sidebar = bootstrap.Offcanvas.getOrCreateInstance(sidebarElement);
+                sidebar.hide();
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

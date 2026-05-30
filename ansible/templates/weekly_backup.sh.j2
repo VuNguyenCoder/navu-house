@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+
+timestamp="$(date +%Y%m%d-%H%M%S)"
+backup_root="{{ backup_nfs_mount_point }}"
+backup_dir="${backup_root}/{{ backup_folder_name }}"
+bundle_dir="/tmp/navu-house-backup-${timestamp}"
+db_dump_path="${bundle_dir}/postgres.sql"
+bundle_archive_path="${backup_dir}/${timestamp}.tar.gz"
+
+mkdir -p "${backup_dir}"
+rm -rf "${bundle_dir}"
+mkdir -p "${bundle_dir}"
+
+cd "{{ deploy_path }}"
+
+docker compose exec -T db \
+  pg_dump -U "{{ postgres_user }}" "{{ postgres_db }}" \
+  > "${db_dump_path}"
+
+cp -R "{{ deploy_path }}/media" "${bundle_dir}/media"
+
+tar -czf "${bundle_archive_path}" -C "${bundle_dir}" .
+
+rm -rf "${bundle_dir}"
+
+find "${backup_dir}" -type f -mtime +{{ backup_retention_days }} -delete

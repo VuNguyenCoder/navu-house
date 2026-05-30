@@ -1,0 +1,144 @@
+---
+- name: Install docker
+  hosts: private
+  become: true
+  vars:
+    docker_install_compose: true
+  roles:
+    - role: geerlingguy.docker
+
+- name: Deploy Navu House
+  hosts: private
+  become: true
+  vars:
+    project_src: "{{ playbook_dir | dirname }}"
+    project_parent_dir: "{{ deploy_path | dirname }}"
+    archive_exclude_args: >-
+      {% for item in project_copy_excludes %}
+      --exclude={{ item }}
+      {% endfor %}
+  tasks:
+    - name: Ensure deploy parent directory exists
+      ansible.builtin.file:
+        path: "{{ project_parent_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Ensure persistent media directory exists on remote host
+      ansible.builtin.file:
+        path: "{{ deploy_path }}/media"
+        state: directory
+        mode: "0755"
+
+    - name: Build deploy archive locally
+      ansible.builtin.command:
+        cmd: >-
+          tar -czf {{ deploy_archive_path }}
+          {{ archive_exclude_args }}
+          -C {{ project_src | dirname }}
+          {{ project_src | basename }}
+      delegate_to: localhost
+      become: false
+
+    - name: Copy deploy archive to remote host
+      ansible.builtin.copy:
+        src: "{{ deploy_archive_path }}"
+        dest: "{{ deploy_archive_path }}"
+        mode: "0644"
+
+    - name: Extract project archive on remote host
+      ansible.builtin.unarchive:
+        src: "{{ deploy_archive_path }}"
+        dest: "{{ project_parent_dir }}"
+        remote_src: true
+
+    - name: Render docker compose override file
+      ansible.builtin.template:
+        src: templates/docker-compose.override.yml.j2
+        dest: "{{ deploy_path }}/docker-compose.override.yml"
+        mode: "0644"
+
+    - name: Start docker compose stack
+      ansible.builtin.command:
+        cmd: docker compose up -d --build
+      args:
+        chdir: "{{ deploy_path }}"
+
+    - name: Ensure target postgres database exists
+      ansible.builtin.shell: >
+        docker compose exec -T db
+        psql -U {{ postgres_user }} -d postgres -tAc
+        "SELECT 1 FROM pg_database WHERE datname='{{ postgres_db }}';"
+        | grep -q 1
+        || docker compose exec -T db
+        psql -U {{ postgres_user }} -d postgres -c
+        "CREATE DATABASE {{ postgres_db }};"
+      args:
+        chdir: "{{ deploy_path }}"
+
+    - name: Show running containers
+      ansible.builtin.command:
+        cmd: docker compose ps
+      args:
+        chdir: "{{ deploy_path }}"
+      register: compose_ps
+      changed_when: false
+
+    - name: Print docker compose status
+      ansible.builtin.debug:
+        var: compose_ps.stdout_lines
+
+    - name: Backup data weekly
+      block:
+        - name: Install NFS client packages
+          ansible.builtin.package:
+            name: "{{ 'nfs-common' if ansible_os_family == 'Debian' else 'nfs-utils' }}"
+            state: present
+
+        - name: Ensure NFS mount point exists
+          ansible.builtin.file:
+            path: "{{ backup_nfs_mount_point }}"
+            state: directory
+            mode: "0755"
+
+        - name: Mount NFS backup share
+          ansible.posix.mount:
+            src: "{{ backup_nfs_server }}:{{ backup_nfs_export }}"
+            path: "{{ backup_nfs_mount_point }}"
+            fstype: nfs
+            opts: rw,sync,hard
+            state: mounted
+
+        - name: Ensure backup directory exists on NFS share
+          ansible.builtin.file:
+            path: "{{ backup_nfs_mount_point }}/{{ backup_folder_name }}"
+            state: directory
+            mode: "0755"
+
+        - name: Render weekly backup script
+          ansible.builtin.template:
+            src: templates/weekly_backup.sh.j2
+            dest: /usr/local/bin/navu-house-weekly-backup.sh
+            mode: "0755"
+
+        - name: Schedule weekly backup
+          ansible.builtin.cron:
+            name: "Navu House weekly backup"
+            user: root
+            minute: "{{ backup_schedule_minute }}"
+            hour: "{{ backup_schedule_hour }}"
+            weekday: "{{ backup_schedule_weekday }}"
+            job: /usr/local/bin/navu-house-weekly-backup.sh
+
+    - name: Remove remote deploy archive
+      ansible.builtin.file:
+        path: "{{ deploy_archive_path }}"
+        state: absent
+
+  post_tasks:
+    - name: Remove local deploy archive
+      ansible.builtin.file:
+        path: "{{ deploy_archive_path }}"
+        state: absent
+      delegate_to: localhost
+      become: false

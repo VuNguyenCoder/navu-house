@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="{% trans 'Breadcrumb' %}" class="page-breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+        {% if selected_subscription %}
+        <li class="breadcrumb-item"><a href="{% url 'subscription_list' %}">{% trans "Subscriptions" %}</a></li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'subscription_details' selected_subscription.pk %}">{{ selected_subscription.room.room_name }}</a>
+        </li>
+        {% else %}
+        <li class="breadcrumb-item"><a href="{% url 'vehicle_list' %}">{% trans "Vehicles" %}</a></li>
+        {% endif %}
+        <li class="breadcrumb-item active" aria-current="page">
+            {% if form.instance.pk %}
+                {{ form.instance.license_plate|default:page_title }}
+            {% else %}
+                {{ page_title }}
+            {% endif %}
+        </li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ page_title }}</h1>
+            <p class="text-muted mb-0">{% trans "Fill in the information below and save your changes." %}</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% for hidden_field in form.hidden_fields %}
+                {{ hidden_field }}
+                {% endfor %}
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <div class="row g-3">
+                    {% for field in form %}
+                    <div class="col-12 {% if field.name == 'description' %}col-lg-12{% else %}col-lg-6{% endif %}">
+                        <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% if field.errors %}
+                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-flex gap-2 pt-4">
+                    <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
+                    <a href="{{ cancel_url }}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

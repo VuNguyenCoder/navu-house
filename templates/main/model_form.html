@@ -1,0 +1,799 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ page_title }}</h1>
+            <p class="text-muted mb-0">{% trans "Fill in the information below and save your changes." %}</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                {% for hidden_field in form.hidden_fields %}
+                {{ hidden_field }}
+                {% endfor %}
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <div class="row g-3">
+                    {% if form_kind == 'usage' %}
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, rgba(13,110,253,0.08), rgba(13,202,240,0.08));">
+                            <div class="card-body p-4">
+                                <h2 class="h5 mb-3">{% trans "Billing setup" %}</h2>
+                                <div class="row g-3">
+                                    {% for field in form %}
+                                    {% if field.name == 'billing_month' or field.name == 'billing_year' or field.name == 'tenant_count' %}
+                                    <div class="col-12 col-lg-4">
+                                        <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                        {{ field }}
+                                        {% if field.help_text %}
+                                        <div class="form-text">{{ field.help_text }}</div>
+                                        {% endif %}
+                                        {% if field.errors %}
+                                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h2 class="h5 mb-3">{% trans "Pricing snapshot" %}</h2>
+                                <div class="row g-3">
+                                    {% for field in form %}
+                                    {% if field.name == 'room_price' or field.name == 'electricity_price' or field.name == 'water_price' or field.name == 'internet_price' or field.name == 'cleaning_price' %}
+                                    <div class="col-12 col-lg-6">
+                                        <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                        {{ field }}
+                                        {% if field.errors %}
+                                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-xl-6">
+                        <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(180deg, rgba(255,193,7,0.12), rgba(255,193,7,0.04));">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <i class="bi bi-lightning-charge-fill text-warning"></i>
+                                    <h2 class="h5 mb-0">{% trans "Electricity" %}</h2>
+                                </div>
+                                {% for field in form %}
+                                {% if field.name == 'latest_electricity_reading' or field.name == 'electricity_meter_image' %}
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                    <div class="form-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                                {% if form.instance.pk and form.instance.electricity_meter_image_path %}
+                                <div class="pt-2 usage-image-preview image-preview-card" data-delete-preview>
+                                    <div class="small text-muted mb-2">{% trans "Current electricity meter image" %}</div>
+                                    <a href="{{ MEDIA_URL }}{{ form.instance.electricity_meter_image_path }}" target="_blank" rel="noopener">
+                                        <img src="{{ MEDIA_URL }}{{ form.instance.electricity_meter_image_path }}" alt="" class="img-fluid rounded border" style="max-height: 220px; object-fit: cover;">
+                                    </a>
+                                    <div class="mt-2">
+                                        {{ form.remove_electricity_meter_image }}
+                                        <button type="button" class="usage-delete-link" data-delete-trigger="{{ form.remove_electricity_meter_image.id_for_label }}">
+                                            {% trans "Delete this image" %}
+                                        </button>
+                                        <div class="usage-delete-pending d-none" data-delete-pending>
+                                            <span>{% trans "Image will be deleted after you save changes." %}</span>
+                                            <button type="button" class="usage-undo-link" data-delete-undo="{% if form.remove_electricity_meter_image.value %}{{ form.remove_electricity_meter_image.id_for_label }}{% else %}{{ form.remove_electricity_meter_image.id_for_label }}{% endif %}">
+                                                {% trans "Undo" %}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {% if form.remove_electricity_meter_image.errors %}
+                                    <div class="text-danger small mt-1">{{ form.remove_electricity_meter_image.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-xl-6">
+                        <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(180deg, rgba(13,202,240,0.12), rgba(13,202,240,0.04));">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <i class="bi bi-droplet-fill text-info"></i>
+                                    <h2 class="h5 mb-0">{% trans "Water" %}</h2>
+                                </div>
+                                {% for field in form %}
+                                {% if field.name == 'latest_water_reading' or field.name == 'water_meter_image' %}
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                    <div class="form-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                                {% if form.instance.pk and form.instance.water_meter_image_path %}
+                                <div class="pt-2 usage-image-preview image-preview-card" data-delete-preview>
+                                    <div class="small text-muted mb-2">{% trans "Current water meter image" %}</div>
+                                    <a href="{{ MEDIA_URL }}{{ form.instance.water_meter_image_path }}" target="_blank" rel="noopener">
+                                        <img src="{{ MEDIA_URL }}{{ form.instance.water_meter_image_path }}" alt="" class="img-fluid rounded border" style="max-height: 220px; object-fit: cover;">
+                                    </a>
+                                    <div class="mt-2">
+                                        {{ form.remove_water_meter_image }}
+                                        <button type="button" class="usage-delete-link" data-delete-trigger="{{ form.remove_water_meter_image.id_for_label }}">
+                                            {% trans "Delete this image" %}
+                                        </button>
+                                        <div class="usage-delete-pending d-none" data-delete-pending>
+                                            <span>{% trans "Image will be deleted after you save changes." %}</span>
+                                            <button type="button" class="usage-undo-link" data-delete-undo="{{ form.remove_water_meter_image.id_for_label }}">
+                                                {% trans "Undo" %}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {% if form.remove_water_meter_image.errors %}
+                                    <div class="text-danger small mt-1">{{ form.remove_water_meter_image.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div
+                            class="card border-0 shadow-sm usage-total-card"
+                            id="usageTotalCard"
+                            data-context-url="{% url 'usage_pricing_context' %}"
+                            data-usage-id="{% if form.instance.pk %}{{ form.instance.pk }}{% endif %}"
+                            data-previous-electricity="{% if usage_previous_context %}{{ usage_previous_context.previous_electricity_reading }}{% else %}0{% endif %}"
+                            data-previous-water="{% if usage_previous_context %}{{ usage_previous_context.previous_water_reading }}{% else %}0{% endif %}"
+                            data-is-first-month="{% if usage_previous_context and usage_previous_context.is_first_month %}true{% else %}false{% endif %}"
+                        >
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                                    <div>
+                                        <h2 class="h5 mb-1">{% trans "Total amount" %}</h2>
+                                        <p class="text-muted mb-0">{% trans "This amount is updated in real time from your pricing and meter inputs." %}</p>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="small text-muted">{% trans "Estimated total" %}</div>
+                                        <div class="usage-total-value" id="usageTotalValue">0 VND</div>
+                                        <div class="usage-total-formula" id="usageTotalFormula">0 + 0 + 0 + 0 + 0 = 0 VND</div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-4">
+                                    <div class="col-12 col-md-6 col-xl-3">
+                                        <div class="usage-metric-box">
+                                            <div class="small text-muted">{% trans "Previous electricity reading" %}</div>
+                                            <div class="fw-semibold" id="previousElectricityValue">0</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-3">
+                                        <div class="usage-metric-box">
+                                            <div class="small text-muted">{% trans "Electricity consumed" %}</div>
+                                            <div class="fw-semibold" id="electricityConsumedValue">0</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-3">
+                                        <div class="usage-metric-box">
+                                            <div class="small text-muted">{% trans "Previous water reading" %}</div>
+                                            <div class="fw-semibold" id="previousWaterValue">0</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-3">
+                                        <div class="usage-metric-box">
+                                            <div class="small text-muted">{% trans "Water consumed" %}</div>
+                                            <div class="fw-semibold" id="waterConsumedValue">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6 col-xl-4">
+                                        <div class="usage-breakdown-row">
+                                            <div>
+                                                <span>{% trans "Room price" %}</span>
+                                                <div class="usage-breakdown-detail" id="roomPriceFormula">{% trans "Flat rate" %}</div>
+                                            </div>
+                                            <strong id="roomPriceAmount">0 VND</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-4">
+                                        <div class="usage-breakdown-row">
+                                            <div>
+                                                <span>{% trans "Electricity cost" %}</span>
+                                                <div class="usage-breakdown-detail" id="electricityCostFormula">0 - 0 x 0 = 0 VND</div>
+                                            </div>
+                                            <strong id="electricityCostAmount">0 VND</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-4">
+                                        <div class="usage-breakdown-row">
+                                            <div>
+                                                <span>{% trans "Water cost" %}</span>
+                                                <div class="usage-breakdown-detail" id="waterCostFormula">0 - 0 x 0 = 0 VND</div>
+                                            </div>
+                                            <strong id="waterCostAmount">0 VND</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-4">
+                                        <div class="usage-breakdown-row">
+                                            <div>
+                                                <span>{% trans "Internet cost" %}</span>
+                                                <div class="usage-breakdown-detail" id="internetCostFormula">{% trans "Flat rate" %}</div>
+                                            </div>
+                                            <strong id="internetCostAmount">0 VND</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-4">
+                                        <div class="usage-breakdown-row">
+                                            <div>
+                                                <span>{% trans "Cleaning cost" %}</span>
+                                                <div class="usage-breakdown-detail" id="cleaningCostFormula">0 x 0 = 0 VND</div>
+                                            </div>
+                                            <strong id="cleaningCostAmount">0 VND</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-warning mt-3 d-none" id="usageValidationWarning" role="alert">
+                                    <div class="fw-semibold mb-1">{% trans "Please review the meter readings." %}</div>
+                                    <div id="usageValidationWarningItems"></div>
+                                </div>
+
+                                <div class="small text-muted mt-3" id="usageBaselineHint">
+                                    {% trans "For the first month of a subscription, previous readings are taken from the room's latest readings." %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    {% for field in form %}
+                    {% if field.name != 'remove_image_paths' %}
+                    <div class="col-12 {% if field.name == 'description' or field.name == 'images' or field.name == 'remove_image_paths' %}col-lg-12{% else %}col-lg-6{% endif %}">
+                        <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% if field.errors %}
+                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+                </div>
+
+                {% if form_kind == 'subscription' %}
+                <div class="pt-4" id="usage-records">
+                    <div class="subscription-usage-panel shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 px-4 py-3 border-bottom">
+                            <div>
+                                <div class="text-uppercase text-muted small fw-semibold">{% trans "Usage records" %}</div>
+                                <div class="text-muted small">{% trans "Manage usage records for this subscription from here." %}</div>
+                            </div>
+                            {% if form.instance.pk %}
+                            <a href="{% url 'usage_create' %}?subscription={{ form.instance.pk }}" class="btn btn-sm btn-success">
+                                <i class="bi bi-plus-circle me-1"></i> {% trans "Add usage record" %}
+                            </a>
+                            {% endif %}
+                        </div>
+
+                        {% if form.instance.pk %}
+                            {% if subscription_usage_rows %}
+                            <div class="table-responsive">
+                                <table class="table usage-inline-table align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>{% trans "No." %}</th>
+                                            <th>{% trans "Time" %}</th>
+                                            <th>{% trans "Electricity consumed" %}</th>
+                                            <th>{% trans "Water consumed" %}</th>
+                                            <th>{% trans "Payment amount" %}</th>
+                                            <th class="text-end">{% trans "Actions" %}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in subscription_usage_rows %}
+                                        <tr>
+                                            <td>{{ row.index }}</td>
+                                            <td class="fw-semibold">{{ row.usage.period|date:"m/Y" }}</td>
+                                            <td>{{ row.electricity_consumed }}</td>
+                                            <td>{{ row.water_consumed }}</td>
+                                            <td>{{ row.total_amount|floatformat:0 }} VND</td>
+                                            <td class="text-end">
+                                                <a href="{% url 'usage_details' row.usage.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Details" %}</a>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#confirmDeleteModal"
+                                                    data-delete-url="{% url 'usage_delete' row.usage.pk %}"
+                                                    data-delete-label="{{ row.usage.period|date:'m/Y' }}"
+                                                >{% trans "Delete" %}</button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="p-4">
+                                <div class="usage-empty">
+                                    {% trans "No usage records for this subscription yet." %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% else %}
+                        <div class="p-4">
+                            <div class="usage-empty">
+                                {% trans "Save this subscription first, then you can add usage records." %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if form.instance.pk and form.instance.image_paths %}
+                <div class="pt-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                        <h2 class="h5 mb-0">{% trans "Current images" %}</h2>
+                        <span class="small text-muted">{% trans "Click the red text below an image to mark it for deletion, then save." %}</span>
+                    </div>
+                    {% if form.remove_image_paths.errors %}
+                    <div class="text-danger small mb-3">{{ form.remove_image_paths.errors|striptags }}</div>
+                    {% endif %}
+                    <div class="d-flex flex-wrap gap-3">
+                        {% for checkbox in form.remove_image_paths %}
+                        <div class="image-preview-card usage-image-preview" data-delete-preview style="width: 180px;">
+                            {{ checkbox.tag }}
+                            <img src="{{ MEDIA_URL }}{{ checkbox.data.value }}" alt="" class="img-fluid rounded mb-2" style="height: 120px; width: 100%; object-fit: cover;">
+                            <div class="small text-muted text-break">{{ checkbox.choice_label }}</div>
+                            <div class="mt-2">
+                                <button type="button" class="usage-delete-link" data-delete-trigger="{{ checkbox.id_for_label }}">
+                                    {% trans "Delete this image" %}
+                                </button>
+                                <div class="usage-delete-pending d-none" data-delete-pending>
+                                    <span>{% trans "Image will be deleted after you save changes." %}</span>
+                                    <button type="button" class="usage-undo-link" data-delete-undo="{{ checkbox.id_for_label }}">
+                                        {% trans "Undo" %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-muted small">
+                            {% trans "No images uploaded yet." %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="d-flex gap-2 pt-4">
+                    <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
+                    <a href="{{ cancel_url }}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+.image-preview-card {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.85rem;
+    padding: 0.85rem;
+    background: var(--bs-body-bg);
+}
+
+.usage-total-card {
+    background:
+        radial-gradient(circle at top right, rgba(25, 135, 84, 0.12), transparent 34%),
+        linear-gradient(135deg, rgba(25, 135, 84, 0.08), rgba(13, 110, 253, 0.04));
+}
+
+.usage-total-value {
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    line-height: 1;
+    font-weight: 700;
+    color: #157347;
+}
+
+.usage-total-formula {
+    margin-top: 0.45rem;
+    font-size: 0.9rem;
+    color: var(--bs-secondary-color);
+}
+
+.usage-metric-box {
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(25, 135, 84, 0.12);
+    border-radius: 0.9rem;
+    background: rgba(255, 255, 255, 0.55);
+}
+
+.usage-breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(25, 135, 84, 0.08);
+}
+
+.usage-breakdown-detail {
+    margin-top: 0.2rem;
+    font-size: 0.85rem;
+    color: var(--bs-secondary-color);
+}
+
+.subscription-usage-panel {
+    border: 1px solid rgba(13, 110, 253, 0.12);
+    border-radius: 16px;
+    background: #fff;
+}
+
+.usage-inline-table th,
+.usage-inline-table td {
+    white-space: nowrap;
+}
+
+.usage-image-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.usage-image-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(13, 110, 253, 0.08);
+    color: var(--bs-body-color);
+    font-size: 0.875rem;
+    text-decoration: none;
+}
+
+.usage-image-badge:hover {
+    background: rgba(13, 110, 253, 0.14);
+}
+
+.usage-empty {
+    border: 1px dashed var(--bs-border-color);
+    border-radius: 14px;
+    padding: 1rem;
+    text-align: center;
+    color: var(--bs-secondary-color);
+    background: var(--bs-tertiary-bg);
+}
+
+.usage-delete-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.usage-image-preview input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.usage-delete-link,
+.usage-undo-link {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
+
+.usage-delete-link {
+    color: #b02a37;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.usage-delete-link:hover {
+    color: #8c1f2b;
+}
+
+.usage-delete-pending {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.usage-undo-link {
+    color: #0d6efd;
+    cursor: pointer;
+}
+
+.usage-image-preview.is-marked-for-delete a,
+.usage-image-preview.is-marked-for-delete img,
+.usage-image-preview.is-marked-for-delete .small.text-muted.text-break,
+.usage-image-preview.is-marked-for-delete .small.text-muted.mb-2,
+.usage-image-preview.is-marked-for-delete .usage-delete-link {
+    display: none !important;
+}
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const stripGrouping = (value) => `${value ?? ''}`.replace(/,/g, '').trim();
+        const formatGroupedDigits = (value) => {
+            const raw = stripGrouping(value).replace(/[^\d.-]/g, '');
+            if (!raw) {
+                return '';
+            }
+            const negative = raw.startsWith('-');
+            const digits = raw.replace(/-/g, '').split('.')[0].replace(/^0+(?=\d)/, '') || '0';
+            const grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return negative ? `-${grouped}` : grouped;
+        };
+
+        document.querySelectorAll('input[data-grouped-number="true"]').forEach((input) => {
+            input.addEventListener('input', () => {
+                input.value = formatGroupedDigits(input.value);
+            });
+            input.addEventListener('blur', () => {
+                input.value = formatGroupedDigits(input.value);
+            });
+            input.value = formatGroupedDigits(input.value);
+        });
+
+        const formatVnd = (value) => {
+            const safeValue = Number.isFinite(value) ? value : 0;
+            return `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(safeValue)} VND`;
+        };
+
+        const formatPlainNumber = (value) => {
+            const safeValue = Number.isFinite(value) ? value : 0;
+            return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(safeValue);
+        };
+
+        const usageTotalCard = document.getElementById('usageTotalCard');
+        if (usageTotalCard) {
+            const fields = {
+                subscription: document.getElementById('{{ form.subscription.id_for_label }}'),
+                month: document.getElementById('{{ form.billing_month.id_for_label }}'),
+                year: document.getElementById('{{ form.billing_year.id_for_label }}'),
+                tenantCount: document.getElementById('{{ form.tenant_count.id_for_label }}'),
+                roomPrice: document.getElementById('{{ form.room_price.id_for_label }}'),
+                electricityPrice: document.getElementById('{{ form.electricity_price.id_for_label }}'),
+                waterPrice: document.getElementById('{{ form.water_price.id_for_label }}'),
+                internetPrice: document.getElementById('{{ form.internet_price.id_for_label }}'),
+                cleaningPrice: document.getElementById('{{ form.cleaning_price.id_for_label }}'),
+                currentElectricity: document.getElementById('{{ form.latest_electricity_reading.id_for_label }}'),
+                currentWater: document.getElementById('{{ form.latest_water_reading.id_for_label }}'),
+            };
+
+            const readNumber = (input) => {
+                const value = parseFloat(stripGrouping(input?.value || '0'));
+                return Number.isFinite(value) ? value : 0;
+            };
+
+            const setText = (id, value) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                }
+            };
+
+            const renderUsageSummary = () => {
+                const previousElectricity = parseFloat(usageTotalCard.dataset.previousElectricity || '0') || 0;
+                const previousWater = parseFloat(usageTotalCard.dataset.previousWater || '0') || 0;
+                const currentElectricity = readNumber(fields.currentElectricity);
+                const currentWater = readNumber(fields.currentWater);
+                const invalidElectricity = currentElectricity < previousElectricity;
+                const invalidWater = currentWater < previousWater;
+                const electricityConsumed = Math.max(currentElectricity - previousElectricity, 0);
+                const waterConsumed = Math.max(currentWater - previousWater, 0);
+                const tenantCount = readNumber(fields.tenantCount);
+                const roomPrice = readNumber(fields.roomPrice);
+                const electricityPrice = readNumber(fields.electricityPrice);
+                const waterPrice = readNumber(fields.waterPrice);
+                const internetPrice = readNumber(fields.internetPrice);
+                const cleaningPrice = readNumber(fields.cleaningPrice);
+
+                const electricityCost = (currentElectricity - previousElectricity > 0)
+                    ? (currentElectricity - previousElectricity) * electricityPrice
+                    : 0;
+                const waterCost = (currentWater - previousWater > 0)
+                    ? (currentWater - previousWater) * waterPrice
+                    : 0;
+                const cleaningCost = tenantCount * cleaningPrice;
+                const total = roomPrice + electricityCost + waterCost + internetPrice + cleaningCost;
+
+                setText('previousElectricityValue', `${previousElectricity}`);
+                setText('electricityConsumedValue', `${electricityConsumed}`);
+                setText('previousWaterValue', `${previousWater}`);
+                setText('waterConsumedValue', `${waterConsumed}`);
+                setText('roomPriceAmount', formatVnd(roomPrice));
+                setText('electricityCostAmount', formatVnd(electricityCost));
+                setText('waterCostAmount', formatVnd(waterCost));
+                setText('internetCostAmount', formatVnd(internetPrice));
+                setText('cleaningCostAmount', formatVnd(cleaningCost));
+                setText('usageTotalValue', formatVnd(total));
+                setText('roomPriceFormula', '{% trans "Flat rate" %}');
+                setText(
+                    'electricityCostFormula',
+                    `(${formatPlainNumber(currentElectricity)} - ${formatPlainNumber(previousElectricity)}) x ${formatPlainNumber(electricityPrice)} = ${formatVnd(electricityCost)}`
+                );
+                setText(
+                    'waterCostFormula',
+                    `(${formatPlainNumber(currentWater)} - ${formatPlainNumber(previousWater)}) x ${formatPlainNumber(waterPrice)} = ${formatVnd(waterCost)}`
+                );
+                setText('internetCostFormula', '{% trans "Flat rate" %}');
+                setText(
+                    'cleaningCostFormula',
+                    `${formatPlainNumber(tenantCount)} x ${formatPlainNumber(cleaningPrice)} = ${formatVnd(cleaningCost)}`
+                );
+                setText(
+                    'usageTotalFormula',
+                    `${formatPlainNumber(roomPrice)} + ${formatPlainNumber(electricityCost)} + ${formatPlainNumber(waterCost)} + ${formatPlainNumber(internetPrice)} + ${formatPlainNumber(cleaningCost)} = ${formatVnd(total)}`
+                );
+
+                const baselineHint = document.getElementById('usageBaselineHint');
+                if (baselineHint) {
+                    baselineHint.classList.toggle('d-none', usageTotalCard.dataset.isFirstMonth !== 'true');
+                }
+
+                const validationWarning = document.getElementById('usageValidationWarning');
+                const validationWarningItems = document.getElementById('usageValidationWarningItems');
+                if (validationWarning && validationWarningItems) {
+                    const warningMessages = [];
+                    if (invalidElectricity) {
+                        warningMessages.push("{% trans "Current electricity reading cannot be lower than the previous month's reading." %}");
+                    }
+                    if (invalidWater) {
+                        warningMessages.push("{% trans "Current water reading cannot be lower than the previous month's reading." %}");
+                    }
+                    validationWarningItems.innerHTML = warningMessages.map((message) => `<div>${message}</div>`).join('');
+                    validationWarning.classList.toggle('d-none', warningMessages.length === 0);
+                }
+            };
+
+            const refreshPreviousReadings = async () => {
+                const subscriptionId = fields.subscription?.value;
+                const month = fields.month?.value;
+                const year = fields.year?.value;
+                if (!subscriptionId || !month || !year) {
+                    renderUsageSummary();
+                    return;
+                }
+
+                const params = new URLSearchParams({
+                    subscription: subscriptionId,
+                    month,
+                    year,
+                });
+                if (usageTotalCard.dataset.usageId) {
+                    params.set('usage_id', usageTotalCard.dataset.usageId);
+                }
+
+                try {
+                    const response = await fetch(`${usageTotalCard.dataset.contextUrl}?${params.toString()}`, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    });
+                    if (!response.ok) {
+                        throw new Error('Failed to load pricing context');
+                    }
+                    const payload = await response.json();
+                    usageTotalCard.dataset.previousElectricity = payload.previous_electricity_reading ?? 0;
+                    usageTotalCard.dataset.previousWater = payload.previous_water_reading ?? 0;
+                    usageTotalCard.dataset.isFirstMonth = payload.is_first_month ? 'true' : 'false';
+                } catch (error) {
+                    console.error('Failed to load previous usage context', error);
+                }
+                renderUsageSummary();
+            };
+
+            [
+                fields.tenantCount,
+                fields.roomPrice,
+                fields.electricityPrice,
+                fields.waterPrice,
+                fields.internetPrice,
+                fields.cleaningPrice,
+                fields.currentElectricity,
+                fields.currentWater,
+            ].forEach((input) => {
+                if (input) {
+                    input.addEventListener('input', renderUsageSummary);
+                }
+            });
+
+            [fields.subscription, fields.month, fields.year].forEach((input) => {
+                if (input) {
+                    input.addEventListener('change', refreshPreviousReadings);
+                }
+            });
+
+            refreshPreviousReadings();
+        }
+
+        const syncPreviewState = (wrapper, input) => {
+            const pending = wrapper.querySelector('[data-delete-pending]');
+            wrapper.classList.toggle('is-marked-for-delete', input.checked);
+            if (pending) {
+                pending.classList.toggle('d-none', !input.checked);
+            }
+        };
+
+        document.querySelectorAll('[data-delete-trigger]').forEach((button) => {
+            const input = document.getElementById(button.dataset.deleteTrigger);
+            const wrapper = button.closest('[data-delete-preview]');
+            if (!input) {
+                return;
+            }
+            button.addEventListener('click', () => {
+                input.checked = true;
+                if (wrapper) {
+                    syncPreviewState(wrapper, input);
+                }
+            });
+            if (wrapper) {
+                syncPreviewState(wrapper, input);
+            }
+        });
+
+        document.querySelectorAll('[data-delete-undo]').forEach((button) => {
+            const input = document.getElementById(button.dataset.deleteUndo);
+            const wrapper = button.closest('[data-delete-preview]');
+            if (!input) {
+                return;
+            }
+            button.addEventListener('click', () => {
+                input.checked = false;
+                if (wrapper) {
+                    syncPreviewState(wrapper, input);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

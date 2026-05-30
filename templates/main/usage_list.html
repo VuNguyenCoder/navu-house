@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Usages" %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">{% trans "Usage management" %}</h1>
+            <p class="text-muted mb-0">{% trans "Track monthly usage snapshots for each subscription." %}</p>
+        </div>
+        <a href="{% url 'usage_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> {% trans "Add usage record" %}
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>{% trans "Room" %}</th>
+                        <th>{% trans "Billing month" %}</th>
+                        <th>{% trans "Tenants" %}</th>
+                        <th>{% trans "Electricity reading" %}</th>
+                        <th>{% trans "Water reading" %}</th>
+                        <th>{% trans "Meter images" %}</th>
+                        <th class="text-end">{% trans "Actions" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usage in usages %}
+                    <tr>
+                        <td class="fw-semibold">{{ usage.subscription.room.room_name }}</td>
+                        <td>{{ usage.period|date:"m/Y" }}</td>
+                        <td>{{ usage.tenant_count }}</td>
+                        <td>{{ usage.latest_electricity_reading }}</td>
+                        <td>{{ usage.latest_water_reading }}</td>
+                        <td class="small">
+                            {% if usage.electricity_meter_image_path %}
+                            <div>{% trans "Electricity:" %} {{ usage.electricity_meter_image_path }}</div>
+                            {% endif %}
+                            {% if usage.water_meter_image_path %}
+                            <div>{% trans "Water:" %} {{ usage.water_meter_image_path }}</div>
+                            {% endif %}
+                            {% if not usage.electricity_meter_image_path and not usage.water_meter_image_path %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'usage_details' usage.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Details" %}</a>
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmDeleteModal"
+                                data-delete-url="{% url 'usage_delete' usage.pk %}"
+                                data-delete-label="{{ usage.period|date:'m/Y' }}"
+                            >{% trans "Delete" %}</button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">{% trans "No usage records yet." %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

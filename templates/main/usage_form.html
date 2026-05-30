@@ -1,0 +1,744 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="{% trans 'Breadcrumb' %}" class="page-breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'subscription_list' %}">{% trans "Subscriptions" %}</a></li>
+        {% if selected_subscription %}
+        <li class="breadcrumb-item">
+            <a href="{% url 'subscription_details' selected_subscription.pk %}">{{ selected_subscription.room.room_name }}</a>
+        </li>
+        {% endif %}
+        <li class="breadcrumb-item active" aria-current="page">
+            {% if form.instance.pk %}
+                {{ form.instance.period|date:"m/Y"|default:page_title }}
+            {% else %}
+                {{ page_title }}
+            {% endif %}
+        </li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ page_title }}</h1>
+            <p class="text-muted mb-0">{% trans "Fill in the information below and save your changes." %}</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                {% for hidden_field in form.hidden_fields %}
+                {{ hidden_field }}
+                {% endfor %}
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, rgba(13,110,253,0.08), rgba(13,202,240,0.08));">
+                            <div class="card-body p-4">
+                                <h2 class="h5 mb-3">{% trans "Billing setup" %}</h2>
+                                <div class="row g-3">
+                                    {% for field in form %}
+                                    {% if field.name == 'subscription' or field.name == 'billing_month' or field.name == 'billing_year' or field.name == 'tenant_count' %}
+                                    <div class="col-12 col-lg-4">
+                                        <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                        {{ field }}
+                                        {% if field.help_text %}
+                                        <div class="form-text">{{ field.help_text }}</div>
+                                        {% endif %}
+                                        {% if field.errors %}
+                                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h2 class="h5 mb-3">{% trans "Pricing snapshot" %}</h2>
+                                <div class="row g-3">
+                                    {% for field in form %}
+                                    {% if field.name == 'room_price' or field.name == 'electricity_price' or field.name == 'water_price' or field.name == 'internet_price' or field.name == 'cleaning_price' or field.name == 'laundry_price' %}
+                                    <div class="col-12 col-lg-6">
+                                        <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                        {{ field }}
+                                        {% if field.errors %}
+                                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-xl-6">
+                        <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(180deg, rgba(255,193,7,0.12), rgba(255,193,7,0.04));">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <i class="bi bi-lightning-charge-fill text-warning"></i>
+                                    <h2 class="h5 mb-0">{% trans "Electricity" %}</h2>
+                                </div>
+                                {% for field in form %}
+                                {% if field.name == 'latest_electricity_reading' or field.name == 'electricity_meter_image' %}
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                    <div class="form-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                                {% if form.instance.pk and form.instance.electricity_meter_image_path %}
+                                <div class="pt-2 usage-image-preview image-preview-card" data-delete-preview>
+                                    <div class="small text-muted mb-2">{% trans "Current electricity meter image" %}</div>
+                                    <a href="{{ MEDIA_URL }}{{ form.instance.electricity_meter_image_path }}" target="_blank" rel="noopener">
+                                        <img src="{{ MEDIA_URL }}{{ form.instance.electricity_meter_image_path }}" alt="" class="img-fluid rounded border" style="max-height: 220px; object-fit: cover;">
+                                    </a>
+                                    <div class="mt-2">
+                                        {{ form.remove_electricity_meter_image }}
+                                        <button type="button" class="usage-delete-link" data-delete-trigger="{{ form.remove_electricity_meter_image.id_for_label }}">
+                                            {% trans "Delete this image" %}
+                                        </button>
+                                        <div class="usage-delete-pending d-none" data-delete-pending>
+                                            <span>{% trans "Image will be deleted after you save changes." %}</span>
+                                            <button type="button" class="usage-undo-link" data-delete-undo="{{ form.remove_electricity_meter_image.id_for_label }}">
+                                                {% trans "Undo" %}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {% if form.remove_electricity_meter_image.errors %}
+                                    <div class="text-danger small mt-1">{{ form.remove_electricity_meter_image.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-xl-6">
+                        <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(180deg, rgba(13,202,240,0.12), rgba(13,202,240,0.04));">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <i class="bi bi-droplet-fill text-info"></i>
+                                    <h2 class="h5 mb-0">{% trans "Water" %}</h2>
+                                </div>
+                                {% for field in form %}
+                                {% if field.name == 'latest_water_reading' or field.name == 'water_meter_image' %}
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                    <div class="form-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                                {% if form.instance.pk and form.instance.water_meter_image_path %}
+                                <div class="pt-2 usage-image-preview image-preview-card" data-delete-preview>
+                                    <div class="small text-muted mb-2">{% trans "Current water meter image" %}</div>
+                                    <a href="{{ MEDIA_URL }}{{ form.instance.water_meter_image_path }}" target="_blank" rel="noopener">
+                                        <img src="{{ MEDIA_URL }}{{ form.instance.water_meter_image_path }}" alt="" class="img-fluid rounded border" style="max-height: 220px; object-fit: cover;">
+                                    </a>
+                                    <div class="mt-2">
+                                        {{ form.remove_water_meter_image }}
+                                        <button type="button" class="usage-delete-link" data-delete-trigger="{{ form.remove_water_meter_image.id_for_label }}">
+                                            {% trans "Delete this image" %}
+                                        </button>
+                                        <div class="usage-delete-pending d-none" data-delete-pending>
+                                            <span>{% trans "Image will be deleted after you save changes." %}</span>
+                                            <button type="button" class="usage-undo-link" data-delete-undo="{{ form.remove_water_meter_image.id_for_label }}">
+                                                {% trans "Undo" %}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {% if form.remove_water_meter_image.errors %}
+                                    <div class="text-danger small mt-1">{{ form.remove_water_meter_image.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div
+                            class="card border-0 shadow-sm usage-total-card"
+                            id="usageTotalCard"
+                            data-context-url="{% url 'usage_pricing_context' %}"
+                            data-usage-id="{% if form.instance.pk %}{{ form.instance.pk }}{% endif %}"
+                            data-previous-electricity="{% if usage_previous_context %}{{ usage_previous_context.previous_electricity_reading }}{% else %}0{% endif %}"
+                            data-previous-water="{% if usage_previous_context %}{{ usage_previous_context.previous_water_reading }}{% else %}0{% endif %}"
+                            data-is-first-month="{% if usage_previous_context and usage_previous_context.is_first_month %}true{% else %}false{% endif %}"
+                        >
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                                    <div>
+                                        <h2 class="h5 mb-1">{% trans "Total amount" %}</h2>
+                                        <p class="text-muted mb-0">{% trans "This amount is updated in real time from your pricing and meter inputs." %}</p>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="small text-muted">{% trans "Estimated total" %}</div>
+                                        <div class="usage-total-value" id="usageTotalValue">0 VND</div>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table align-middle usage-total-table mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>{% trans "No." %}</th>
+                                                <th>{% trans "Content" %}</th>
+                                                <th>{% trans "Quantity" %}</th>
+                                                <th>{% trans "Unit price" %}</th>
+                                                <th>{% trans "Amount" %}</th>
+                                                <th>{% trans "Notes" %}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>1</td>
+                                                <td class="fw-semibold">{% trans "Room" %}</td>
+                                                <td id="roomQuantityValue">1</td>
+                                                <td id="roomUnitPriceValue">0 VND</td>
+                                                <td id="roomPriceAmount">0 VND</td>
+                                                <td id="roomNoteValue">{% trans "Flat rate" %}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2</td>
+                                                <td class="fw-semibold">{% trans "Electricity" %}</td>
+                                                <td id="electricityQuantityValue">0</td>
+                                                <td id="electricityUnitPriceValue">0 VND</td>
+                                                <td id="electricityCostAmount">0 VND</td>
+                                                <td id="electricityNoteValue">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3</td>
+                                                <td class="fw-semibold">{% trans "Water" %}</td>
+                                                <td id="waterQuantityValue">0</td>
+                                                <td id="waterUnitPriceValue">0 VND</td>
+                                                <td id="waterCostAmount">0 VND</td>
+                                                <td id="waterNoteValue">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4</td>
+                                                <td class="fw-semibold">{% trans "Internet price" %}</td>
+                                                <td id="internetQuantityValue">1</td>
+                                                <td id="internetUnitPriceValue">0 VND</td>
+                                                <td id="internetCostAmount">0 VND</td>
+                                                <td id="internetNoteValue">{% trans "Flat rate" %}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>5</td>
+                                                <td class="fw-semibold">{% trans "Cleaning price" %}</td>
+                                                <td id="cleaningQuantityValue">0</td>
+                                                <td id="cleaningUnitPriceValue">0 VND</td>
+                                                <td id="cleaningCostAmount">0 VND</td>
+                                                <td id="cleaningNoteValue">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td>6</td>
+                                                <td class="fw-semibold">{% trans "Laundry price" %}</td>
+                                                <td id="laundryQuantityValue">1</td>
+                                                <td id="laundryUnitPriceValue">0 VND</td>
+                                                <td id="laundryCostAmount">0 VND</td>
+                                                <td id="laundryNoteValue">{% trans "Flat rate" %}</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="4" class="text-end fw-bold">{% trans "Total amount" %}</td>
+                                                <td class="fw-bold text-success" id="usageTotalFooterValue">0 VND</td>
+                                                <td class="text-muted" id="usageTotalFormula"></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                                <div class="alert alert-warning mt-3 d-none" id="usageValidationWarning" role="alert">
+                                    <div class="fw-semibold mb-1">{% trans "Please review the meter readings." %}</div>
+                                    <div id="usageValidationWarningItems"></div>
+                                </div>
+
+                                <div class="small text-muted mt-3" id="usageBaselineHint">
+                                    {% trans "For the first month of a subscription, previous readings are taken from the subscription's start readings." %}
+                                </div>
+
+                                <div class="d-flex justify-content-end align-items-center gap-2 mt-4">
+                                    <span class="small text-muted d-none" id="copyUsageSummaryStatus"></span>
+                                    <button type="button" class="btn btn-sm btn-outline-success" id="copyUsageSummaryButton">
+                                        <i class="bi bi-clipboard-plus me-1"></i>{% trans "Copy as image" %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 pt-4">
+                    <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
+                    <a href="{{ cancel_url }}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+.image-preview-card {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.85rem;
+    padding: 0.85rem;
+    background: var(--bs-body-bg);
+}
+
+.usage-total-card {
+    background:
+        radial-gradient(circle at top right, rgba(25, 135, 84, 0.12), transparent 34%),
+        linear-gradient(135deg, rgba(25, 135, 84, 0.08), rgba(13, 110, 253, 0.04));
+}
+
+.usage-total-value {
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    line-height: 1;
+    font-weight: 700;
+    color: #157347;
+}
+
+.usage-total-formula {
+    margin-top: 0.45rem;
+    font-size: 0.9rem;
+    color: var(--bs-secondary-color);
+}
+
+.usage-total-table {
+    --bs-table-bg: rgba(255, 255, 255, 0.58);
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.72);
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(25, 135, 84, 0.12);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.usage-total-table thead th {
+    background: rgba(255, 255, 255, 0.78);
+    white-space: nowrap;
+}
+
+.usage-total-table td,
+.usage-total-table th {
+    vertical-align: top;
+}
+
+.usage-note-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.usage-note-list {
+    margin: 0;
+    padding-left: 1rem;
+}
+
+.usage-note-list li + li {
+    margin-top: 0.15rem;
+}
+
+.usage-note-result {
+    font-weight: 500;
+    color: var(--bs-emphasis-color);
+}
+
+.usage-total-table tfoot td {
+    background: rgba(255, 255, 255, 0.86);
+}
+
+.usage-delete-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.usage-image-preview input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.usage-delete-link,
+.usage-undo-link {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
+
+.usage-delete-link {
+    color: #b02a37;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.usage-delete-link:hover {
+    color: #8c1f2b;
+}
+
+.usage-delete-pending {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.usage-undo-link {
+    color: #0d6efd;
+    cursor: pointer;
+}
+
+.usage-image-preview.is-marked-for-delete a,
+.usage-image-preview.is-marked-for-delete img,
+.usage-image-preview.is-marked-for-delete .small.text-muted.mb-2,
+.usage-image-preview.is-marked-for-delete .usage-delete-link {
+    display: none !important;
+}
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const stripGrouping = (value) => `${value ?? ''}`.replace(/,/g, '').trim();
+        const formatGroupedDigits = (value) => {
+            const raw = stripGrouping(value).replace(/[^\d.-]/g, '');
+            if (!raw) {
+                return '';
+            }
+            const negative = raw.startsWith('-');
+            const digits = raw.replace(/-/g, '').split('.')[0].replace(/^0+(?=\d)/, '') || '0';
+            const grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return negative ? `-${grouped}` : grouped;
+        };
+
+        document.querySelectorAll('input[data-grouped-number="true"]').forEach((input) => {
+            input.addEventListener('input', () => {
+                input.value = formatGroupedDigits(input.value);
+            });
+            input.addEventListener('blur', () => {
+                input.value = formatGroupedDigits(input.value);
+            });
+            input.value = formatGroupedDigits(input.value);
+        });
+
+        const formatVnd = (value) => {
+            const safeValue = Number.isFinite(value) ? value : 0;
+            return `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(safeValue)} VND`;
+        };
+
+        const formatPlainNumber = (value) => {
+            const safeValue = Number.isFinite(value) ? value : 0;
+            return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(safeValue);
+        };
+
+        const usageTotalCard = document.getElementById('usageTotalCard');
+        if (usageTotalCard) {
+            const copyUsageSummaryButton = document.getElementById('copyUsageSummaryButton');
+            const copyUsageSummaryStatus = document.getElementById('copyUsageSummaryStatus');
+            const fields = {
+                subscription: document.getElementById('{{ form.subscription.id_for_label }}'),
+                month: document.getElementById('{{ form.billing_month.id_for_label }}'),
+                year: document.getElementById('{{ form.billing_year.id_for_label }}'),
+                tenantCount: document.getElementById('{{ form.tenant_count.id_for_label }}'),
+                roomPrice: document.getElementById('{{ form.room_price.id_for_label }}'),
+                electricityPrice: document.getElementById('{{ form.electricity_price.id_for_label }}'),
+                waterPrice: document.getElementById('{{ form.water_price.id_for_label }}'),
+                internetPrice: document.getElementById('{{ form.internet_price.id_for_label }}'),
+                cleaningPrice: document.getElementById('{{ form.cleaning_price.id_for_label }}'),
+                laundryPrice: document.getElementById('{{ form.laundry_price.id_for_label }}'),
+                currentElectricity: document.getElementById('{{ form.latest_electricity_reading.id_for_label }}'),
+                currentWater: document.getElementById('{{ form.latest_water_reading.id_for_label }}'),
+            };
+
+            const readNumber = (input) => {
+                const value = parseFloat(stripGrouping(input?.value || '0'));
+                return Number.isFinite(value) ? value : 0;
+            };
+
+            const setText = (id, value) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                }
+            };
+
+            const setHtml = (id, value) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.innerHTML = value;
+                }
+            };
+
+            const setCopyStatus = (message, isError = false) => {
+                if (!copyUsageSummaryStatus) {
+                    return;
+                }
+                copyUsageSummaryStatus.textContent = message;
+                copyUsageSummaryStatus.classList.remove('d-none', 'text-muted', 'text-danger', 'text-success');
+                copyUsageSummaryStatus.classList.add(isError ? 'text-danger' : 'text-success');
+                window.setTimeout(() => {
+                    copyUsageSummaryStatus.textContent = '';
+                    copyUsageSummaryStatus.classList.add('d-none');
+                }, 2400);
+            };
+
+            const renderUsageSummary = () => {
+                const previousElectricity = parseFloat(usageTotalCard.dataset.previousElectricity || '0') || 0;
+                const previousWater = parseFloat(usageTotalCard.dataset.previousWater || '0') || 0;
+                const currentElectricity = readNumber(fields.currentElectricity);
+                const currentWater = readNumber(fields.currentWater);
+                const invalidElectricity = currentElectricity < previousElectricity;
+                const invalidWater = currentWater < previousWater;
+                const electricityConsumed = Math.max(currentElectricity - previousElectricity, 0);
+                const waterConsumed = Math.max(currentWater - previousWater, 0);
+                const tenantCount = readNumber(fields.tenantCount);
+                const roomPrice = readNumber(fields.roomPrice);
+                const electricityPrice = readNumber(fields.electricityPrice);
+                const waterPrice = readNumber(fields.waterPrice);
+                const internetPrice = readNumber(fields.internetPrice);
+                const cleaningPrice = readNumber(fields.cleaningPrice);
+                const laundryPrice = readNumber(fields.laundryPrice);
+
+                const electricityCost = (currentElectricity - previousElectricity > 0)
+                    ? (currentElectricity - previousElectricity) * electricityPrice
+                    : 0;
+                const waterCost = (currentWater - previousWater > 0)
+                    ? (currentWater - previousWater) * waterPrice
+                    : 0;
+                const cleaningCost = tenantCount * cleaningPrice;
+                const laundryCost = tenantCount * laundryPrice;
+                const total = roomPrice + electricityCost + waterCost + internetPrice + cleaningCost + laundryCost;
+
+                setText('roomQuantityValue', `1 {% trans "room" %}`);
+                setText('electricityQuantityValue', `${formatPlainNumber(electricityConsumed)} {% trans "kWh" %}`);
+                setText('waterQuantityValue', `${formatPlainNumber(waterConsumed)} {% trans "m3" %}`);
+                setText('internetQuantityValue', `1 {% trans "room" %}`);
+                setText('cleaningQuantityValue', `${formatPlainNumber(tenantCount)} {% trans "person" %}`);
+                setText('laundryQuantityValue', `${formatPlainNumber(tenantCount)} {% trans "person" %}`);
+                setText('roomUnitPriceValue', formatVnd(roomPrice));
+                setText('electricityUnitPriceValue', formatVnd(electricityPrice));
+                setText('waterUnitPriceValue', formatVnd(waterPrice));
+                setText('internetUnitPriceValue', formatVnd(internetPrice));
+                setText('cleaningUnitPriceValue', formatVnd(cleaningPrice));
+                setText('laundryUnitPriceValue', formatVnd(laundryPrice));
+                setText('roomPriceAmount', formatVnd(roomPrice));
+                setText('electricityCostAmount', formatVnd(electricityCost));
+                setText('waterCostAmount', formatVnd(waterCost));
+                setText('internetCostAmount', formatVnd(internetPrice));
+                setText('cleaningCostAmount', formatVnd(cleaningCost));
+                setText('laundryCostAmount', formatVnd(laundryCost));
+                setText('usageTotalValue', formatVnd(total));
+                setText('usageTotalFooterValue', formatVnd(total));
+                setText('roomNoteValue', `1 {% trans "room" %} x ${formatPlainNumber(roomPrice)}`);
+                setHtml(
+                    'electricityNoteValue',
+                    `<div class="usage-note-lines"><ul class="usage-note-list"><li>{% trans "Previous electricity reading" %}: ${formatPlainNumber(previousElectricity)}</li><li>{% trans "Electricity reading" %}: ${formatPlainNumber(currentElectricity)}</li></ul><div class="usage-note-result">→ {% trans "Electricity consumed" %}: ${formatPlainNumber(currentElectricity)} - ${formatPlainNumber(previousElectricity)} = ${formatPlainNumber(electricityConsumed)}</div></div>`
+                );
+                setHtml(
+                    'waterNoteValue',
+                    `<div class="usage-note-lines"><ul class="usage-note-list"><li>{% trans "Previous water reading" %}: ${formatPlainNumber(previousWater)}</li><li>{% trans "Water reading" %}: ${formatPlainNumber(currentWater)}</li></ul><div class="usage-note-result">→ {% trans "Water consumed" %}: ${formatPlainNumber(currentWater)} - ${formatPlainNumber(previousWater)} = ${formatPlainNumber(waterConsumed)}</div></div>`
+                );
+                setText('internetNoteValue', `1 {% trans "room" %} x ${formatPlainNumber(internetPrice)}`);
+                setText('cleaningNoteValue', `${formatPlainNumber(tenantCount)} {% trans "person" %} x ${formatPlainNumber(cleaningPrice)}`);
+                setText('laundryNoteValue', `${formatPlainNumber(tenantCount)} {% trans "person" %} x ${formatPlainNumber(laundryPrice)}`);
+
+                const baselineHint = document.getElementById('usageBaselineHint');
+                if (baselineHint) {
+                    baselineHint.classList.toggle('d-none', usageTotalCard.dataset.isFirstMonth !== 'true');
+                }
+
+                const validationWarning = document.getElementById('usageValidationWarning');
+                const validationWarningItems = document.getElementById('usageValidationWarningItems');
+                if (validationWarning && validationWarningItems) {
+                    const warningMessages = [];
+                    if (invalidElectricity) {
+                        warningMessages.push("{% trans "Current electricity reading cannot be lower than the previous month's reading." %}");
+                    }
+                    if (invalidWater) {
+                        warningMessages.push("{% trans "Current water reading cannot be lower than the previous month's reading." %}");
+                    }
+                    validationWarningItems.innerHTML = warningMessages.map((message) => `<div>${message}</div>`).join('');
+                    validationWarning.classList.toggle('d-none', warningMessages.length === 0);
+                }
+            };
+
+            const refreshPreviousReadings = async () => {
+                const subscriptionId = fields.subscription?.value;
+                const month = fields.month?.value;
+                const year = fields.year?.value;
+                if (!subscriptionId || !month || !year) {
+                    renderUsageSummary();
+                    return;
+                }
+
+                const params = new URLSearchParams({
+                    subscription: subscriptionId,
+                    month,
+                    year,
+                });
+                if (usageTotalCard.dataset.usageId) {
+                    params.set('usage_id', usageTotalCard.dataset.usageId);
+                }
+
+                try {
+                    const response = await fetch(`${usageTotalCard.dataset.contextUrl}?${params.toString()}`, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    });
+                    if (!response.ok) {
+                        throw new Error('Failed to load pricing context');
+                    }
+                    const payload = await response.json();
+                    usageTotalCard.dataset.previousElectricity = payload.previous_electricity_reading ?? 0;
+                    usageTotalCard.dataset.previousWater = payload.previous_water_reading ?? 0;
+                    usageTotalCard.dataset.isFirstMonth = payload.is_first_month ? 'true' : 'false';
+                } catch (error) {
+                    console.error('Failed to load previous usage context', error);
+                }
+                renderUsageSummary();
+            };
+
+            [
+                fields.tenantCount,
+                fields.roomPrice,
+                fields.electricityPrice,
+                fields.waterPrice,
+                fields.internetPrice,
+                fields.cleaningPrice,
+                fields.laundryPrice,
+                fields.currentElectricity,
+                fields.currentWater,
+            ].forEach((input) => {
+                if (input) {
+                    input.addEventListener('input', renderUsageSummary);
+                }
+            });
+
+            [fields.subscription, fields.month, fields.year].forEach((input) => {
+                if (input) {
+                    input.addEventListener('change', refreshPreviousReadings);
+                }
+            });
+
+            if (copyUsageSummaryButton) {
+                copyUsageSummaryButton.addEventListener('click', async () => {
+                    if (!window.html2canvas || !navigator.clipboard || typeof ClipboardItem === 'undefined') {
+                        setCopyStatus('{% trans "Copy image is not supported in this browser." %}', true);
+                        return;
+                    }
+
+                    copyUsageSummaryButton.disabled = true;
+                    setCopyStatus('{% trans "Preparing image..." %}');
+
+                    try {
+                        const canvas = await window.html2canvas(usageTotalCard, {
+                            backgroundColor: null,
+                            scale: 2,
+                            useCORS: true,
+                        });
+
+                        const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+                        if (!blob) {
+                            throw new Error('no_blob');
+                        }
+
+                        await navigator.clipboard.write([
+                            new ClipboardItem({
+                                'image/png': blob,
+                            }),
+                        ]);
+                        setCopyStatus('{% trans "Copied image to clipboard." %}');
+                    } catch (error) {
+                        console.error('Failed to copy usage summary image', error);
+                        setCopyStatus('{% trans "Could not copy image. Please try again." %}', true);
+                    } finally {
+                        copyUsageSummaryButton.disabled = false;
+                    }
+                });
+            }
+
+            refreshPreviousReadings();
+        }
+
+        const syncPreviewState = (wrapper, input) => {
+            const pending = wrapper.querySelector('[data-delete-pending]');
+            wrapper.classList.toggle('is-marked-for-delete', input.checked);
+            if (pending) {
+                pending.classList.toggle('d-none', !input.checked);
+            }
+        };
+
+        document.querySelectorAll('[data-delete-trigger]').forEach((button) => {
+            const input = document.getElementById(button.dataset.deleteTrigger);
+            const wrapper = button.closest('[data-delete-preview]');
+            if (!input) {
+                return;
+            }
+            button.addEventListener('click', () => {
+                input.checked = true;
+                if (wrapper) {
+                    syncPreviewState(wrapper, input);
+                }
+            });
+            if (wrapper) {
+                syncPreviewState(wrapper, input);
+            }
+        });
+
+        document.querySelectorAll('[data-delete-undo]').forEach((button) => {
+            const input = document.getElementById(button.dataset.deleteUndo);
+            const wrapper = button.closest('[data-delete-preview]');
+            if (!input) {
+                return;
+            }
+            button.addEventListener('click', () => {
+                input.checked = false;
+                if (wrapper) {
+                    syncPreviewState(wrapper, input);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

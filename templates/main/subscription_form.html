@@ -1,0 +1,442 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="{% trans 'Breadcrumb' %}" class="page-breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'subscription_list' %}">{% trans "Subscriptions" %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">
+            {% if form.instance.pk %}
+                {{ form.instance.room.room_name|default:page_title }}
+            {% else %}
+                {{ page_title }}
+            {% endif %}
+        </li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ page_title }}</h1>
+            <p class="text-muted mb-0">{% trans "Fill in the information below and save your changes." %}</p>
+        </div>
+        {% if form.instance.pk %}
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            {% if form.instance.status == 'enabled' %}
+            <span class="badge rounded-pill text-bg-success px-3 py-2">{% trans "Enabled" %}</span>
+            <button
+                type="button"
+                class="btn btn-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#confirmDeleteModal"
+                data-delete-url="{% url 'subscription_deactivate' form.instance.pk %}"
+                data-delete-label="{{ form.instance.room.room_name }}"
+                data-dialog-title="{% trans 'Deactivate subscription' %}"
+                data-dialog-message="{% blocktrans with room_name=form.instance.room.room_name %}Are you sure you want to deactivate the subscription for {{ room_name }}?{% endblocktrans %}"
+            ><i class="bi bi-pause-circle me-1"></i>{% trans "Deactivate" %}</button>
+            {% else %}
+            <span class="badge rounded-pill text-bg-secondary px-3 py-2">{% trans "Disabled" %}</span>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% for hidden_field in form.hidden_fields %}
+                {{ hidden_field }}
+                {% endfor %}
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <div>
+                    <section class="subscription-section">
+                        <button class="subscription-section-toggle{% if not form.instance.pk %}{% else %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#subscriptionBasicInfo" aria-expanded="{% if not form.instance.pk %}true{% else %}false{% endif %}" aria-controls="subscriptionBasicInfo">
+                            <span class="subscription-section-title">
+                                <span class="subscription-section-badge bg-primary-subtle text-primary">
+                                    <i class="bi bi-card-heading"></i>
+                                </span>
+                                <span class="h5 mb-0 text-primary-emphasis">{% trans "Basic information" %}</span>
+                            </span>
+                            <i class="bi bi-chevron-down subscription-section-icon"></i>
+                        </button>
+                        <div class="collapse{% if not form.instance.pk %} show{% endif %} subscription-section-body" id="subscriptionBasicInfo">
+                            <div class="row g-3">
+                                {% for field in form %}
+                                {% if field.name == 'room' or field.name == 'description' or field.name == 'start_date' %}
+                                <div class="col-12 {% if field.name == 'description' %}col-lg-12{% else %}col-lg-6{% endif %}">
+                                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                    <div class="form-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="subscription-section">
+                        <button class="subscription-section-toggle{% if not form.instance.pk %}{% else %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#subscriptionStartReadings" aria-expanded="{% if not form.instance.pk %}true{% else %}false{% endif %}" aria-controls="subscriptionStartReadings">
+                            <span class="subscription-section-title">
+                                <span class="subscription-section-badge bg-warning-subtle text-warning-emphasis">
+                                    <i class="bi bi-lightning-charge"></i>
+                                </span>
+                                <span class="h5 mb-0 text-warning-emphasis">{% trans "Start readings" %}</span>
+                            </span>
+                            <i class="bi bi-chevron-down subscription-section-icon"></i>
+                        </button>
+                        <div class="collapse{% if not form.instance.pk %} show{% endif %} subscription-section-body" id="subscriptionStartReadings">
+                            <div class="row g-3">
+                                {% for field in form %}
+                                {% if field.name == 'start_electricity_reading' or field.name == 'start_water_reading' %}
+                                <div class="col-12 col-lg-6">
+                                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                    <div class="form-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="subscription-section">
+                        <button class="subscription-section-toggle{% if not form.instance.pk %}{% else %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#subscriptionPricingSnapshot" aria-expanded="{% if not form.instance.pk %}true{% else %}false{% endif %}" aria-controls="subscriptionPricingSnapshot">
+                            <span class="subscription-section-title">
+                                <span class="subscription-section-badge bg-success-subtle text-success-emphasis">
+                                    <i class="bi bi-cash-stack"></i>
+                                </span>
+                                <span class="h5 mb-0 text-success-emphasis">{% trans "Pricing snapshot" %}</span>
+                            </span>
+                            <i class="bi bi-chevron-down subscription-section-icon"></i>
+                        </button>
+                        <div class="collapse{% if not form.instance.pk %} show{% endif %} subscription-section-body" id="subscriptionPricingSnapshot">
+                            <div class="row g-3">
+                                {% for field in form %}
+                                {% if field.name == 'deposit_amount' or field.name == 'room_price' or field.name == 'electricity_price' or field.name == 'water_price' or field.name == 'internet_price' or field.name == 'cleaning_price' or field.name == 'laundry_price' %}
+                                <div class="col-12 col-lg-6">
+                                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                    <div class="form-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="subscription-section">
+                        <button class="subscription-section-toggle{% if not form.instance.pk %}{% else %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#subscriptionContactInfo" aria-expanded="{% if not form.instance.pk %}true{% else %}false{% endif %}" aria-controls="subscriptionContactInfo">
+                            <span class="subscription-section-title">
+                                <span class="subscription-section-badge bg-info-subtle text-info-emphasis">
+                                    <i class="bi bi-person-lines-fill"></i>
+                                </span>
+                                <span class="h5 mb-0 text-info-emphasis">{% trans "Contact information" %}</span>
+                            </span>
+                            <i class="bi bi-chevron-down subscription-section-icon"></i>
+                        </button>
+                        <div class="collapse{% if not form.instance.pk %} show{% endif %} subscription-section-body" id="subscriptionContactInfo">
+                            <div class="row g-3">
+                                {% for field in form %}
+                                {% if field.name == 'contact_phonenumber' or field.name == 'contact_email' %}
+                                <div class="col-12 col-lg-6">
+                                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                    <div class="form-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="d-flex gap-2 pt-4">
+                    <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
+                    <a href="{{ cancel_url }}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="pt-4" id="vehicle-records">
+        <div class="subscription-usage-panel shadow-sm">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 px-4 py-3 border-bottom">
+                <div>
+                    <div class="text-uppercase text-muted small fw-semibold">{% trans "Vehicles" %}</div>
+                    <div class="text-muted small">{% trans "Manage vehicles for this subscription from here." %}</div>
+                </div>
+                {% if form.instance.pk %}
+                <a href="{% url 'vehicle_create' %}?subscription={{ form.instance.pk }}" class="btn btn-sm btn-success">
+                    <i class="bi bi-plus-circle me-1"></i> {% trans "Add vehicle" %}
+                </a>
+                {% endif %}
+            </div>
+
+            {% if form.instance.pk %}
+                {% if subscription_vehicles %}
+                <div class="table-responsive">
+                    <table class="table usage-inline-table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>{% trans "License plate" %}</th>
+                                <th>{% trans "Created at" %}</th>
+                                <th class="text-end">{% trans "Actions" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vehicle in subscription_vehicles %}
+                            <tr>
+                                <td class="fw-semibold">{{ vehicle.license_plate }}</td>
+                                <td>{{ vehicle.created_at|date:"d/m/Y H:i" }}</td>
+                                <td class="text-end">
+                                    <a href="{% url 'vehicle_details' vehicle.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Details" %}</a>
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#confirmDeleteModal"
+                                        data-delete-url="{% url 'vehicle_delete' vehicle.pk %}"
+                                        data-delete-label="{{ vehicle.license_plate }}"
+                                    >{% trans "Delete" %}</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-4">
+                    <div class="usage-empty">
+                        {% trans "No vehicles for this subscription yet." %}
+                    </div>
+                </div>
+                {% endif %}
+            {% else %}
+            <div class="p-4">
+                <div class="usage-empty">
+                    {% trans "Save this subscription first, then you can add vehicles." %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="pt-4" id="usage-records">
+        <div class="subscription-usage-panel shadow-sm">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 px-4 py-3 border-bottom">
+                <div>
+                    <div class="text-uppercase text-muted small fw-semibold">{% trans "Usage records" %}</div>
+                    <div class="text-muted small">{% trans "Manage usage records for this subscription from here." %}</div>
+                </div>
+                {% if form.instance.pk %}
+                <a href="{% url 'usage_create' %}?subscription={{ form.instance.pk }}" class="btn btn-sm btn-success">
+                    <i class="bi bi-plus-circle me-1"></i> {% trans "Add usage record" %}
+                </a>
+                {% endif %}
+            </div>
+
+            {% if form.instance.pk %}
+                {% if subscription_usage_rows %}
+                <div class="table-responsive">
+                    <table class="table usage-inline-table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>{% trans "No." %}</th>
+                                <th>{% trans "Time" %}</th>
+                                <th>{% trans "Electricity consumed" %}</th>
+                                <th>{% trans "Water consumed" %}</th>
+                                <th>{% trans "Payment amount" %}</th>
+                                <th class="text-end">{% trans "Actions" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in subscription_usage_rows %}
+                            <tr>
+                                <td>{{ row.index }}</td>
+                                <td class="fw-semibold">{{ row.usage.period|date:"m/Y" }}</td>
+                                <td>{{ row.electricity_consumed }}</td>
+                                <td>{{ row.water_consumed }}</td>
+                                <td>{{ row.total_amount|floatformat:0 }} VND</td>
+                                <td class="text-end">
+                                    <a href="{% url 'usage_details' row.usage.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Details" %}</a>
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#confirmDeleteModal"
+                                        data-delete-url="{% url 'usage_delete' row.usage.pk %}"
+                                        data-delete-label="{{ row.usage.period|date:'m/Y' }}"
+                                    >{% trans "Delete" %}</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-4">
+                    <div class="usage-empty">
+                        {% trans "No usage records for this subscription yet." %}
+                    </div>
+                </div>
+                {% endif %}
+            {% else %}
+            <div class="p-4">
+                <div class="usage-empty">
+                    {% trans "Save this subscription first, then you can add usage records." %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+.subscription-section + .subscription-section {
+    border-top: 2px solid rgba(13, 110, 253, 0.16);
+}
+
+.subscription-section-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+}
+
+.subscription-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+}
+
+.subscription-section-badge {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: 1rem;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+.subscription-section-toggle:hover {
+    color: var(--bs-primary);
+}
+
+.subscription-section-toggle[aria-expanded="true"] .subscription-section-icon {
+    transform: rotate(180deg);
+}
+
+.subscription-section-icon {
+    transition: transform 0.2s ease;
+    color: var(--bs-secondary-color);
+}
+
+.subscription-section {
+    padding: 0;
+}
+
+.subscription-section-body {
+    padding: 0 0 1.25rem;
+}
+
+.subscription-usage-panel {
+    border: 1px solid rgba(13, 110, 253, 0.12);
+    border-radius: 16px;
+    background: #fff;
+}
+
+.usage-inline-table th,
+.usage-inline-table td {
+    white-space: nowrap;
+}
+
+.usage-empty {
+    border: 1px dashed var(--bs-border-color);
+    border-radius: 14px;
+    padding: 1rem;
+    text-align: center;
+    color: var(--bs-secondary-color);
+    background: var(--bs-tertiary-bg);
+}
+
+@media (max-width: 767.98px) {
+    .subscription-section-toggle {
+        padding: 1rem 0;
+    }
+
+    .subscription-section-body {
+        padding: 0 0 1rem;
+    }
+}
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const stripGrouping = (value) => `${value ?? ''}`.replace(/,/g, '').trim();
+        const formatGroupedDigits = (value) => {
+            const raw = stripGrouping(value).replace(/[^\d.-]/g, '');
+            if (!raw) {
+                return '';
+            }
+            const negative = raw.startsWith('-');
+            const digits = raw.replace(/-/g, '').split('.')[0].replace(/^0+(?=\d)/, '') || '0';
+            const grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return negative ? `-${grouped}` : grouped;
+        };
+
+        document.querySelectorAll('input[data-grouped-number="true"]').forEach((input) => {
+            input.addEventListener('input', () => {
+                input.value = formatGroupedDigits(input.value);
+            });
+            input.addEventListener('blur', () => {
+                input.value = formatGroupedDigits(input.value);
+            });
+            input.value = formatGroupedDigits(input.value);
+        });
+    });
+</script>
+{% endblock %}

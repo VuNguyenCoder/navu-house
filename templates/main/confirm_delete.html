@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="{% trans 'Breadcrumb' %}" class="page-breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+        {% if breadcrumb_list_url and breadcrumb_list_label %}
+        <li class="breadcrumb-item"><a href="{{ breadcrumb_list_url }}">{{ breadcrumb_list_label }}</a></li>
+        {% endif %}
+        {% if breadcrumb_parent_label %}
+        <li class="breadcrumb-item">{{ breadcrumb_parent_label }}</li>
+        {% endif %}
+        <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h1 class="h3 mb-3">{{ page_title }}</h1>
+            <p class="text-muted mb-4">
+                {% blocktrans with label=object_label %}Are you sure you want to delete "{{ label }}"?{% endblocktrans %}
+            </p>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
+                    <a href="{{ cancel_url }}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

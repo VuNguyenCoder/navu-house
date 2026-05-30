@@ -1,0 +1,33 @@
+services:
+  db:
+    environment:
+      POSTGRES_DB: "{{ postgres_db }}"
+      POSTGRES_USER: "{{ postgres_user }}"
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{ postgres_user }} -d {{ postgres_db }}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "{{ postgres_port }}:5432"
+
+  redis:
+    ports:
+      - "{{ redis_port }}:6379"
+
+  web:
+    environment:
+      DEBUG: "{{ 'True' if django_debug else 'False' }}"
+      ALLOWED_HOSTS: "{{ django_allowed_hosts | join(',') }}"
+      DB_NAME: "{{ postgres_db }}"
+      DB_USER: "{{ postgres_user }}"
+      DB_PASSWORD: "{{ postgres_password }}"
+      DB_HOST: db
+      DB_PORT: "5432"
+      REDIS_URL: "{{ redis_url }}"
+      GUNICORN_BIND: 0.0.0.0:8000
+      GUNICORN_WORKERS: "{{ gunicorn_workers }}"
+      GUNICORN_THREADS: "{{ gunicorn_threads }}"
+    ports:
+      - "{{ web_port }}:8000"

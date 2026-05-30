@@ -1,0 +1,50 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Translations
+*.mo
+
+# Environment and local secrets
+.env
+.env.*
+config/.env
+ansible/group_vars/private.yml
+ansible/inventory.yml
+
+# Ansible local dependencies
+ansible/.galaxy/
+
+# Docker and runtime data
+volumes/
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo

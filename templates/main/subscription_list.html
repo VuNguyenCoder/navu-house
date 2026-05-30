@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Subscriptions" %}{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="{% trans 'Breadcrumb' %}" class="page-breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% trans "Subscriptions" %}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">{% trans "Subscription management" %}</h1>
+            <p class="text-muted mb-0">{% trans "Manage active rentals and snapshot the pricing from the shared price template." %}</p>
+        </div>
+        <a href="{% url 'subscription_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> {% trans "Add subscription" %}
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-3 p-lg-4">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-12 col-lg-3">
+                    <label class="form-label fw-semibold" for="subscriptionRoomFilter">{% trans "Room" %}</label>
+                    <select id="subscriptionRoomFilter" name="room" class="form-select">
+                        <option value="">{% trans "All rooms" %}</option>
+                        {% for room in filter_rooms %}
+                        <option value="{{ room.pk }}"{% if selected_room == room.pk|stringformat:'s' %} selected{% endif %}>{{ room.room_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <label class="form-label fw-semibold" for="subscriptionStatusFilter">{% trans "Status" %}</label>
+                    <select id="subscriptionStatusFilter" name="status" class="form-select">
+                        <option value="all"{% if selected_status == 'all' %} selected{% endif %}>{% trans "All" %}</option>
+                        <option value="enabled"{% if selected_status == 'enabled' %} selected{% endif %}>{% trans "Enabled" %}</option>
+                        <option value="disabled"{% if selected_status == 'disabled' %} selected{% endif %}>{% trans "Disabled" %}</option>
+                    </select>
+                </div>
+                <div class="col-12 col-lg-2">
+                    <label class="form-label fw-semibold" for="subscriptionDateFrom">{% trans "From date" %}</label>
+                    <input id="subscriptionDateFrom" type="date" name="date_from" value="{{ selected_date_from }}" class="form-control">
+                </div>
+                <div class="col-12 col-lg-2">
+                    <label class="form-label fw-semibold" for="subscriptionDateTo">{% trans "To date" %}</label>
+                    <input id="subscriptionDateTo" type="date" name="date_to" value="{{ selected_date_to }}" class="form-control">
+                </div>
+                <div class="col-12 col-lg-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1">{% trans "Apply filters" %}</button>
+                    <a href="{% url 'subscription_list' %}" class="btn btn-outline-secondary">{% trans "Clear" %}</a>
+                </div>
+                <div class="col-12">
+                    <div class="small text-muted">{% trans "Time range" %}: {% if selected_date_from or selected_date_to %}{% trans "Custom range" %}{% else %}{% trans "All the time" %}{% endif %}</div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="d-none d-md-table-cell">{% trans "Description" %}</th>
+                        <th>{% trans "Room" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th class="d-none d-md-table-cell">{% trans "Start date" %}</th>
+                        <th class="d-none d-md-table-cell">{% trans "Deposit amount" %}</th>
+                        <th class="d-none d-md-table-cell">{% trans "Contact email" %}</th>
+                        <th class="text-end">{% trans "Actions" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subscription in subscriptions %}
+                    <tr>
+                        <td class="d-none d-md-table-cell">{{ subscription.description|default:"—"|truncatechars:80 }}</td>
+                        <td class="fw-semibold">{{ subscription.room.room_name }}</td>
+                        <td>
+                            {% if subscription.status == 'enabled' %}
+                            <span class="badge bg-success">{% trans "Enabled" %}</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{% trans "Disabled" %}</span>
+                            {% endif %}
+                        </td>
+                        <td class="d-none d-md-table-cell">{{ subscription.start_date|date:"d/m/Y" }}</td>
+                        <td class="d-none d-md-table-cell">{{ subscription.deposit_amount|floatformat:0 }} VND</td>
+                        <td class="d-none d-md-table-cell">{{ subscription.contact_email|default:"—" }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'subscription_details' subscription.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Details" %}</a>
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmDeleteModal"
+                                data-delete-url="{% url 'subscription_delete' subscription.pk %}"
+                                data-delete-label="{{ subscription.room.room_name }}"
+                            >{% trans "Delete" %}</button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">{% trans "No subscriptions yet." %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

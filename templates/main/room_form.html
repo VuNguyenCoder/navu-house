@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="{% trans 'Breadcrumb' %}" class="page-breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'room_list' %}">{% trans "Rooms" %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">
+            {% if form.instance.pk %}
+                {{ form.instance.room_name|default:page_title }}
+            {% else %}
+                {{ page_title }}
+            {% endif %}
+        </li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ page_title }}</h1>
+            <p class="text-muted mb-0">{% trans "Fill in the information below and save your changes." %}</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                {% for hidden_field in form.hidden_fields %}
+                {{ hidden_field }}
+                {% endfor %}
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <div class="row g-3">
+                    {% for field in form %}
+                    {% if field.name != 'remove_image_paths' %}
+                    <div class="col-12 {% if field.name == 'description' or field.name == 'images' %}col-lg-12{% else %}col-lg-6{% endif %}">
+                        <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% if field.errors %}
+                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if form.instance.pk and form.instance.image_paths %}
+                <div class="pt-4">
+                    {% if form.remove_image_paths.errors %}
+                    <div class="text-danger small mb-3">{{ form.remove_image_paths.errors|striptags }}</div>
+                    {% endif %}
+                    <div class="d-flex flex-wrap gap-3">
+                        {% for checkbox in form.remove_image_paths %}
+                        <div class="image-preview-card room-image-preview" data-delete-preview style="width: 180px;">
+                            {{ checkbox.tag }}
+                            <img src="{{ MEDIA_URL }}{{ checkbox.data.value }}" alt="" class="img-fluid rounded mb-2" style="height: 120px; width: 100%; object-fit: cover;">
+                            <div class="small text-muted text-break">{{ checkbox.choice_label }}</div>
+                            <div class="mt-2">
+                                <button type="button" class="image-delete-link" data-delete-trigger="{{ checkbox.id_for_label }}">
+                                    {% trans "Delete this image" %}
+                                </button>
+                                <div class="image-delete-pending d-none" data-delete-pending>
+                                    <span>{% trans "Image will be deleted after you save changes." %}</span>
+                                    <button type="button" class="image-undo-link" data-delete-undo="{{ checkbox.id_for_label }}">
+                                        {% trans "Undo" %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-muted small">
+                            {% trans "No images uploaded yet." %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="d-flex gap-2 pt-4">
+                    <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
+                    <a href="{{ cancel_url }}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+.image-preview-card {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.85rem;
+    padding: 0.85rem;
+    background: var(--bs-body-bg);
+}
+
+.room-image-preview input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.image-delete-link,
+.image-undo-link {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
+
+.image-delete-link {
+    color: #b02a37;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.image-delete-link:hover {
+    color: #8c1f2b;
+}
+
+.image-delete-pending {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.image-undo-link {
+    color: #0d6efd;
+    cursor: pointer;
+}
+
+.room-image-preview.is-marked-for-delete img,
+.room-image-preview.is-marked-for-delete .small.text-muted.text-break,
+.room-image-preview.is-marked-for-delete .image-delete-link {
+    display: none !important;
+}
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const stripGrouping = (value) => `${value ?? ''}`.replace(/,/g, '').trim();
+        const formatGroupedDigits = (value) => {
+            const raw = stripGrouping(value).replace(/[^\d.-]/g, '');
+            if (!raw) {
+                return '';
+            }
+            const negative = raw.startsWith('-');
+            const digits = raw.replace(/-/g, '').split('.')[0].replace(/^0+(?=\d)/, '') || '0';
+            const grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return negative ? `-${grouped}` : grouped;
+        };
+
+        document.querySelectorAll('input[data-grouped-number="true"]').forEach((input) => {
+            input.addEventListener('input', () => {
+                input.value = formatGroupedDigits(input.value);
+            });
+            input.addEventListener('blur', () => {
+                input.value = formatGroupedDigits(input.value);
+            });
+            input.value = formatGroupedDigits(input.value);
+        });
+
+        const syncPreviewState = (wrapper, input) => {
+            const pending = wrapper.querySelector('[data-delete-pending]');
+            wrapper.classList.toggle('is-marked-for-delete', input.checked);
+            if (pending) {
+                pending.classList.toggle('d-none', !input.checked);
+            }
+        };
+
+        document.querySelectorAll('[data-delete-trigger]').forEach((button) => {
+            const input = document.getElementById(button.dataset.deleteTrigger);
+            const wrapper = button.closest('[data-delete-preview]');
+            if (!input) {
+                return;
+            }
+            button.addEventListener('click', () => {
+                input.checked = true;
+                if (wrapper) {
+                    syncPreviewState(wrapper, input);
+                }
+            });
+            if (wrapper) {
+                syncPreviewState(wrapper, input);
+            }
+        });
+
+        document.querySelectorAll('[data-delete-undo]').forEach((button) => {
+            const input = document.getElementById(button.dataset.deleteUndo);
+            const wrapper = button.closest('[data-delete-preview]');
+            if (!input) {
+                return;
+            }
+            button.addEventListener('click', () => {
+                input.checked = false;
+                if (wrapper) {
+                    syncPreviewState(wrapper, input);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,43 @@
+deploy_path: /opt/navu-house
+deploy_archive_path: /tmp/navu-house-deploy.tar.gz
+compose_project_name: navu-house
+
+django_debug: false
+django_allowed_hosts:
+  - 192.168.1.152
+  - localhost
+  - 127.0.0.1
+
+postgres_db: navu_house
+postgres_user: postgres
+postgres_password: change_me
+postgres_port: 5432
+
+redis_port: 6379
+redis_url: redis://redis:6379/1
+
+web_port: 80
+gunicorn_workers: 2
+gunicorn_threads: 4
+
+backup_nfs_server: 192.168.1.10
+backup_nfs_export: /volume1/navu-house
+backup_nfs_mount_point: /mnt/navu-house
+backup_folder_name: backup
+backup_schedule_weekday: "0"
+backup_schedule_hour: "2"
+backup_schedule_minute: "30"
+backup_retention_days: 60
+
+project_copy_excludes:
+  - .git
+  - .gitignore
+  - .venv
+  - ansible/.galaxy
+  - volumes
+  - media
+  - __pycache__
+  - "*.pyc"
+  - "*.pyo"
+  - "*.sqlite3"
+  - .DS_Store

@@ -752,6 +752,15 @@ msgstr "Đến ngày"
 msgid "Apply filters"
 msgstr "Lọc"
 
+msgid "Filters"
+msgstr "Bộ lọc"
+
+msgid "Filter subscriptions by room, status, and time range."
+msgstr "Lọc hợp đồng thuê theo phòng, trạng thái và khoảng thời gian."
+
+msgid "Toggle filters"
+msgstr "Ẩn/hiện bộ lọc"
+
 msgid "Time range"
 msgstr "Khoảng thời gian"
 

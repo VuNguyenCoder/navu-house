@@ -17,8 +17,8 @@ redis_port: 6379
 redis_url: redis://redis:6379/1
 
 web_port: 80
-gunicorn_workers: 2
-gunicorn_threads: 4
+gunicorn_workers: 1
+gunicorn_threads: 2
 
 backup_nfs_server: 192.168.1.10
 backup_nfs_export: /volume1/navu-house

@@ -275,8 +275,8 @@
                             <tr>
                                 <th>{% trans "No." %}</th>
                                 <th>{% trans "Time" %}</th>
-                                <th>{% trans "Electricity consumed" %}</th>
-                                <th>{% trans "Water consumed" %}</th>
+                                <th class="d-none d-md-table-cell">{% trans "Electricity consumed" %}</th>
+                                <th class="d-none d-md-table-cell">{% trans "Water consumed" %}</th>
                                 <th>{% trans "Payment amount" %}</th>
                                 <th class="text-end">{% trans "Actions" %}</th>
                             </tr>
@@ -286,11 +286,19 @@
                             <tr>
                                 <td>{{ row.index }}</td>
                                 <td class="fw-semibold">{{ row.usage.period|date:"m/Y" }}</td>
-                                <td>{{ row.electricity_consumed }}</td>
-                                <td>{{ row.water_consumed }}</td>
+                                <td class="d-none d-md-table-cell">{{ row.electricity_consumed }}</td>
+                                <td class="d-none d-md-table-cell">{{ row.water_consumed }}</td>
                                 <td>{{ row.total_amount|floatformat:0 }} VND</td>
                                 <td class="text-end">
-                                    <a href="{% url 'usage_details' row.usage.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Details" %}</a>
+                                    <a
+                                        href="{% url 'usage_details' row.usage.pk %}"
+                                        class="btn btn-sm btn-outline-primary"
+                                        aria-label="{% trans 'Details' %}"
+                                        title="{% trans 'Details' %}"
+                                    >
+                                        <i class="bi bi-eye"></i>
+                                        <span class="d-none d-md-inline ms-md-1">{% trans "Details" %}</span>
+                                    </a>
                                     <button
                                         type="button"
                                         class="btn btn-sm btn-outline-danger"
@@ -298,7 +306,12 @@
                                         data-bs-target="#confirmDeleteModal"
                                         data-delete-url="{% url 'usage_delete' row.usage.pk %}"
                                         data-delete-label="{{ row.usage.period|date:'m/Y' }}"
-                                    >{% trans "Delete" %}</button>
+                                        aria-label="{% trans 'Delete' %}"
+                                        title="{% trans 'Delete' %}"
+                                    >
+                                        <i class="bi bi-trash"></i>
+                                        <span class="d-none d-md-inline ms-md-1">{% trans "Delete" %}</span>
+                                    </button>
                                 </td>
                             </tr>
                             {% endfor %}

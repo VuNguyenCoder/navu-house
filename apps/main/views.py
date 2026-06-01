@@ -154,6 +154,11 @@ class RoomCreateView(OperatorRequiredMixin, SuccessMessageMixin, CreateView):
         })
         return context
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
 
 class RoomUpdateView(OperatorRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Room
@@ -169,6 +174,11 @@ class RoomUpdateView(OperatorRequiredMixin, SuccessMessageMixin, UpdateView):
             'cancel_url': reverse('room_list'),
         })
         return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def get_success_url(self):
         return reverse('room_details', kwargs={'pk': self.object.pk})

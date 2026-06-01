@@ -206,6 +206,39 @@ msgstr "Bạn không có quyền truy cập trang bảng giá."
 msgid "Price template updated successfully."
 msgstr "Cập nhật bảng giá thành công."
 
+msgid "When you create a new subscription, this value is used as the baseline for calculating electricity charges in the following months. It is also updated automatically after each monthly usage record."
+msgstr "Khi bạn tạo hợp đồng thuê mới, giá trị này sẽ được dùng làm mốc để tính tiền điện cho các tháng tiếp theo. Sau mỗi kỳ khai báo sử dụng hằng tháng, giá trị này cũng sẽ được tự động cập nhật lại."
+
+msgid "When you create a new subscription, this value is used as the baseline for calculating water charges in the following months. It is also updated automatically after each monthly usage record."
+msgstr "Khi bạn tạo hợp đồng thuê mới, giá trị này sẽ được dùng làm mốc để tính tiền nước cho các tháng tiếp theo. Sau mỗi kỳ khai báo sử dụng hằng tháng, giá trị này cũng sẽ được tự động cập nhật lại."
+
+msgid "Manual update on Room details"
+msgstr "Cập nhật thủ công trên trang chi tiết phòng"
+
+msgid "Automatic update from subscription usage"
+msgstr "Tự động cập nhật từ khai báo sử dụng của hợp đồng"
+
+msgid "Manual update on Room details by %(username)s"
+msgstr "Cập nhật thủ công trên trang chi tiết phòng bởi %(username)s"
+
+msgid "Automatic update from subscription %(subscription_id)s (%(period)s)"
+msgstr "Tự động cập nhật từ hợp đồng %(subscription_id)s (%(period)s)"
+
+msgid "Automatic update from"
+msgstr "Tự động cập nhật từ"
+
+msgid "subscription %(subscription_id)s (%(period)s)"
+msgstr "hợp đồng %(subscription_id)s (%(period)s)"
+
+msgid "Not updated yet"
+msgstr "Chưa được cập nhật"
+
+msgid "Last updated"
+msgstr "Cập nhật lần cuối"
+
+msgid "Source"
+msgstr "Nguồn cập nhật"
+
 msgid "Rooms"
 msgstr "Phòng"
 

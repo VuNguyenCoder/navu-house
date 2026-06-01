@@ -46,7 +46,55 @@
                     {% if field.name != 'remove_image_paths' %}
                     <div class="col-12 {% if field.name == 'description' or field.name == 'images' %}col-lg-12{% else %}col-lg-6{% endif %}">
                         <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {% if field.name == 'latest_electricity_reading' or field.name == 'latest_water_reading' %}
                         {{ field }}
+                        <div class="room-reading-meta mt-2">
+                            <div class="room-reading-meta-row">
+                                <span class="room-reading-meta-label">{% trans "Last updated" %}:</span>
+                                <span>
+                                    {% if field.name == 'latest_electricity_reading' %}
+                                        {% if form.instance.latest_electricity_reading_updated_at %}
+                                            {{ form.instance.latest_electricity_reading_updated_at|date:"d/m/Y H:i" }}
+                                        {% else %}
+                                            {% trans "Not updated yet" %}
+                                        {% endif %}
+                                    {% else %}
+                                        {% if form.instance.latest_water_reading_updated_at %}
+                                            {{ form.instance.latest_water_reading_updated_at|date:"d/m/Y H:i" }}
+                                        {% else %}
+                                            {% trans "Not updated yet" %}
+                                        {% endif %}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="room-reading-meta-row">
+                                <span class="room-reading-meta-label">{% trans "Source" %}:</span>
+                                <span>
+                                    {% if field.name == 'latest_electricity_reading' %}
+                                        {% if form.instance.latest_electricity_reading_source == 'usage' and form.instance.latest_electricity_reading_usage %}
+                                            {% trans "Automatic update from" %}
+                                            <a href="{% url 'subscription_details' form.instance.latest_electricity_reading_usage.subscription_id %}">
+                                                {% blocktrans with subscription_id=form.instance.latest_electricity_reading_usage.subscription_id period=form.instance.latest_electricity_reading_usage.period|date:"m/Y" %}subscription {{ subscription_id }} ({{ period }}){% endblocktrans %}
+                                            </a>
+                                        {% else %}
+                                            {{ form.instance.latest_electricity_reading_source_summary }}
+                                        {% endif %}
+                                    {% else %}
+                                        {% if form.instance.latest_water_reading_source == 'usage' and form.instance.latest_water_reading_usage %}
+                                            {% trans "Automatic update from" %}
+                                            <a href="{% url 'subscription_details' form.instance.latest_water_reading_usage.subscription_id %}">
+                                                {% blocktrans with subscription_id=form.instance.latest_water_reading_usage.subscription_id period=form.instance.latest_water_reading_usage.period|date:"m/Y" %}subscription {{ subscription_id }} ({{ period }}){% endblocktrans %}
+                                            </a>
+                                        {% else %}
+                                            {{ form.instance.latest_water_reading_source_summary }}
+                                        {% endif %}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        {% else %}
+                        {{ field }}
+                        {% endif %}
                         {% if field.help_text %}
                         <div class="form-text">{{ field.help_text }}</div>
                         {% endif %}
@@ -107,6 +155,26 @@
     border-radius: 0.85rem;
     padding: 0.85rem;
     background: var(--bs-body-bg);
+}
+
+.room-reading-meta {
+    border: 1px solid rgba(13, 110, 253, 0.14);
+    background: rgba(13, 110, 253, 0.05);
+    border-radius: 0.85rem;
+    padding: 0.75rem 0.9rem;
+    font-size: 0.9rem;
+    color: #4f5b67;
+}
+
+.room-reading-meta-row + .room-reading-meta-row {
+    margin-top: 0.45rem;
+}
+
+.room-reading-meta-label {
+    display: inline-block;
+    min-width: 6.75rem;
+    font-weight: 600;
+    color: #1f2a37;
 }
 
 .room-image-preview input[type="checkbox"] {

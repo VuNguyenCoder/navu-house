@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.db import models
@@ -50,11 +51,55 @@ class PriceTemplate(models.Model):
 
 
 class Room(models.Model):
+    class ReadingUpdateSource(models.TextChoices):
+        MANUAL = 'manual', _('Manual update on Room details')
+        USAGE = 'usage', _('Automatic update from subscription usage')
+
     room_name = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True)
     image_paths = models.JSONField(default=list, blank=True)
     latest_electricity_reading = models.PositiveIntegerField(default=0)
     latest_water_reading = models.PositiveIntegerField(default=0)
+    latest_electricity_reading_updated_at = models.DateTimeField(null=True, blank=True)
+    latest_water_reading_updated_at = models.DateTimeField(null=True, blank=True)
+    latest_electricity_reading_source = models.CharField(
+        max_length=20,
+        choices=ReadingUpdateSource.choices,
+        blank=True,
+    )
+    latest_water_reading_source = models.CharField(
+        max_length=20,
+        choices=ReadingUpdateSource.choices,
+        blank=True,
+    )
+    latest_electricity_reading_usage = models.ForeignKey(
+        'Usage',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+    latest_water_reading_usage = models.ForeignKey(
+        'Usage',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+    latest_electricity_reading_updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+    latest_water_reading_updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -76,6 +121,36 @@ class Room(models.Model):
     @property
     def image_count(self):
         return len(self.image_paths or [])
+
+    def _build_reading_source_summary(self, reading_type):
+        source = getattr(self, f'latest_{reading_type}_reading_source', '')
+        updated_by = getattr(self, f'latest_{reading_type}_reading_updated_by', None)
+        usage = getattr(self, f'latest_{reading_type}_reading_usage', None)
+
+        if source == self.ReadingUpdateSource.MANUAL:
+            if updated_by:
+                return _('Manual update on Room details by %(username)s') % {
+                    'username': updated_by.get_username(),
+                }
+            return _('Manual update on Room details')
+
+        if source == self.ReadingUpdateSource.USAGE:
+            if usage:
+                return _('Automatic update from subscription %(subscription_id)s (%(period)s)') % {
+                    'subscription_id': usage.subscription_id,
+                    'period': usage.period.strftime('%m/%Y'),
+                }
+            return _('Automatic update from subscription usage')
+
+        return _('Not updated yet')
+
+    @property
+    def latest_electricity_reading_source_summary(self):
+        return self._build_reading_source_summary('electricity')
+
+    @property
+    def latest_water_reading_source_summary(self):
+        return self._build_reading_source_summary('water')
 
     def delete(self, *args, **kwargs):
         for path in self.image_paths or []:
@@ -219,7 +294,35 @@ class Usage(models.Model):
         if (
             room.latest_electricity_reading != latest_usage.latest_electricity_reading
             or room.latest_water_reading != latest_usage.latest_water_reading
+            or room.latest_electricity_reading_source != Room.ReadingUpdateSource.USAGE
+            or room.latest_water_reading_source != Room.ReadingUpdateSource.USAGE
+            or room.latest_electricity_reading_usage_id != latest_usage.pk
+            or room.latest_water_reading_usage_id != latest_usage.pk
+            or room.latest_electricity_reading_updated_at != latest_usage.updated_at
+            or room.latest_water_reading_updated_at != latest_usage.updated_at
+            or room.latest_electricity_reading_updated_by_id is not None
+            or room.latest_water_reading_updated_by_id is not None
         ):
             room.latest_electricity_reading = latest_usage.latest_electricity_reading
             room.latest_water_reading = latest_usage.latest_water_reading
-            room.save(update_fields=['latest_electricity_reading', 'latest_water_reading', 'updated_at'])
+            room.latest_electricity_reading_source = Room.ReadingUpdateSource.USAGE
+            room.latest_water_reading_source = Room.ReadingUpdateSource.USAGE
+            room.latest_electricity_reading_usage = latest_usage
+            room.latest_water_reading_usage = latest_usage
+            room.latest_electricity_reading_updated_at = latest_usage.updated_at
+            room.latest_water_reading_updated_at = latest_usage.updated_at
+            room.latest_electricity_reading_updated_by = None
+            room.latest_water_reading_updated_by = None
+            room.save(update_fields=[
+                'latest_electricity_reading',
+                'latest_water_reading',
+                'latest_electricity_reading_source',
+                'latest_water_reading_source',
+                'latest_electricity_reading_usage',
+                'latest_water_reading_usage',
+                'latest_electricity_reading_updated_at',
+                'latest_water_reading_updated_at',
+                'latest_electricity_reading_updated_by',
+                'latest_water_reading_updated_by',
+                'updated_at',
+            ])

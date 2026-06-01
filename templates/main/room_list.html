@@ -32,8 +32,6 @@
                         <th>{% trans "Room name" %}</th>
                         <th>{% trans "Description" %}</th>
                         <th>{% trans "Images" %}</th>
-                        <th>{% trans "Electricity" %}</th>
-                        <th>{% trans "Water" %}</th>
                         <th class="text-end">{% trans "Actions" %}</th>
                     </tr>
                 </thead>
@@ -55,8 +53,6 @@
                                 <span class="text-muted">—</span>
                             {% endif %}
                         </td>
-                        <td>{{ room.latest_electricity_reading }}</td>
-                        <td>{{ room.latest_water_reading }}</td>
                         <td class="text-end">
                             <a href="{% url 'room_details' room.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Details" %}</a>
                             <button

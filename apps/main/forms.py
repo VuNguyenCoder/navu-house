@@ -146,9 +146,20 @@ class RoomForm(StyledModelForm):
             'latest_electricity_reading': forms.NumberInput(attrs={'min': '0', 'step': '1'}),
             'latest_water_reading': forms.NumberInput(attrs={'min': '0', 'step': '1'}),
         }
+        help_texts = {
+            'latest_electricity_reading': _(
+                'When you create a new subscription, this value is used as the baseline for calculating electricity charges in the following months. It is also updated automatically after each monthly usage record.'
+            ),
+            'latest_water_reading': _(
+                'When you create a new subscription, this value is used as the baseline for calculating water charges in the following months. It is also updated automatically after each monthly usage record.'
+            ),
+        }
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+        self._original_latest_electricity_reading = self.instance.latest_electricity_reading if self.instance.pk else None
+        self._original_latest_water_reading = self.instance.latest_water_reading if self.instance.pk else None
         self.order_fields([
             'room_name',
             'description',
@@ -188,6 +199,20 @@ class RoomForm(StyledModelForm):
             remaining_paths.append(saved_path)
 
         self.instance.image_paths = remaining_paths
+        metadata_updated_at = timezone.now()
+
+        if self._original_latest_electricity_reading != self.cleaned_data.get('latest_electricity_reading'):
+            self.instance.latest_electricity_reading_source = Room.ReadingUpdateSource.MANUAL
+            self.instance.latest_electricity_reading_usage = None
+            self.instance.latest_electricity_reading_updated_at = metadata_updated_at
+            self.instance.latest_electricity_reading_updated_by = self.user if getattr(self.user, 'is_authenticated', False) else None
+
+        if self._original_latest_water_reading != self.cleaned_data.get('latest_water_reading'):
+            self.instance.latest_water_reading_source = Room.ReadingUpdateSource.MANUAL
+            self.instance.latest_water_reading_usage = None
+            self.instance.latest_water_reading_updated_at = metadata_updated_at
+            self.instance.latest_water_reading_updated_by = self.user if getattr(self.user, 'is_authenticated', False) else None
+
         return super().save(commit=commit)
 
 

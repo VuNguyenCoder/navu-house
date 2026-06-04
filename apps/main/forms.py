@@ -326,13 +326,13 @@ class UsageForm(StyledModelForm):
         required=False,
         label=_('Electricity meter image'),
         help_text=_('Choose an existing image or capture one from the camera on supported devices.'),
-        widget=forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+        widget=forms.ClearableFileInput(attrs={'accept': 'image/*'}),
     )
     water_meter_image = forms.FileField(
         required=False,
         label=_('Water meter image'),
         help_text=_('Choose an existing image or capture one from the camera on supported devices.'),
-        widget=forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+        widget=forms.ClearableFileInput(attrs={'accept': 'image/*'}),
     )
     remove_electricity_meter_image = forms.BooleanField(
         required=False,

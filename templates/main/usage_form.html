@@ -54,7 +54,7 @@
                                 <div class="row g-3">
                                     {% for field in form %}
                                     {% if field.name == 'subscription' or field.name == 'billing_month' or field.name == 'billing_year' or field.name == 'tenant_count' %}
-                                    <div class="col-12 col-lg-4">
+                                    <div class="col-12 col-lg-4{% if field.name == 'tenant_count' %} usage-restroom-optional-field{% endif %}"{% if field.name == 'tenant_count' %} data-restroom-optional-field{% endif %}>
                                         <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
                                         {{ field }}
                                         {% if field.help_text %}
@@ -78,7 +78,7 @@
                                 <div class="row g-3">
                                     {% for field in form %}
                                     {% if field.name == 'room_price' or field.name == 'electricity_price' or field.name == 'water_price' or field.name == 'internet_price' or field.name == 'cleaning_price' or field.name == 'laundry_price' %}
-                                    <div class="col-12 col-lg-6">
+                                    <div class="col-12 col-lg-6{% if field.name == 'room_price' or field.name == 'internet_price' or field.name == 'cleaning_price' or field.name == 'laundry_price' %} usage-restroom-optional-field{% endif %}"{% if field.name == 'room_price' or field.name == 'internet_price' or field.name == 'cleaning_price' or field.name == 'laundry_price' %} data-restroom-optional-field{% endif %}>
                                         <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
                                         {{ field }}
                                         {% if field.errors %}
@@ -188,6 +188,42 @@
                         </div>
                     </div>
 
+                    <div class="col-12 d-none" id="linkedRestroomUsageSection">
+                        <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, rgba(108,117,125,0.08), rgba(13,110,253,0.05));">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <i class="bi bi-diagram-3-fill text-secondary"></i>
+                                    <h2 class="h5 mb-0">{% trans "Linked restroom usage" %}</h2>
+                                </div>
+                                <div class="small text-muted mb-3" id="linkedRestroomUsageSummary"></div>
+                                <div class="alert alert-secondary d-none mb-3" id="linkedRestroomUsageMessage"></div>
+                                <div class="alert alert-warning d-none mb-3" id="linkedRestroomUsageWarning"></div>
+                                <div id="linkedRestroomUsageDetails" class="d-none">
+                                    <div class="image-preview-card mb-3">
+                                        <div class="fw-semibold mb-2">{% trans "Other linked subscription" %}</div>
+                                        <div id="linkedRestroomOtherSubscriptions"></div>
+                                    </div>
+                                    <div class="row g-3">
+                                        <div class="col-12 col-xl-6">
+                                            <div class="image-preview-card h-100">
+                                                <div class="fw-semibold mb-2">{% trans "Restroom electricity" %}</div>
+                                                <div class="small text-muted mb-2" id="linkedRestroomElectricityDetails"></div>
+                                                <div class="small" id="linkedRestroomElectricityAllocation"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-6">
+                                            <div class="image-preview-card h-100">
+                                                <div class="fw-semibold mb-2">{% trans "Restroom water" %}</div>
+                                                <div class="small text-muted mb-2" id="linkedRestroomWaterDetails"></div>
+                                                <div class="small" id="linkedRestroomWaterAllocation"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="col-12">
                         <div
                             class="card border-0 shadow-sm usage-total-card"
@@ -202,6 +238,13 @@
                                 <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
                                     <div>
                                         <h2 class="h5 mb-1">{% trans "Total amount" %}</h2>
+                                        <div class="small fw-semibold text-body-secondary mb-1" id="usageInvoiceHeading">
+                                            {% if selected_subscription %}
+                                                {% blocktrans with room_name=selected_subscription.room.room_name period=form.instance.period|date:"m/Y"|default:form.fields.period.initial|date:"m/Y" %}Invoice for room {{ room_name }} {{ period }}{% endblocktrans %}
+                                            {% else %}
+                                                {% trans "Invoice summary" %}
+                                            {% endif %}
+                                        </div>
                                         <p class="text-muted mb-0">{% trans "This amount is updated in real time from your pricing and meter inputs." %}</p>
                                     </div>
                                     <div class="text-end">
@@ -223,48 +266,64 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>1</td>
+                                            <tr data-usage-summary-row data-restroom-optional-row>
+                                                <td data-usage-row-number>1</td>
                                                 <td class="fw-semibold">{% trans "Room" %}</td>
                                                 <td id="roomQuantityValue">1</td>
                                                 <td id="roomUnitPriceValue">0 VND</td>
                                                 <td id="roomPriceAmount">0 VND</td>
                                                 <td id="roomNoteValue">{% trans "Flat rate" %}</td>
                                             </tr>
-                                            <tr>
-                                                <td>2</td>
+                                            <tr data-usage-summary-row>
+                                                <td data-usage-row-number>2</td>
                                                 <td class="fw-semibold">{% trans "Electricity" %}</td>
                                                 <td id="electricityQuantityValue">0</td>
                                                 <td id="electricityUnitPriceValue">0 VND</td>
                                                 <td id="electricityCostAmount">0 VND</td>
                                                 <td id="electricityNoteValue">0</td>
                                             </tr>
-                                            <tr>
-                                                <td>3</td>
+                                            <tr data-usage-summary-row data-linked-restroom-row class="d-none">
+                                                <td data-usage-row-number>3</td>
+                                                <td class="fw-semibold">{% trans "Linked restroom electricity" %}</td>
+                                                <td id="linkedRestroomElectricityQuantityValue">0</td>
+                                                <td id="linkedRestroomElectricityUnitPriceValue">0 VND</td>
+                                                <td id="linkedRestroomElectricityCostAmount">0 VND</td>
+                                                <td id="linkedRestroomElectricityNoteValue">0</td>
+                                            </tr>
+                                            <tr data-usage-summary-row>
+                                                <td data-usage-row-number>4</td>
                                                 <td class="fw-semibold">{% trans "Water" %}</td>
                                                 <td id="waterQuantityValue">0</td>
                                                 <td id="waterUnitPriceValue">0 VND</td>
                                                 <td id="waterCostAmount">0 VND</td>
                                                 <td id="waterNoteValue">0</td>
                                             </tr>
-                                            <tr>
-                                                <td>4</td>
+                                            <tr data-usage-summary-row data-linked-restroom-row class="d-none">
+                                                <td data-usage-row-number>5</td>
+                                                <td class="fw-semibold">{% trans "Linked restroom water" %}</td>
+                                                <td id="linkedRestroomWaterQuantityValue">0</td>
+                                                <td id="linkedRestroomWaterUnitPriceValue">0 VND</td>
+                                                <td id="linkedRestroomWaterCostAmount">0 VND</td>
+                                                <td id="linkedRestroomWaterNoteValue">0</td>
+                                            </tr>
+                                            <tr data-usage-summary-row data-restroom-optional-row>
+                                                <td data-usage-row-number>6</td>
                                                 <td class="fw-semibold">{% trans "Internet price" %}</td>
                                                 <td id="internetQuantityValue">1</td>
                                                 <td id="internetUnitPriceValue">0 VND</td>
                                                 <td id="internetCostAmount">0 VND</td>
                                                 <td id="internetNoteValue">{% trans "Flat rate" %}</td>
                                             </tr>
-                                            <tr>
-                                                <td>5</td>
+                                            <tr data-usage-summary-row data-restroom-optional-row>
+                                                <td data-usage-row-number>7</td>
                                                 <td class="fw-semibold">{% trans "Cleaning price" %}</td>
                                                 <td id="cleaningQuantityValue">0</td>
                                                 <td id="cleaningUnitPriceValue">0 VND</td>
                                                 <td id="cleaningCostAmount">0 VND</td>
                                                 <td id="cleaningNoteValue">0</td>
                                             </tr>
-                                            <tr>
-                                                <td>6</td>
+                                            <tr data-usage-summary-row data-restroom-optional-row>
+                                                <td data-usage-row-number>8</td>
                                                 <td class="fw-semibold">{% trans "Laundry price" %}</td>
                                                 <td id="laundryQuantityValue">1</td>
                                                 <td id="laundryUnitPriceValue">0 VND</td>
@@ -439,6 +498,8 @@
 {% block extra_js %}
 {{ block.super }}
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+{{ rest_room_subscription_ids|json_script:"rest-room-subscription-ids" }}
+{{ subscription_room_names|json_script:"subscription-room-name-map" }}
 <script>
     window.addEventListener('DOMContentLoaded', () => {
         const stripGrouping = (value) => `${value ?? ''}`.replace(/,/g, '').trim();
@@ -473,10 +534,23 @@
             return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(safeValue);
         };
 
+        const subscriptionRoomNameMap = JSON.parse(
+            document.getElementById('subscription-room-name-map')?.textContent || '{}'
+        );
         const usageTotalCard = document.getElementById('usageTotalCard');
         if (usageTotalCard) {
             const copyUsageSummaryButton = document.getElementById('copyUsageSummaryButton');
             const copyUsageSummaryStatus = document.getElementById('copyUsageSummaryStatus');
+            const usageInvoiceHeading = document.getElementById('usageInvoiceHeading');
+            const restRoomSubscriptionIds = JSON.parse(
+                document.getElementById('rest-room-subscription-ids')?.textContent || '[]'
+            );
+            const linkedRestroomUsageSection = document.getElementById('linkedRestroomUsageSection');
+            const linkedRestroomUsageSummary = document.getElementById('linkedRestroomUsageSummary');
+            const linkedRestroomUsageMessage = document.getElementById('linkedRestroomUsageMessage');
+            const linkedRestroomUsageWarning = document.getElementById('linkedRestroomUsageWarning');
+            const linkedRestroomUsageDetails = document.getElementById('linkedRestroomUsageDetails');
+            const linkedRestroomOtherSubscriptions = document.getElementById('linkedRestroomOtherSubscriptions');
             const fields = {
                 subscription: document.getElementById('{{ form.subscription.id_for_label }}'),
                 month: document.getElementById('{{ form.billing_month.id_for_label }}'),
@@ -491,6 +565,12 @@
                 currentElectricity: document.getElementById('{{ form.latest_electricity_reading.id_for_label }}'),
                 currentWater: document.getElementById('{{ form.latest_water_reading.id_for_label }}'),
             };
+            const restroomOptionalFieldWrappers = document.querySelectorAll('[data-restroom-optional-field]');
+            const restroomOptionalRows = document.querySelectorAll('[data-restroom-optional-row]');
+            const usageSummaryRows = document.querySelectorAll('[data-usage-summary-row]');
+            const linkedRestroomRows = document.querySelectorAll('[data-linked-restroom-row]');
+            const isRestRoomSubscription = () => restRoomSubscriptionIds.includes(Number(fields.subscription?.value || 0));
+            let linkedRestroomUsageContext = null;
 
             const readNumber = (input) => {
                 const value = parseFloat(stripGrouping(input?.value || '0'));
@@ -511,6 +591,20 @@
                 }
             };
 
+            const updateInvoiceHeading = () => {
+                if (!usageInvoiceHeading || !fields.subscription || !fields.month || !fields.year) {
+                    return;
+                }
+                const roomLabel = subscriptionRoomNameMap[String(fields.subscription.value || '')] || '';
+                const month = fields.month.value;
+                const year = fields.year.value;
+                if (!roomLabel || !month || !year) {
+                    usageInvoiceHeading.textContent = '{% trans "Invoice summary" %}';
+                    return;
+                }
+                usageInvoiceHeading.textContent = `{% trans "Invoice for room" %} ${roomLabel} ${month}/${year}`;
+            };
+
             const setCopyStatus = (message, isError = false) => {
                 if (!copyUsageSummaryStatus) {
                     return;
@@ -524,7 +618,185 @@
                 }, 2400);
             };
 
+            const renderUsageSummaryCanvas = async () => {
+                if (!window.html2canvas) {
+                    throw new Error('html2canvas_unavailable');
+                }
+
+                return window.html2canvas(usageTotalCard, {
+                    backgroundColor: null,
+                    scale: 2,
+                    useCORS: true,
+                });
+            };
+
+            const canvasToBlob = async (canvas) => {
+                return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+            };
+
+            const downloadUsageSummaryImage = (blob) => {
+                const objectUrl = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = objectUrl;
+                link.download = `usage-summary-${fields.year?.value || 'yyyy'}-${fields.month?.value || 'mm'}.png`;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+            };
+
+            const renumberUsageSummaryRows = () => {
+                let visibleRowNumber = 1;
+                usageSummaryRows.forEach((row) => {
+                    const numberCell = row.querySelector('[data-usage-row-number]');
+                    if (!numberCell) {
+                        return;
+                    }
+                    if (row.classList.contains('d-none')) {
+                        return;
+                    }
+                    numberCell.textContent = visibleRowNumber;
+                    visibleRowNumber += 1;
+                });
+            };
+
+            const renderLinkedRestroomUsageSection = (currentTenantCount) => {
+                if (!linkedRestroomUsageSection) {
+                    return;
+                }
+
+                const context = linkedRestroomUsageContext;
+                if (!context || !context.is_applicable) {
+                    linkedRestroomUsageSection.classList.add('d-none');
+                    linkedRestroomRows.forEach((row) => row.classList.add('d-none'));
+                    renumberUsageSummaryRows();
+                    return;
+                }
+
+                linkedRestroomUsageSection.classList.remove('d-none');
+                if (linkedRestroomUsageSummary) {
+                    if (context.restroom_subscription_id) {
+                        linkedRestroomUsageSummary.innerHTML = `{% trans "Linked restroom room" %}: <strong>${context.restroom_room_name}</strong> · {% trans "Restroom subscription" %}: <a href="/subscriptions/${context.restroom_subscription_id}/details/">#${context.restroom_subscription_id}</a> · {% trans "Time" %}: ${context.period_label}`;
+                    } else {
+                        linkedRestroomUsageSummary.innerHTML = `{% trans "Linked restroom room" %}: <strong>${context.restroom_room_name}</strong> · {% trans "Time" %}: ${context.period_label}`;
+                    }
+                }
+
+                if (!context.has_subscription) {
+                    linkedRestroomUsageDetails?.classList.add('d-none');
+                    linkedRestroomUsageWarning?.classList.add('d-none');
+                    if (linkedRestroomUsageMessage) {
+                        linkedRestroomUsageMessage.textContent = '{% trans "No linked restroom subscription found yet." %}';
+                        linkedRestroomUsageMessage.classList.remove('d-none');
+                    }
+                    linkedRestroomRows.forEach((row) => row.classList.add('d-none'));
+                    renumberUsageSummaryRows();
+                    return;
+                }
+
+                if (!context.has_usage) {
+                    linkedRestroomUsageDetails?.classList.add('d-none');
+                    linkedRestroomUsageWarning?.classList.add('d-none');
+                    if (linkedRestroomUsageMessage) {
+                        linkedRestroomUsageMessage.textContent = '{% trans "No usage record found for the linked restroom in this billing month." %}';
+                        linkedRestroomUsageMessage.classList.remove('d-none');
+                    }
+                    linkedRestroomRows.forEach((row) => row.classList.add('d-none'));
+                    renumberUsageSummaryRows();
+                    return;
+                }
+
+                linkedRestroomUsageMessage?.classList.add('d-none');
+                linkedRestroomUsageDetails?.classList.remove('d-none');
+                if (linkedRestroomUsageWarning) {
+                    if (context.has_incomplete_other_usage) {
+                        linkedRestroomUsageWarning.textContent = '{% trans "Some other linked subscriptions do not have a usage record for this billing month yet, so these allocated numbers are not final." %}';
+                        linkedRestroomUsageWarning.classList.remove('d-none');
+                    } else {
+                        linkedRestroomUsageWarning.classList.add('d-none');
+                    }
+                }
+
+                if (linkedRestroomOtherSubscriptions) {
+                    const items = context.other_linked_subscriptions || [];
+                    if (!items.length) {
+                        linkedRestroomOtherSubscriptions.innerHTML = `<div class="text-muted small">{% trans "No other linked subscriptions." %}</div>`;
+                    } else {
+                        linkedRestroomOtherSubscriptions.innerHTML = items.map((item) => `
+                            <div class="d-flex justify-content-between align-items-start gap-3 py-1 border-bottom border-light-subtle">
+                                <div>
+                                    <a href="/subscriptions/${item.subscription_id}/details/">${item.room_name} - ${item.subscription_description || '—'}</a>
+                                </div>
+                                <div class="text-end small">
+                                    <div>${item.tenant_count} {% trans "person" %}</div>
+                                    <div class="${item.has_usage_for_period ? 'text-success' : 'text-warning'}">
+                                        ${item.has_usage_for_period ? '{% trans "Usage recorded" %}' : '{% trans "Usage not recorded yet" %}'}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+
+                const totalLinkedTenants = currentTenantCount + (context.other_linked_tenants || 0);
+                const electricityPerTenant = totalLinkedTenants > 0 ? (context.electricity_amount || 0) / totalLinkedTenants : 0;
+                const waterPerTenant = totalLinkedTenants > 0 ? (context.water_amount || 0) / totalLinkedTenants : 0;
+                const electricityAllocation = electricityPerTenant * currentTenantCount;
+                const waterAllocation = waterPerTenant * currentTenantCount;
+
+                setHtml(
+                    'linkedRestroomElectricityDetails',
+                    `<div>{% trans "Previous electricity reading" %}: ${formatPlainNumber(context.previous_electricity_reading || 0)}</div><div>{% trans "Electricity reading" %}: ${formatPlainNumber(context.latest_electricity_reading || 0)}</div><div>→ {% trans "Electricity consumed" %}: ${formatPlainNumber(context.electricity_consumed || 0)} {% trans "kWh" %}</div><div>{% trans "Electricity price" %}: ${formatVnd(context.electricity_unit_price || 0)}</div><div>→ {% trans "Amount" %}: ${formatVnd(context.electricity_amount || 0)}</div>`
+                );
+                setHtml(
+                    'linkedRestroomWaterDetails',
+                    `<div>{% trans "Previous water reading" %}: ${formatPlainNumber(context.previous_water_reading || 0)}</div><div>{% trans "Water reading" %}: ${formatPlainNumber(context.latest_water_reading || 0)}</div><div>→ {% trans "Water consumed" %}: ${formatPlainNumber(context.water_consumed || 0)} {% trans "m3" %}</div><div>{% trans "Water price" %}: ${formatVnd(context.water_unit_price || 0)}</div><div>→ {% trans "Amount" %}: ${formatVnd(context.water_amount || 0)}</div>`
+                );
+                setHtml(
+                    'linkedRestroomElectricityAllocation',
+                    `<hr><div>{% trans "Other linked tenants" %}: ${formatPlainNumber(context.other_linked_tenants || 0)}</div><div>{% trans "Current subscription tenants" %}: ${formatPlainNumber(currentTenantCount)}</div><div>{% trans "Total linked tenants" %}: ${formatPlainNumber(totalLinkedTenants)}</div><div>→ {% trans "Shared per tenant" %}: ${formatVnd(context.electricity_amount || 0)} / ${formatPlainNumber(totalLinkedTenants)} = ${formatVnd(electricityPerTenant)}</div><hr><div class="usage-note-result">{% trans "Allocated to this subscription" %}: ${formatVnd(electricityPerTenant)} x ${formatPlainNumber(currentTenantCount)} = ${formatVnd(electricityAllocation)}</div>`
+                );
+                setHtml(
+                    'linkedRestroomWaterAllocation',
+                    `<hr><div>{% trans "Other linked tenants" %}: ${formatPlainNumber(context.other_linked_tenants || 0)}</div><div>{% trans "Current subscription tenants" %}: ${formatPlainNumber(currentTenantCount)}</div><div>{% trans "Total linked tenants" %}: ${formatPlainNumber(totalLinkedTenants)}</div><div>→ {% trans "Shared per tenant" %}: ${formatVnd(context.water_amount || 0)} / ${formatPlainNumber(totalLinkedTenants)} = ${formatVnd(waterPerTenant)}</div><hr><div class="usage-note-result">{% trans "Allocated to this subscription" %}: ${formatVnd(waterPerTenant)} x ${formatPlainNumber(currentTenantCount)} = ${formatVnd(waterAllocation)}</div>`
+                );
+
+                linkedRestroomRows.forEach((row) => row.classList.remove('d-none'));
+                setText('linkedRestroomElectricityQuantityValue', `${formatPlainNumber(currentTenantCount)} {% trans "person" %}`);
+                setText('linkedRestroomWaterQuantityValue', `${formatPlainNumber(currentTenantCount)} {% trans "person" %}`);
+                setText('linkedRestroomElectricityUnitPriceValue', formatVnd(electricityPerTenant));
+                setText('linkedRestroomWaterUnitPriceValue', formatVnd(waterPerTenant));
+                setText('linkedRestroomElectricityCostAmount', formatVnd(electricityAllocation));
+                setText('linkedRestroomWaterCostAmount', formatVnd(waterAllocation));
+                setText('linkedRestroomElectricityNoteValue', `${formatVnd(context.electricity_amount || 0)} / ${formatPlainNumber(totalLinkedTenants)} {% trans "person" %}`);
+                setText('linkedRestroomWaterNoteValue', `${formatVnd(context.water_amount || 0)} / ${formatPlainNumber(totalLinkedTenants)} {% trans "person" %}`);
+                renumberUsageSummaryRows();
+            };
+
+            const syncRestroomLinkedUi = () => {
+                const restRoomSubscription = isRestRoomSubscription();
+                restroomOptionalFieldWrappers.forEach((wrapper) => {
+                    wrapper.classList.toggle('d-none', restRoomSubscription);
+                    wrapper.querySelectorAll('input, select, textarea').forEach((input) => {
+                        if (!input.dataset.originalRequired) {
+                            input.dataset.originalRequired = input.required ? 'true' : 'false';
+                        }
+                        input.disabled = restRoomSubscription;
+                        input.required = restRoomSubscription ? false : input.dataset.originalRequired === 'true';
+                    });
+                });
+                restroomOptionalRows.forEach((row) => {
+                    row.classList.toggle('d-none', restRoomSubscription);
+                });
+                if (restRoomSubscription) {
+                    linkedRestroomRows.forEach((row) => row.classList.add('d-none'));
+                    linkedRestroomUsageSection?.classList.add('d-none');
+                }
+                renumberUsageSummaryRows();
+            };
+
             const renderUsageSummary = () => {
+                const restRoomSubscription = isRestRoomSubscription();
                 const previousElectricity = parseFloat(usageTotalCard.dataset.previousElectricity || '0') || 0;
                 const previousWater = parseFloat(usageTotalCard.dataset.previousWater || '0') || 0;
                 const currentElectricity = readNumber(fields.currentElectricity);
@@ -533,13 +805,13 @@
                 const invalidWater = currentWater < previousWater;
                 const electricityConsumed = Math.max(currentElectricity - previousElectricity, 0);
                 const waterConsumed = Math.max(currentWater - previousWater, 0);
-                const tenantCount = readNumber(fields.tenantCount);
-                const roomPrice = readNumber(fields.roomPrice);
+                const tenantCount = restRoomSubscription ? 0 : readNumber(fields.tenantCount);
+                const roomPrice = restRoomSubscription ? 0 : readNumber(fields.roomPrice);
                 const electricityPrice = readNumber(fields.electricityPrice);
                 const waterPrice = readNumber(fields.waterPrice);
-                const internetPrice = readNumber(fields.internetPrice);
-                const cleaningPrice = readNumber(fields.cleaningPrice);
-                const laundryPrice = readNumber(fields.laundryPrice);
+                const internetPrice = restRoomSubscription ? 0 : readNumber(fields.internetPrice);
+                const cleaningPrice = restRoomSubscription ? 0 : readNumber(fields.cleaningPrice);
+                const laundryPrice = restRoomSubscription ? 0 : readNumber(fields.laundryPrice);
 
                 const electricityCost = (currentElectricity - previousElectricity > 0)
                     ? (currentElectricity - previousElectricity) * electricityPrice
@@ -549,7 +821,16 @@
                     : 0;
                 const cleaningCost = tenantCount * cleaningPrice;
                 const laundryCost = tenantCount * laundryPrice;
-                const total = roomPrice + electricityCost + waterCost + internetPrice + cleaningCost + laundryCost;
+                let linkedRestroomElectricityCost = 0;
+                let linkedRestroomWaterCost = 0;
+                if (!restRoomSubscription && linkedRestroomUsageContext?.has_usage) {
+                    const totalLinkedTenants = tenantCount + (linkedRestroomUsageContext.other_linked_tenants || 0);
+                    if (totalLinkedTenants > 0) {
+                        linkedRestroomElectricityCost = ((linkedRestroomUsageContext.electricity_amount || 0) / totalLinkedTenants) * tenantCount;
+                        linkedRestroomWaterCost = ((linkedRestroomUsageContext.water_amount || 0) / totalLinkedTenants) * tenantCount;
+                    }
+                }
+                const total = roomPrice + electricityCost + waterCost + internetPrice + cleaningCost + laundryCost + linkedRestroomElectricityCost + linkedRestroomWaterCost;
 
                 setText('roomQuantityValue', `1 {% trans "room" %}`);
                 setText('electricityQuantityValue', `${formatPlainNumber(electricityConsumed)} {% trans "kWh" %}`);
@@ -583,6 +864,7 @@
                 setText('internetNoteValue', `1 {% trans "room" %} x ${formatPlainNumber(internetPrice)}`);
                 setText('cleaningNoteValue', `${formatPlainNumber(tenantCount)} {% trans "person" %} x ${formatPlainNumber(cleaningPrice)}`);
                 setText('laundryNoteValue', `${formatPlainNumber(tenantCount)} {% trans "person" %} x ${formatPlainNumber(laundryPrice)}`);
+                renderLinkedRestroomUsageSection(tenantCount);
 
                 const baselineHint = document.getElementById('usageBaselineHint');
                 if (baselineHint) {
@@ -608,6 +890,8 @@
                 const subscriptionId = fields.subscription?.value;
                 const month = fields.month?.value;
                 const year = fields.year?.value;
+                syncRestroomLinkedUi();
+                updateInvoiceHeading();
                 if (!subscriptionId || !month || !year) {
                     renderUsageSummary();
                     return;
@@ -633,8 +917,10 @@
                     usageTotalCard.dataset.previousElectricity = payload.previous_electricity_reading ?? 0;
                     usageTotalCard.dataset.previousWater = payload.previous_water_reading ?? 0;
                     usageTotalCard.dataset.isFirstMonth = payload.is_first_month ? 'true' : 'false';
+                    linkedRestroomUsageContext = payload.linked_restroom_usage_context || null;
                 } catch (error) {
                     console.error('Failed to load previous usage context', error);
+                    linkedRestroomUsageContext = null;
                 }
                 renderUsageSummary();
             };
@@ -663,41 +949,44 @@
 
             if (copyUsageSummaryButton) {
                 copyUsageSummaryButton.addEventListener('click', async () => {
-                    if (!window.html2canvas || !navigator.clipboard || typeof ClipboardItem === 'undefined') {
-                        setCopyStatus('{% trans "Copy image is not supported in this browser." %}', true);
-                        return;
-                    }
-
                     copyUsageSummaryButton.disabled = true;
                     setCopyStatus('{% trans "Preparing image..." %}');
 
                     try {
-                        const canvas = await window.html2canvas(usageTotalCard, {
-                            backgroundColor: null,
-                            scale: 2,
-                            useCORS: true,
-                        });
-
-                        const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+                        const canvas = await renderUsageSummaryCanvas();
+                        const blob = await canvasToBlob(canvas);
                         if (!blob) {
                             throw new Error('no_blob');
                         }
 
-                        await navigator.clipboard.write([
-                            new ClipboardItem({
-                                'image/png': blob,
-                            }),
-                        ]);
-                        setCopyStatus('{% trans "Copied image to clipboard." %}');
+                        const canCopyImage =
+                            window.isSecureContext &&
+                            !!navigator.clipboard &&
+                            typeof navigator.clipboard.write === 'function' &&
+                            typeof ClipboardItem !== 'undefined';
+
+                        if (canCopyImage) {
+                            await navigator.clipboard.write([
+                                new ClipboardItem({
+                                    'image/png': blob,
+                                }),
+                            ]);
+                            setCopyStatus('{% trans "Copied image to clipboard." %}');
+                        } else {
+                            downloadUsageSummaryImage(blob);
+                            setCopyStatus('{% trans "Clipboard image copy is not available here. The image was downloaded instead." %}');
+                        }
                     } catch (error) {
                         console.error('Failed to copy usage summary image', error);
-                        setCopyStatus('{% trans "Could not copy image. Please try again." %}', true);
+                        setCopyStatus('{% trans "Could not create the image. Please try again." %}', true);
                     } finally {
                         copyUsageSummaryButton.disabled = false;
                     }
                 });
             }
 
+            syncRestroomLinkedUi();
+            updateInvoiceHeading();
             refreshPreviousReadings();
         }
 

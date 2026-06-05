@@ -30,8 +30,7 @@
                 <thead class="table-light">
                     <tr>
                         <th>{% trans "Room name" %}</th>
-                        <th>{% trans "Description" %}</th>
-                        <th>{% trans "Images" %}</th>
+                        <th>{% trans "Type" %}</th>
                         <th class="text-end">{% trans "Actions" %}</th>
                     </tr>
                 </thead>
@@ -39,22 +38,17 @@
                     {% for room in rooms %}
                     <tr>
                         <td class="fw-semibold">{{ room.room_name }}</td>
-                        <td>{{ room.description|default:"—"|truncatechars:80 }}</td>
-                        <td>
-                            {% if room.image_paths %}
-                                <div class="d-flex flex-wrap gap-2">
-                                    {% for path in room.image_paths %}
-                                    <a href="{{ MEDIA_URL }}{{ path }}" target="_blank" rel="noopener">
-                                        <img src="{{ MEDIA_URL }}{{ path }}" alt="" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;">
-                                    </a>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                <span class="text-muted">—</span>
-                            {% endif %}
-                        </td>
+                        <td>{{ room.get_type_display }}</td>
                         <td class="text-end">
-                            <a href="{% url 'room_details' room.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Details" %}</a>
+                            <a
+                                href="{% url 'room_details' room.pk %}"
+                                class="btn btn-sm btn-outline-primary"
+                                aria-label="{% trans 'Details' %}"
+                                title="{% trans 'Details' %}"
+                            >
+                                <i class="bi bi-eye"></i>
+                                <span class="ms-1">{% trans "Details" %}</span>
+                            </a>
                             <button
                                 type="button"
                                 class="btn btn-sm btn-outline-danger"
@@ -62,12 +56,17 @@
                                 data-bs-target="#confirmDeleteModal"
                                 data-delete-url="{% url 'room_delete' room.pk %}"
                                 data-delete-label="{{ room.room_name }}"
-                            >{% trans "Delete" %}</button>
+                                aria-label="{% trans 'Delete' %}"
+                                title="{% trans 'Delete' %}"
+                            >
+                                <i class="bi bi-trash"></i>
+                                <span class="ms-1">{% trans "Delete" %}</span>
+                            </button>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center py-4 text-muted">{% trans "No rooms yet." %}</td>
+                        <td colspan="3" class="text-center py-4 text-muted">{% trans "No rooms yet." %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -80,6 +80,141 @@ def get_usage_period_from_form(form, fallback=None):
     return fallback or date.today().replace(day=1)
 
 
+def get_room_subscription_for_period(room, period):
+    usage_subscription_id = (
+        Usage.objects.filter(subscription__room=room, period=period)
+        .order_by('-updated_at', '-id')
+        .values_list('subscription_id', flat=True)
+        .first()
+    )
+    if usage_subscription_id:
+        return Subscription.objects.select_related('room').filter(pk=usage_subscription_id).first()
+
+    started_queryset = room.subscriptions.filter(start_date__lte=period).order_by('-start_date', '-updated_at', '-id')
+    enabled_started = started_queryset.filter(status=Subscription.Status.ENABLED).first()
+    if enabled_started:
+        return enabled_started
+
+    fallback_enabled = room.subscriptions.filter(status=Subscription.Status.ENABLED).order_by('-start_date', '-updated_at', '-id').first()
+    if fallback_enabled:
+        return fallback_enabled
+
+    return room.subscriptions.order_by('-start_date', '-updated_at', '-id').first()
+
+
+def get_subscription_tenant_count_for_period(subscription, period):
+    period_usage = subscription.usages.filter(period=period).order_by('-updated_at', '-id').first()
+    if period_usage and period_usage.tenant_count is not None:
+        return period_usage.tenant_count
+
+    previous_usage = subscription.usages.filter(period__lt=period).order_by('-period', '-updated_at', '-id').first()
+    if previous_usage and previous_usage.tenant_count is not None:
+        return previous_usage.tenant_count
+
+    latest_usage = subscription.usages.order_by('-period', '-updated_at', '-id').first()
+    if latest_usage and latest_usage.tenant_count is not None:
+        return latest_usage.tenant_count
+
+    return 0
+
+
+def get_linked_restroom_usage_context(subscription, period):
+    room = subscription.room
+    if room.type != Room.RoomType.UNENCLOSED or not room.linked_restroom_id:
+        return None
+
+    linked_restroom = room.linked_restroom
+    other_linked_tenants = 0
+    other_linked_subscriptions = []
+    has_incomplete_other_usage = False
+    linked_rooms = Room.objects.filter(type=Room.RoomType.UNENCLOSED, linked_restroom=linked_restroom).order_by('room_name')
+    for linked_room in linked_rooms:
+        linked_subscription = get_room_subscription_for_period(linked_room, period)
+        if not linked_subscription or linked_subscription.pk == subscription.pk:
+            continue
+        period_usage = linked_subscription.usages.filter(period=period).order_by('-updated_at', '-id').first()
+        tenant_count = get_subscription_tenant_count_for_period(linked_subscription, period)
+        other_linked_tenants += tenant_count
+        if not period_usage:
+            has_incomplete_other_usage = True
+        other_linked_subscriptions.append({
+            'subscription_id': linked_subscription.pk,
+            'room_name': linked_subscription.room.room_name,
+            'subscription_description': linked_subscription.description or '',
+            'tenant_count': tenant_count,
+            'has_usage_for_period': bool(period_usage),
+        })
+
+    context = {
+        'is_applicable': True,
+        'restroom_room_name': linked_restroom.room_name,
+        'restroom_room_id': linked_restroom.pk,
+        'period_label': period.strftime('%m/%Y'),
+        'other_linked_tenants': other_linked_tenants,
+        'other_linked_subscriptions': other_linked_subscriptions,
+        'has_incomplete_other_usage': has_incomplete_other_usage,
+        'has_subscription': False,
+        'has_usage': False,
+    }
+
+    restroom_subscription = get_room_subscription_for_period(linked_restroom, period)
+    if not restroom_subscription:
+        return context
+
+    context['has_subscription'] = True
+    context['restroom_subscription_id'] = restroom_subscription.pk
+
+    restroom_usage = (
+        Usage.objects.filter(subscription=restroom_subscription, period=period)
+        .order_by('-updated_at', '-id')
+        .first()
+    )
+    if not restroom_usage:
+        return context
+
+    previous_context = get_previous_usage_context(restroom_subscription, period, exclude_usage_id=restroom_usage.pk)
+    previous_electricity = previous_context['previous_electricity_reading']
+    previous_water = previous_context['previous_water_reading']
+    electricity_consumed = max(restroom_usage.latest_electricity_reading - previous_electricity, 0)
+    water_consumed = max(restroom_usage.latest_water_reading - previous_water, 0)
+    electricity_amount = Decimal(electricity_consumed) * Decimal(restroom_usage.electricity_price or 0)
+    water_amount = Decimal(water_consumed) * Decimal(restroom_usage.water_price or 0)
+
+    context.update({
+        'has_usage': True,
+        'restroom_usage_id': restroom_usage.pk,
+        'previous_electricity_reading': previous_electricity,
+        'latest_electricity_reading': restroom_usage.latest_electricity_reading,
+        'electricity_consumed': electricity_consumed,
+        'electricity_unit_price': Decimal(restroom_usage.electricity_price or 0),
+        'electricity_amount': electricity_amount,
+        'previous_water_reading': previous_water,
+        'latest_water_reading': restroom_usage.latest_water_reading,
+        'water_consumed': water_consumed,
+        'water_unit_price': Decimal(restroom_usage.water_price or 0),
+        'water_amount': water_amount,
+    })
+    return context
+
+
+def serialize_linked_restroom_usage_context(context):
+    if context is None:
+        return None
+
+    def normalize(value):
+        if isinstance(value, list):
+            return [normalize(item) for item in value]
+        if isinstance(value, dict):
+            return {key: normalize(item) for key, item in value.items()}
+        if isinstance(value, Decimal):
+            if value == value.to_integral():
+                return int(value)
+            return float(value)
+        return value
+
+    return {key: normalize(value) for key, value in context.items()}
+
+
 def build_subscription_usage_rows(subscription):
     usages = list(subscription.usages.order_by('-period', '-updated_at', '-id'))
     usage_rows = []
@@ -90,13 +225,28 @@ def build_subscription_usage_rows(subscription):
         previous_water = previous_context['previous_water_reading']
         electricity_consumed = max(usage.latest_electricity_reading - previous_electricity, 0)
         water_consumed = max(usage.latest_water_reading - previous_water, 0)
+        tenant_count = usage.tenant_count or 0
+        linked_restroom_context = get_linked_restroom_usage_context(subscription, usage.period)
+        linked_restroom_electricity_amount = Decimal('0')
+        linked_restroom_water_amount = Decimal('0')
+        if linked_restroom_context and linked_restroom_context.get('has_usage'):
+            total_linked_tenants = linked_restroom_context['other_linked_tenants'] + tenant_count
+            if total_linked_tenants > 0:
+                linked_restroom_electricity_amount = (
+                    linked_restroom_context['electricity_amount'] / Decimal(total_linked_tenants)
+                ) * Decimal(tenant_count)
+                linked_restroom_water_amount = (
+                    linked_restroom_context['water_amount'] / Decimal(total_linked_tenants)
+                ) * Decimal(tenant_count)
         total_amount = (
-            Decimal(usage.room_price)
+            Decimal(usage.room_price or 0)
             + Decimal(electricity_consumed) * Decimal(usage.electricity_price)
             + Decimal(water_consumed) * Decimal(usage.water_price)
-            + Decimal(usage.internet_price)
-            + Decimal(usage.tenant_count) * Decimal(usage.cleaning_price)
-            + Decimal(usage.tenant_count) * Decimal(usage.laundry_price)
+            + Decimal(usage.internet_price or 0)
+            + Decimal(tenant_count) * Decimal(usage.cleaning_price or 0)
+            + Decimal(tenant_count) * Decimal(usage.laundry_price or 0)
+            + linked_restroom_electricity_amount
+            + linked_restroom_water_amount
         )
         usage_rows.append({
             'index': index,
@@ -104,6 +254,7 @@ def build_subscription_usage_rows(subscription):
             'electricity_consumed': electricity_consumed,
             'water_consumed': water_consumed,
             'total_amount': total_amount,
+            'total_amount_display': f'{total_amount:,.0f}',
         })
 
     return usage_rows
@@ -460,6 +611,8 @@ class UsageCreateView(OperatorRequiredMixin, SuccessMessageMixin, CreateView):
             'cancel_url': get_subscription_edit_url(subscription.pk if subscription else None),
             'usage_previous_context': usage_context,
             'selected_subscription': subscription,
+            'rest_room_subscription_ids': form.rest_room_subscription_ids if form else [],
+            'subscription_room_names': form.subscription_room_names if form else {},
         })
         return context
 
@@ -484,6 +637,8 @@ class UsageUpdateView(OperatorRequiredMixin, SuccessMessageMixin, UpdateView):
             'cancel_url': get_subscription_edit_url(self.object.subscription_id),
             'usage_previous_context': usage_context,
             'selected_subscription': self.object.subscription,
+            'rest_room_subscription_ids': form.rest_room_subscription_ids if form else [],
+            'subscription_room_names': form.subscription_room_names if form else {},
         })
         return context
 
@@ -560,6 +715,9 @@ def usage_pricing_context(request):
         return JsonResponse({'error': 'invalid_parameters'}, status=400)
 
     context = get_previous_usage_context(subscription, period, exclude_usage_id=usage_id)
+    context['linked_restroom_usage_context'] = serialize_linked_restroom_usage_context(
+        get_linked_restroom_usage_context(subscription, period)
+    )
     return JsonResponse(context)
 
 

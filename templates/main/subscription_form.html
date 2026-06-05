@@ -273,7 +273,6 @@
                     <table class="table usage-inline-table align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th>{% trans "No." %}</th>
                                 <th>{% trans "Time" %}</th>
                                 <th class="d-none d-md-table-cell">{% trans "Electricity consumed" %}</th>
                                 <th class="d-none d-md-table-cell">{% trans "Water consumed" %}</th>
@@ -284,11 +283,10 @@
                         <tbody>
                             {% for row in subscription_usage_rows %}
                             <tr>
-                                <td>{{ row.index }}</td>
                                 <td class="fw-semibold">{{ row.usage.period|date:"m/Y" }}</td>
                                 <td class="d-none d-md-table-cell">{{ row.electricity_consumed }}</td>
                                 <td class="d-none d-md-table-cell">{{ row.water_consumed }}</td>
-                                <td>{{ row.total_amount|floatformat:0 }} VND</td>
+                                <td>{{ row.total_amount_display }} VND</td>
                                 <td class="text-end">
                                     <a
                                         href="{% url 'usage_details' row.usage.pk %}"
@@ -297,7 +295,7 @@
                                         title="{% trans 'Details' %}"
                                     >
                                         <i class="bi bi-eye"></i>
-                                        <span class="d-none d-md-inline ms-md-1">{% trans "Details" %}</span>
+                                        <span class="ms-1">{% trans "Details" %}</span>
                                     </a>
                                     <button
                                         type="button"

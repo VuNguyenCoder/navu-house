@@ -21,6 +21,8 @@ class PriceTemplateAdmin(admin.ModelAdmin):
 class RoomAdmin(admin.ModelAdmin):
     list_display = (
         'room_name',
+        'type',
+        'linked_restroom',
         'image_count',
         'latest_electricity_reading',
         'latest_water_reading',

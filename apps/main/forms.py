@@ -13,6 +13,13 @@ from .models import PRICE_FIELD_NAMES, PriceTemplate, Room, Subscription, Usage,
 PRICE_WIDGET = forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'step': '1'})
 
 
+def format_subscription_label(subscription):
+    description = (subscription.description or '').strip()
+    if description:
+        return f"{subscription.room.room_name} - {description}"
+    return subscription.room.room_name
+
+
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
 
@@ -130,23 +137,30 @@ class RoomForm(StyledModelForm):
         model = Room
         fields = [
             'room_name',
+            'type',
+            'linked_restroom',
             'description',
             'latest_electricity_reading',
             'latest_water_reading',
         ]
         labels = {
             'room_name': _('Room name'),
+            'type': _('Type'),
+            'linked_restroom': _('Linked restroom'),
             'description': _('Description'),
             'latest_electricity_reading': _('Latest electricity reading'),
             'latest_water_reading': _('Latest water reading'),
         }
         widgets = {
             'room_name': forms.TextInput(attrs={'placeholder': 'Phòng 101'}),
+            'type': forms.Select(attrs={'class': 'form-select'}),
+            'linked_restroom': forms.Select(attrs={'class': 'form-select'}),
             'description': forms.Textarea(attrs={'rows': 4}),
             'latest_electricity_reading': forms.NumberInput(attrs={'min': '0', 'step': '1'}),
             'latest_water_reading': forms.NumberInput(attrs={'min': '0', 'step': '1'}),
         }
         help_texts = {
+            'linked_restroom': _('For unenclosed rooms, optionally choose a restroom room to use as the shared toilet.'),
             'latest_electricity_reading': _(
                 'When you create a new subscription, this value is used as the baseline for calculating electricity charges in the following months. It is also updated automatically after each monthly usage record.'
             ),
@@ -162,12 +176,18 @@ class RoomForm(StyledModelForm):
         self._original_latest_water_reading = self.instance.latest_water_reading if self.instance.pk else None
         self.order_fields([
             'room_name',
+            'type',
+            'linked_restroom',
             'description',
             'remove_image_paths',
             'latest_electricity_reading',
             'latest_water_reading',
             'images',
         ])
+        restroom_queryset = Room.objects.filter(type=Room.RoomType.REST).order_by('room_name')
+        if self.instance.pk:
+            restroom_queryset = restroom_queryset.exclude(pk=self.instance.pk)
+        self.fields['linked_restroom'].queryset = restroom_queryset
         existing_paths = self.instance.image_paths or []
         self.fields['remove_image_paths'].choices = [(path, Path(path).name) for path in existing_paths]
 
@@ -305,6 +325,7 @@ class VehicleForm(StyledModelForm):
         if not self.instance.pk:
             queryset = queryset.filter(status=Subscription.Status.ENABLED)
         self.fields['subscription'].queryset = queryset
+        self.fields['subscription'].label_from_instance = format_subscription_label
 
 
 class UsageForm(StyledModelForm):
@@ -345,6 +366,14 @@ class UsageForm(StyledModelForm):
         widget=forms.CheckboxInput(attrs={'class': 'usage-delete-input'}),
     )
 
+    RESTROOM_OPTIONAL_FIELDS = (
+        'tenant_count',
+        'room_price',
+        'internet_price',
+        'cleaning_price',
+        'laundry_price',
+    )
+
     class Meta:
         model = Usage
         fields = [
@@ -382,6 +411,13 @@ class UsageForm(StyledModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        subscription_queryset = Subscription.objects.select_related('room').order_by('room__room_name', '-start_date')
+        self.fields['subscription'].queryset = subscription_queryset
+        self.fields['subscription'].label_from_instance = format_subscription_label
+        self.subscription_room_names = {
+            str(subscription.pk): subscription.room.room_name
+            for subscription in subscription_queryset
+        }
         self.order_fields([
             'subscription',
             'billing_month',
@@ -401,6 +437,11 @@ class UsageForm(StyledModelForm):
             'remove_water_meter_image',
         ])
         subscription = self._get_selected_subscription()
+        self.rest_room_subscription_ids = list(
+            Subscription.objects.select_related('room')
+            .filter(room__type=Room.RoomType.REST)
+            .values_list('pk', flat=True)
+        )
         default_period = self.instance.period if self.instance.pk and self.instance.period else timezone.localdate().replace(day=1)
         current_year = timezone.localdate().year
         self.fields['billing_month'].choices = [(f'{month:02d}', f'{month:02d}') for month in range(1, 13)]
@@ -420,6 +461,7 @@ class UsageForm(StyledModelForm):
             else:
                 self.fields['latest_electricity_reading'].initial = subscription.start_electricity_reading
                 self.fields['latest_water_reading'].initial = subscription.start_water_reading
+        self._apply_rest_room_rules(subscription)
 
     def _get_selected_subscription(self):
         if self.instance.pk:
@@ -431,6 +473,14 @@ class UsageForm(StyledModelForm):
             except Subscription.DoesNotExist:
                 return None
         return None
+
+    def _apply_rest_room_rules(self, subscription):
+        is_rest_room = bool(subscription and subscription.room.type == Room.RoomType.REST)
+        for field_name in self.RESTROOM_OPTIONAL_FIELDS:
+            self.fields[field_name].required = not is_rest_room
+        if is_rest_room and not self.is_bound:
+            for field_name in self.RESTROOM_OPTIONAL_FIELDS:
+                self.fields[field_name].initial = None
 
     def clean(self):
         cleaned_data = super().clean()
@@ -447,11 +497,19 @@ class UsageForm(StyledModelForm):
             raise forms.ValidationError(_('Invalid billing month selection.'))
         period = timezone.datetime(year=year, month=month, day=1).date()
         cleaned_data['period'] = period
+        subscription = cleaned_data.get('subscription') or self._get_selected_subscription()
+        is_rest_room = bool(subscription and subscription.room.type == Room.RoomType.REST)
+        if is_rest_room:
+            for field_name in self.RESTROOM_OPTIONAL_FIELDS:
+                cleaned_data[field_name] = None
         return cleaned_data
 
     def save(self, commit=True):
         instance = super().save(commit=False)
         subscription = self.cleaned_data.get('subscription') or instance.subscription
+        if subscription and subscription.room.type == Room.RoomType.REST:
+            for field_name in self.RESTROOM_OPTIONAL_FIELDS:
+                setattr(instance, field_name, None)
         period = self.cleaned_data.get('period') or instance.period
         period_slug = period.strftime('%Y-%m') if period else 'unknown-period'
         subscription_slug = str(subscription.pk) if subscription and subscription.pk else 'subscription'

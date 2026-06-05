@@ -51,11 +51,24 @@ class PriceTemplate(models.Model):
 
 
 class Room(models.Model):
+    class RoomType(models.TextChoices):
+        ENCLOSED = 'enclosed', _('Enclosed')
+        UNENCLOSED = 'unenclosed', _('Unenclosed')
+        REST = 'rest', _('Rest')
+
     class ReadingUpdateSource(models.TextChoices):
         MANUAL = 'manual', _('Manual update on Room details')
         USAGE = 'usage', _('Automatic update from subscription usage')
 
     room_name = models.CharField(max_length=50, unique=True)
+    type = models.CharField(max_length=20, choices=RoomType.choices, default=RoomType.ENCLOSED)
+    linked_restroom = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name='dependent_rooms',
+    )
     description = models.TextField(blank=True)
     image_paths = models.JSONField(default=list, blank=True)
     latest_electricity_reading = models.PositiveIntegerField(default=0)
@@ -117,6 +130,23 @@ class Room(models.Model):
             raise ValidationError({'image_paths': _('A room can store at most 5 images.')})
         if any(not isinstance(path, str) or not path.strip() for path in self.image_paths):
             raise ValidationError({'image_paths': _('Each image path must be a non-empty string.')})
+        if self.type != self.RoomType.UNENCLOSED and self.linked_restroom_id:
+            raise ValidationError({
+                'linked_restroom': _('Only unenclosed rooms can be linked to a shared restroom.'),
+            })
+        if self.type == self.RoomType.UNENCLOSED and self.linked_restroom_id:
+            if self.pk and self.linked_restroom_id == self.pk:
+                raise ValidationError({
+                    'linked_restroom': _('A room cannot be linked to itself as a shared restroom.'),
+                })
+            if self.linked_restroom and self.linked_restroom.type != self.RoomType.REST:
+                raise ValidationError({
+                    'linked_restroom': _('The linked room must be of type Rest.'),
+                })
+        if self.type == self.RoomType.REST and self.linked_restroom_id:
+            raise ValidationError({
+                'linked_restroom': _('A restroom room cannot link to another shared restroom.'),
+            })
 
     @property
     def image_count(self):
@@ -244,13 +274,13 @@ class Vehicle(models.Model):
 class Usage(models.Model):
     subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, related_name='usages')
     period = models.DateField()
-    tenant_count = models.PositiveIntegerField(default=1)
-    room_price = models.DecimalField(max_digits=12, decimal_places=0, default=0)
+    tenant_count = models.PositiveIntegerField(default=1, null=True, blank=True)
+    room_price = models.DecimalField(max_digits=12, decimal_places=0, default=0, null=True, blank=True)
     electricity_price = models.DecimalField(max_digits=12, decimal_places=0, default=0)
     water_price = models.DecimalField(max_digits=12, decimal_places=0, default=0)
-    internet_price = models.DecimalField(max_digits=12, decimal_places=0, default=0)
-    cleaning_price = models.DecimalField(max_digits=12, decimal_places=0, default=0)
-    laundry_price = models.DecimalField(max_digits=12, decimal_places=0, default=0)
+    internet_price = models.DecimalField(max_digits=12, decimal_places=0, default=0, null=True, blank=True)
+    cleaning_price = models.DecimalField(max_digits=12, decimal_places=0, default=0, null=True, blank=True)
+    laundry_price = models.DecimalField(max_digits=12, decimal_places=0, default=0, null=True, blank=True)
     latest_electricity_reading = models.PositiveIntegerField(default=0)
     electricity_meter_image_path = models.CharField(max_length=500, blank=True)
     latest_water_reading = models.PositiveIntegerField(default=0)

@@ -103,7 +103,15 @@
                         </td>
                         <td class="d-none d-md-table-cell">{{ subscription.start_date|date:"d/m/Y" }}</td>
                         <td class="text-end">
-                            <a href="{% url 'subscription_details' subscription.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Details" %}</a>
+                            <a
+                                href="{% url 'subscription_details' subscription.pk %}"
+                                class="btn btn-sm btn-outline-primary"
+                                aria-label="{% trans 'Details' %}"
+                                title="{% trans 'Details' %}"
+                            >
+                                <i class="bi bi-eye"></i>
+                                <span class="ms-1">{% trans "Details" %}</span>
+                            </a>
                             <button
                                 type="button"
                                 class="btn btn-sm btn-outline-danger"
@@ -111,7 +119,12 @@
                                 data-bs-target="#confirmDeleteModal"
                                 data-delete-url="{% url 'subscription_delete' subscription.pk %}"
                                 data-delete-label="{{ subscription.room.room_name }}"
-                            >{% trans "Delete" %}</button>
+                                aria-label="{% trans 'Delete' %}"
+                                title="{% trans 'Delete' %}"
+                            >
+                                <i class="bi bi-trash"></i>
+                                <span class="ms-1">{% trans "Delete" %}</span>
+                            </button>
                         </td>
                     </tr>
                     {% empty %}

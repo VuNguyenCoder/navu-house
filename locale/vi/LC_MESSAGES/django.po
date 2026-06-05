@@ -542,8 +542,104 @@ msgstr "Hợp đồng thuê này chưa có bản ghi sử dụng nào."
 msgid "Save this subscription first, then you can add usage records."
 msgstr "Hãy lưu hợp đồng thuê này trước, sau đó bạn có thể thêm các bản ghi sử dụng."
 
+msgid "Linked restroom usage"
+msgstr "Khai báo sử dụng của nhà vệ sinh liên kết"
+
+msgid "Restroom electricity"
+msgstr "Điện của nhà vệ sinh"
+
+msgid "Restroom water"
+msgstr "Nước của nhà vệ sinh"
+
+msgid "Linked restroom electricity"
+msgstr "Điện (WC chung)"
+
+msgid "Linked restroom water"
+msgstr "Nước (WC chung)"
+
+msgid "Linked restroom room"
+msgstr "Phòng vệ sinh liên kết"
+
+msgid "Restroom subscription"
+msgstr "Hợp đồng của phòng vệ sinh"
+
+msgid "No linked restroom subscription found yet."
+msgstr "Chưa tìm thấy hợp đồng tương ứng cho phòng vệ sinh liên kết."
+
+msgid "No usage record found for the linked restroom in this billing month."
+msgstr "Chưa có bản ghi sử dụng của phòng vệ sinh liên kết trong tháng này."
+
+msgid "Other linked tenants"
+msgstr "Số người của các phòng liên kết khác"
+
+msgid "Other linked subscription"
+msgstr "Các hợp đồng liên kết khác"
+
+msgid "Current subscription tenants"
+msgstr "Số người của hợp đồng hiện tại"
+
+msgid "Total linked tenants"
+msgstr "Tổng số người của các phòng liên kết"
+
+msgid "Shared per tenant"
+msgstr "Chi phí chia theo mỗi người"
+
+msgid "Allocated to this subscription"
+msgstr "Phần phân bổ cho hợp đồng này"
+
+msgid "Some other linked subscriptions do not have a usage record for this billing month yet, so these allocated numbers are not final."
+msgstr "Một số hợp đồng liên kết khác vẫn chưa có bản ghi sử dụng trong tháng này, nên các số liệu phân bổ hiện tại vẫn chưa phải kết quả cuối cùng."
+
+msgid "No other linked subscriptions."
+msgstr "Không có hợp đồng liên kết nào khác."
+
+msgid "Invoice summary"
+msgstr "Tóm tắt hóa đơn"
+
+msgid "Invoice for room %(room_name)s %(period)s"
+msgstr "Hóa đơn của phòng %(room_name)s %(period)s"
+
+msgid "Invoice for room"
+msgstr "Hóa đơn của phòng"
+
+msgid "Usage recorded"
+msgstr "Đã có usage"
+
+msgid "Usage not recorded yet"
+msgstr "Chưa có usage"
+
 msgid "Room name"
 msgstr "Tên phòng"
+
+msgid "Type"
+msgstr "Loại phòng"
+
+msgid "Enclosed"
+msgstr "Khép kín"
+
+msgid "Unenclosed"
+msgstr "Không khép kín"
+
+msgid "Rest"
+msgstr "Phòng vệ sinh"
+
+msgid "Linked restroom"
+msgstr "Nhà vệ sinh liên kết"
+
+msgid "For unenclosed rooms, optionally choose a restroom room to use as the shared toilet."
+msgstr "Với phòng không khép kín, bạn có thể chọn thêm một phòng vệ sinh để dùng làm nhà vệ sinh chung."
+
+msgid "Only unenclosed rooms can be linked to a shared restroom."
+msgstr "Chỉ phòng không khép kín mới có thể liên kết tới nhà vệ sinh chung."
+
+msgid "A room cannot be linked to itself as a shared restroom."
+msgstr "Một phòng không thể tự liên kết chính nó làm nhà vệ sinh chung."
+
+msgid "The linked room must be of type Rest."
+msgstr "Phòng được liên kết phải có loại là phòng vệ sinh."
+
+msgid "A restroom room cannot link to another shared restroom."
+msgstr "Một phòng vệ sinh không thể liên kết tới một nhà vệ sinh chung khác."
 
 msgid "License plate"
 msgstr "Biển số"
@@ -815,8 +911,11 @@ msgstr "Đang chuẩn bị ảnh..."
 msgid "Copied image to clipboard."
 msgstr "Đã sao chép ảnh vào clipboard."
 
-msgid "Could not copy image. Please try again."
-msgstr "Không thể sao chép ảnh. Vui lòng thử lại."
+msgid "Clipboard image copy is not available here. The image was downloaded instead."
+msgstr "Môi trường hiện tại không hỗ trợ sao chép ảnh vào clipboard. Ảnh đã được tải xuống thay thế."
+
+msgid "Could not create the image. Please try again."
+msgstr "Không thể tạo ảnh. Vui lòng thử lại."
 
 msgid "Breadcrumb"
 msgstr "Điều hướng"

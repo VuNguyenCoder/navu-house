@@ -53,7 +53,6 @@
                     <tr>
                         <th>{% trans "License plate" %}</th>
                         <th>{% trans "Room" %}</th>
-                        <th>{% trans "Created at" %}</th>
                         <th class="text-end">{% trans "Actions" %}</th>
                     </tr>
                 </thead>
@@ -62,9 +61,16 @@
                     <tr>
                         <td class="fw-semibold">{{ vehicle.license_plate }}</td>
                         <td>{{ vehicle.subscription.room.room_name }}</td>
-                        <td>{{ vehicle.created_at|date:"d/m/Y H:i" }}</td>
                         <td class="text-end">
-                            <a href="{% url 'vehicle_details' vehicle.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Details" %}</a>
+                            <a
+                                href="{% url 'vehicle_details' vehicle.pk %}"
+                                class="btn btn-sm btn-outline-primary"
+                                aria-label="{% trans 'Details' %}"
+                                title="{% trans 'Details' %}"
+                            >
+                                <i class="bi bi-eye"></i>
+                                <span class="ms-1">{% trans "Details" %}</span>
+                            </a>
                             <button
                                 type="button"
                                 class="btn btn-sm btn-outline-danger"
@@ -72,12 +78,17 @@
                                 data-bs-target="#confirmDeleteModal"
                                 data-delete-url="{% url 'vehicle_delete' vehicle.pk %}"
                                 data-delete-label="{{ vehicle.license_plate }}"
-                            >{% trans "Delete" %}</button>
+                                aria-label="{% trans 'Delete' %}"
+                                title="{% trans 'Delete' %}"
+                            >
+                                <i class="bi bi-trash"></i>
+                                <span class="ms-1">{% trans "Delete" %}</span>
+                            </button>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" class="text-center py-4 text-muted">{% trans "No vehicles yet." %}</td>
+                        <td colspan="3" class="text-center py-4 text-muted">{% trans "No vehicles yet." %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

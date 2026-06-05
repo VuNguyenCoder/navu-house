@@ -20,6 +20,7 @@ services:
     environment:
       DEBUG: "{{ 'True' if django_debug else 'False' }}"
       ALLOWED_HOSTS: "{{ django_allowed_hosts | join(',') }}"
+      CSRF_TRUSTED_ORIGINS: "{{ csrf_trusted_origins | join(',') }}"
       DB_NAME: "{{ postgres_db }}"
       DB_USER: "{{ postgres_user }}"
       DB_PASSWORD: "{{ postgres_password }}"
@@ -29,5 +30,25 @@ services:
       GUNICORN_BIND: 0.0.0.0:8000
       GUNICORN_WORKERS: "{{ gunicorn_workers }}"
       GUNICORN_THREADS: "{{ gunicorn_threads }}"
+      HTTPS_ENABLED: "{{ 'True' if https_enabled else 'False' }}"
+      USE_X_FORWARDED_HOST: "True"
+{% if https_enabled %}
+    ports: []
+{% else %}
     ports:
       - "{{ web_port }}:8000"
+{% endif %}
+
+{% if https_enabled %}
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - web
+    ports:
+      - "{{ web_port }}:80"
+      - "{{ https_port }}:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+{% endif %}

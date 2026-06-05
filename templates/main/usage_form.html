@@ -253,7 +253,7 @@
                                     </div>
                                 </div>
 
-                                <div class="table-responsive">
+                                <div class="table-responsive d-none d-lg-block">
                                     <table class="table align-middle usage-total-table mb-0">
                                         <thead>
                                             <tr>
@@ -266,7 +266,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr data-usage-summary-row data-restroom-optional-row>
+                                            <tr data-usage-summary-row data-usage-summary-table-row data-restroom-optional-row>
                                                 <td data-usage-row-number>1</td>
                                                 <td class="fw-semibold">{% trans "Room" %}</td>
                                                 <td id="roomQuantityValue">1</td>
@@ -274,7 +274,7 @@
                                                 <td id="roomPriceAmount">0 VND</td>
                                                 <td id="roomNoteValue">{% trans "Flat rate" %}</td>
                                             </tr>
-                                            <tr data-usage-summary-row>
+                                            <tr data-usage-summary-row data-usage-summary-table-row>
                                                 <td data-usage-row-number>2</td>
                                                 <td class="fw-semibold">{% trans "Electricity" %}</td>
                                                 <td id="electricityQuantityValue">0</td>
@@ -282,7 +282,7 @@
                                                 <td id="electricityCostAmount">0 VND</td>
                                                 <td id="electricityNoteValue">0</td>
                                             </tr>
-                                            <tr data-usage-summary-row data-linked-restroom-row class="d-none">
+                                            <tr data-usage-summary-row data-usage-summary-table-row data-linked-restroom-row class="d-none">
                                                 <td data-usage-row-number>3</td>
                                                 <td class="fw-semibold">{% trans "Linked restroom electricity" %}</td>
                                                 <td id="linkedRestroomElectricityQuantityValue">0</td>
@@ -290,7 +290,7 @@
                                                 <td id="linkedRestroomElectricityCostAmount">0 VND</td>
                                                 <td id="linkedRestroomElectricityNoteValue">0</td>
                                             </tr>
-                                            <tr data-usage-summary-row>
+                                            <tr data-usage-summary-row data-usage-summary-table-row>
                                                 <td data-usage-row-number>4</td>
                                                 <td class="fw-semibold">{% trans "Water" %}</td>
                                                 <td id="waterQuantityValue">0</td>
@@ -298,7 +298,7 @@
                                                 <td id="waterCostAmount">0 VND</td>
                                                 <td id="waterNoteValue">0</td>
                                             </tr>
-                                            <tr data-usage-summary-row data-linked-restroom-row class="d-none">
+                                            <tr data-usage-summary-row data-usage-summary-table-row data-linked-restroom-row class="d-none">
                                                 <td data-usage-row-number>5</td>
                                                 <td class="fw-semibold">{% trans "Linked restroom water" %}</td>
                                                 <td id="linkedRestroomWaterQuantityValue">0</td>
@@ -306,7 +306,7 @@
                                                 <td id="linkedRestroomWaterCostAmount">0 VND</td>
                                                 <td id="linkedRestroomWaterNoteValue">0</td>
                                             </tr>
-                                            <tr data-usage-summary-row data-restroom-optional-row>
+                                            <tr data-usage-summary-row data-usage-summary-table-row data-restroom-optional-row>
                                                 <td data-usage-row-number>6</td>
                                                 <td class="fw-semibold">{% trans "Internet price" %}</td>
                                                 <td id="internetQuantityValue">1</td>
@@ -314,7 +314,7 @@
                                                 <td id="internetCostAmount">0 VND</td>
                                                 <td id="internetNoteValue">{% trans "Flat rate" %}</td>
                                             </tr>
-                                            <tr data-usage-summary-row data-restroom-optional-row>
+                                            <tr data-usage-summary-row data-usage-summary-table-row data-restroom-optional-row>
                                                 <td data-usage-row-number>7</td>
                                                 <td class="fw-semibold">{% trans "Cleaning price" %}</td>
                                                 <td id="cleaningQuantityValue">0</td>
@@ -322,7 +322,7 @@
                                                 <td id="cleaningCostAmount">0 VND</td>
                                                 <td id="cleaningNoteValue">0</td>
                                             </tr>
-                                            <tr data-usage-summary-row data-restroom-optional-row>
+                                            <tr data-usage-summary-row data-usage-summary-table-row data-restroom-optional-row>
                                                 <td data-usage-row-number>8</td>
                                                 <td class="fw-semibold">{% trans "Laundry price" %}</td>
                                                 <td id="laundryQuantityValue">1</td>
@@ -339,6 +339,112 @@
                                             </tr>
                                         </tfoot>
                                     </table>
+                                </div>
+
+                                <div class="d-lg-none">
+                                    <div class="usage-total-mobile-list">
+                                        <div class="usage-mobile-item" data-usage-summary-row data-usage-summary-mobile-row data-restroom-optional-row>
+                                            <div class="usage-mobile-item-header">
+                                                <span class="usage-mobile-item-number" data-usage-row-number>1</span>
+                                                <span class="fw-semibold">{% trans "Room" %}</span>
+                                            </div>
+                                            <div class="usage-mobile-item-body">
+                                                <div><strong>{% trans "Quantity" %}:</strong> <span id="roomQuantityValueMobile">1</span></div>
+                                                <div><strong>{% trans "Unit price" %}:</strong> <span id="roomUnitPriceValueMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Amount" %}:</strong> <span id="roomPriceAmountMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Note" %}:</strong> <span id="roomNoteValueMobile">{% trans "Flat rate" %}</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="usage-mobile-item" data-usage-summary-row data-usage-summary-mobile-row>
+                                            <div class="usage-mobile-item-header">
+                                                <span class="usage-mobile-item-number" data-usage-row-number>2</span>
+                                                <span class="fw-semibold">{% trans "Electricity" %}</span>
+                                            </div>
+                                            <div class="usage-mobile-item-body">
+                                                <div><strong>{% trans "Quantity" %}:</strong> <span id="electricityQuantityValueMobile">0</span></div>
+                                                <div><strong>{% trans "Unit price" %}:</strong> <span id="electricityUnitPriceValueMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Amount" %}:</strong> <span id="electricityCostAmountMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Note" %}:</strong> <div class="d-inline-block" id="electricityNoteValueMobile">0</div></div>
+                                            </div>
+                                        </div>
+                                        <div class="usage-mobile-item d-none" data-usage-summary-row data-usage-summary-mobile-row data-linked-restroom-row>
+                                            <div class="usage-mobile-item-header">
+                                                <span class="usage-mobile-item-number" data-usage-row-number>3</span>
+                                                <span class="fw-semibold">{% trans "Linked restroom electricity" %}</span>
+                                            </div>
+                                            <div class="usage-mobile-item-body">
+                                                <div><strong>{% trans "Quantity" %}:</strong> <span id="linkedRestroomElectricityQuantityValueMobile">0</span></div>
+                                                <div><strong>{% trans "Unit price" %}:</strong> <span id="linkedRestroomElectricityUnitPriceValueMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Amount" %}:</strong> <span id="linkedRestroomElectricityCostAmountMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Note" %}:</strong> <span id="linkedRestroomElectricityNoteValueMobile">0</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="usage-mobile-item" data-usage-summary-row data-usage-summary-mobile-row>
+                                            <div class="usage-mobile-item-header">
+                                                <span class="usage-mobile-item-number" data-usage-row-number>4</span>
+                                                <span class="fw-semibold">{% trans "Water" %}</span>
+                                            </div>
+                                            <div class="usage-mobile-item-body">
+                                                <div><strong>{% trans "Quantity" %}:</strong> <span id="waterQuantityValueMobile">0</span></div>
+                                                <div><strong>{% trans "Unit price" %}:</strong> <span id="waterUnitPriceValueMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Amount" %}:</strong> <span id="waterCostAmountMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Note" %}:</strong> <div class="d-inline-block" id="waterNoteValueMobile">0</div></div>
+                                            </div>
+                                        </div>
+                                        <div class="usage-mobile-item d-none" data-usage-summary-row data-usage-summary-mobile-row data-linked-restroom-row>
+                                            <div class="usage-mobile-item-header">
+                                                <span class="usage-mobile-item-number" data-usage-row-number>5</span>
+                                                <span class="fw-semibold">{% trans "Linked restroom water" %}</span>
+                                            </div>
+                                            <div class="usage-mobile-item-body">
+                                                <div><strong>{% trans "Quantity" %}:</strong> <span id="linkedRestroomWaterQuantityValueMobile">0</span></div>
+                                                <div><strong>{% trans "Unit price" %}:</strong> <span id="linkedRestroomWaterUnitPriceValueMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Amount" %}:</strong> <span id="linkedRestroomWaterCostAmountMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Note" %}:</strong> <span id="linkedRestroomWaterNoteValueMobile">0</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="usage-mobile-item" data-usage-summary-row data-usage-summary-mobile-row data-restroom-optional-row>
+                                            <div class="usage-mobile-item-header">
+                                                <span class="usage-mobile-item-number" data-usage-row-number>6</span>
+                                                <span class="fw-semibold">{% trans "Internet price" %}</span>
+                                            </div>
+                                            <div class="usage-mobile-item-body">
+                                                <div><strong>{% trans "Quantity" %}:</strong> <span id="internetQuantityValueMobile">1</span></div>
+                                                <div><strong>{% trans "Unit price" %}:</strong> <span id="internetUnitPriceValueMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Amount" %}:</strong> <span id="internetCostAmountMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Note" %}:</strong> <span id="internetNoteValueMobile">{% trans "Flat rate" %}</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="usage-mobile-item" data-usage-summary-row data-usage-summary-mobile-row data-restroom-optional-row>
+                                            <div class="usage-mobile-item-header">
+                                                <span class="usage-mobile-item-number" data-usage-row-number>7</span>
+                                                <span class="fw-semibold">{% trans "Cleaning price" %}</span>
+                                            </div>
+                                            <div class="usage-mobile-item-body">
+                                                <div><strong>{% trans "Quantity" %}:</strong> <span id="cleaningQuantityValueMobile">0</span></div>
+                                                <div><strong>{% trans "Unit price" %}:</strong> <span id="cleaningUnitPriceValueMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Amount" %}:</strong> <span id="cleaningCostAmountMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Note" %}:</strong> <span id="cleaningNoteValueMobile">0</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="usage-mobile-item" data-usage-summary-row data-usage-summary-mobile-row data-restroom-optional-row>
+                                            <div class="usage-mobile-item-header">
+                                                <span class="usage-mobile-item-number" data-usage-row-number>8</span>
+                                                <span class="fw-semibold">{% trans "Laundry price" %}</span>
+                                            </div>
+                                            <div class="usage-mobile-item-body">
+                                                <div><strong>{% trans "Quantity" %}:</strong> <span id="laundryQuantityValueMobile">1</span></div>
+                                                <div><strong>{% trans "Unit price" %}:</strong> <span id="laundryUnitPriceValueMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Amount" %}:</strong> <span id="laundryCostAmountMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Note" %}:</strong> <span id="laundryNoteValueMobile">{% trans "Flat rate" %}</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="usage-total-mobile-footer">
+                                        <div class="fw-bold">{% trans "Total amount" %}</div>
+                                        <div class="fw-bold text-success" id="usageTotalFooterValueMobile">0 VND</div>
+                                        <div class="small text-muted mt-1" id="usageTotalFormulaMobile"></div>
+                                    </div>
                                 </div>
 
                                 <div class="alert alert-warning mt-3 d-none" id="usageValidationWarning" role="alert">
@@ -440,6 +546,54 @@
 
 .usage-total-table tfoot td {
     background: rgba(255, 255, 255, 0.86);
+}
+
+.usage-total-mobile-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.usage-mobile-item {
+    border: 1px solid rgba(25, 135, 84, 0.14);
+    border-radius: 0.95rem;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 0.95rem 1rem;
+}
+
+.usage-mobile-item-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.usage-mobile-item-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 999px;
+    background: rgba(25, 135, 84, 0.12);
+    color: #157347;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.usage-mobile-item-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.95rem;
+}
+
+.usage-total-mobile-footer {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid rgba(25, 135, 84, 0.14);
+    border-radius: 0.95rem;
+    background: rgba(255, 255, 255, 0.78);
 }
 
 .usage-delete-input {
@@ -567,7 +721,8 @@
             };
             const restroomOptionalFieldWrappers = document.querySelectorAll('[data-restroom-optional-field]');
             const restroomOptionalRows = document.querySelectorAll('[data-restroom-optional-row]');
-            const usageSummaryRows = document.querySelectorAll('[data-usage-summary-row]');
+            const usageSummaryTableRows = document.querySelectorAll('[data-usage-summary-table-row]');
+            const usageSummaryMobileRows = document.querySelectorAll('[data-usage-summary-mobile-row]');
             const linkedRestroomRows = document.querySelectorAll('[data-linked-restroom-row]');
             const isRestRoomSubscription = () => restRoomSubscriptionIds.includes(Number(fields.subscription?.value || 0));
             let linkedRestroomUsageContext = null;
@@ -577,18 +732,24 @@
                 return Number.isFinite(value) ? value : 0;
             };
 
-            const setText = (id, value) => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.textContent = value;
-                }
+            const setText = (target, value) => {
+                const ids = Array.isArray(target) ? target : [target];
+                ids.forEach((id) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = value;
+                    }
+                });
             };
 
-            const setHtml = (id, value) => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.innerHTML = value;
-                }
+            const setHtml = (target, value) => {
+                const ids = Array.isArray(target) ? target : [target];
+                ids.forEach((id) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.innerHTML = value;
+                    }
+                });
             };
 
             const updateInvoiceHeading = () => {
@@ -624,14 +785,65 @@
                 }
 
                 return window.html2canvas(usageTotalCard, {
-                    backgroundColor: null,
-                    scale: 2,
+                    backgroundColor: window.matchMedia('(max-width: 991.98px)').matches ? '#ffffff' : null,
+                    scale: window.matchMedia('(max-width: 991.98px)').matches ? 1 : 2,
                     useCORS: true,
+                    scrollX: 0,
+                    scrollY: -window.scrollY,
+                    windowWidth: document.documentElement.clientWidth,
                 });
             };
 
+            const dataUrlToBlob = (dataUrl) => {
+                const [header, base64Data] = dataUrl.split(',');
+                if (!header || !base64Data) {
+                    return null;
+                }
+                const mimeMatch = header.match(/data:(.*?);base64/);
+                const mimeType = mimeMatch ? mimeMatch[1] : 'image/png';
+                const binary = window.atob(base64Data);
+                const length = binary.length;
+                const bytes = new Uint8Array(length);
+                for (let index = 0; index < length; index += 1) {
+                    bytes[index] = binary.charCodeAt(index);
+                }
+                return new Blob([bytes], { type: mimeType });
+            };
+
             const canvasToBlob = async (canvas) => {
-                return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+                if (typeof canvas.toBlob === 'function') {
+                    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+                    if (blob) {
+                        return blob;
+                    }
+                }
+                return dataUrlToBlob(canvas.toDataURL('image/png'));
+            };
+
+            const createUsageSummaryImageBlob = async () => {
+                try {
+                    const canvas = await renderUsageSummaryCanvas();
+                    const blob = await canvasToBlob(canvas);
+                    if (blob) {
+                        return blob;
+                    }
+                } catch (error) {
+                    console.warn('Primary usage summary render failed, retrying with safe fallback.', error);
+                }
+
+                const fallbackCanvas = await window.html2canvas(usageTotalCard, {
+                    backgroundColor: '#ffffff',
+                    scale: 1,
+                    useCORS: true,
+                    scrollX: 0,
+                    scrollY: -window.scrollY,
+                    windowWidth: document.documentElement.clientWidth,
+                });
+                const fallbackBlob = await canvasToBlob(fallbackCanvas);
+                if (!fallbackBlob) {
+                    throw new Error('no_blob');
+                }
+                return fallbackBlob;
             };
 
             const downloadUsageSummaryImage = (blob) => {
@@ -645,9 +857,26 @@
                 window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
             };
 
-            const renumberUsageSummaryRows = () => {
+            const shareUsageSummaryImage = async (blob) => {
+                const fileName = `usage-summary-${fields.year?.value || 'yyyy'}-${fields.month?.value || 'mm'}.png`;
+                const file = new File([blob], fileName, { type: 'image/png' });
+                if (
+                    typeof navigator.share !== 'function' ||
+                    typeof navigator.canShare !== 'function' ||
+                    !navigator.canShare({ files: [file] })
+                ) {
+                    return false;
+                }
+                await navigator.share({
+                    files: [file],
+                    title: '{% trans "Total amount" %}',
+                });
+                return true;
+            };
+
+            const renumberUsageSummaryRowsInCollection = (rows) => {
                 let visibleRowNumber = 1;
-                usageSummaryRows.forEach((row) => {
+                rows.forEach((row) => {
                     const numberCell = row.querySelector('[data-usage-row-number]');
                     if (!numberCell) {
                         return;
@@ -658,6 +887,11 @@
                     numberCell.textContent = visibleRowNumber;
                     visibleRowNumber += 1;
                 });
+            };
+
+            const renumberUsageSummaryRows = () => {
+                renumberUsageSummaryRowsInCollection(usageSummaryTableRows);
+                renumberUsageSummaryRowsInCollection(usageSummaryMobileRows);
             };
 
             const renderLinkedRestroomUsageSection = (currentTenantCount) => {
@@ -762,14 +996,14 @@
                 );
 
                 linkedRestroomRows.forEach((row) => row.classList.remove('d-none'));
-                setText('linkedRestroomElectricityQuantityValue', `${formatPlainNumber(currentTenantCount)} {% trans "person" %}`);
-                setText('linkedRestroomWaterQuantityValue', `${formatPlainNumber(currentTenantCount)} {% trans "person" %}`);
-                setText('linkedRestroomElectricityUnitPriceValue', formatVnd(electricityPerTenant));
-                setText('linkedRestroomWaterUnitPriceValue', formatVnd(waterPerTenant));
-                setText('linkedRestroomElectricityCostAmount', formatVnd(electricityAllocation));
-                setText('linkedRestroomWaterCostAmount', formatVnd(waterAllocation));
-                setText('linkedRestroomElectricityNoteValue', `${formatVnd(context.electricity_amount || 0)} / ${formatPlainNumber(totalLinkedTenants)} {% trans "person" %}`);
-                setText('linkedRestroomWaterNoteValue', `${formatVnd(context.water_amount || 0)} / ${formatPlainNumber(totalLinkedTenants)} {% trans "person" %}`);
+                setText(['linkedRestroomElectricityQuantityValue', 'linkedRestroomElectricityQuantityValueMobile'], `${formatPlainNumber(currentTenantCount)} {% trans "person" %}`);
+                setText(['linkedRestroomWaterQuantityValue', 'linkedRestroomWaterQuantityValueMobile'], `${formatPlainNumber(currentTenantCount)} {% trans "person" %}`);
+                setText(['linkedRestroomElectricityUnitPriceValue', 'linkedRestroomElectricityUnitPriceValueMobile'], formatVnd(electricityPerTenant));
+                setText(['linkedRestroomWaterUnitPriceValue', 'linkedRestroomWaterUnitPriceValueMobile'], formatVnd(waterPerTenant));
+                setText(['linkedRestroomElectricityCostAmount', 'linkedRestroomElectricityCostAmountMobile'], formatVnd(electricityAllocation));
+                setText(['linkedRestroomWaterCostAmount', 'linkedRestroomWaterCostAmountMobile'], formatVnd(waterAllocation));
+                setText(['linkedRestroomElectricityNoteValue', 'linkedRestroomElectricityNoteValueMobile'], `${formatVnd(context.electricity_amount || 0)} / ${formatPlainNumber(totalLinkedTenants)} {% trans "person" %}`);
+                setText(['linkedRestroomWaterNoteValue', 'linkedRestroomWaterNoteValueMobile'], `${formatVnd(context.water_amount || 0)} / ${formatPlainNumber(totalLinkedTenants)} {% trans "person" %}`);
                 renumberUsageSummaryRows();
             };
 
@@ -832,38 +1066,39 @@
                 }
                 const total = roomPrice + electricityCost + waterCost + internetPrice + cleaningCost + laundryCost + linkedRestroomElectricityCost + linkedRestroomWaterCost;
 
-                setText('roomQuantityValue', `1 {% trans "room" %}`);
-                setText('electricityQuantityValue', `${formatPlainNumber(electricityConsumed)} {% trans "kWh" %}`);
-                setText('waterQuantityValue', `${formatPlainNumber(waterConsumed)} {% trans "m3" %}`);
-                setText('internetQuantityValue', `1 {% trans "room" %}`);
-                setText('cleaningQuantityValue', `${formatPlainNumber(tenantCount)} {% trans "person" %}`);
-                setText('laundryQuantityValue', `${formatPlainNumber(tenantCount)} {% trans "person" %}`);
-                setText('roomUnitPriceValue', formatVnd(roomPrice));
-                setText('electricityUnitPriceValue', formatVnd(electricityPrice));
-                setText('waterUnitPriceValue', formatVnd(waterPrice));
-                setText('internetUnitPriceValue', formatVnd(internetPrice));
-                setText('cleaningUnitPriceValue', formatVnd(cleaningPrice));
-                setText('laundryUnitPriceValue', formatVnd(laundryPrice));
-                setText('roomPriceAmount', formatVnd(roomPrice));
-                setText('electricityCostAmount', formatVnd(electricityCost));
-                setText('waterCostAmount', formatVnd(waterCost));
-                setText('internetCostAmount', formatVnd(internetPrice));
-                setText('cleaningCostAmount', formatVnd(cleaningCost));
-                setText('laundryCostAmount', formatVnd(laundryCost));
+                setText(['roomQuantityValue', 'roomQuantityValueMobile'], `1 {% trans "room" %}`);
+                setText(['electricityQuantityValue', 'electricityQuantityValueMobile'], `${formatPlainNumber(electricityConsumed)} {% trans "kWh" %}`);
+                setText(['waterQuantityValue', 'waterQuantityValueMobile'], `${formatPlainNumber(waterConsumed)} {% trans "m3" %}`);
+                setText(['internetQuantityValue', 'internetQuantityValueMobile'], `1 {% trans "room" %}`);
+                setText(['cleaningQuantityValue', 'cleaningQuantityValueMobile'], `${formatPlainNumber(tenantCount)} {% trans "person" %}`);
+                setText(['laundryQuantityValue', 'laundryQuantityValueMobile'], `${formatPlainNumber(tenantCount)} {% trans "person" %}`);
+                setText(['roomUnitPriceValue', 'roomUnitPriceValueMobile'], formatVnd(roomPrice));
+                setText(['electricityUnitPriceValue', 'electricityUnitPriceValueMobile'], formatVnd(electricityPrice));
+                setText(['waterUnitPriceValue', 'waterUnitPriceValueMobile'], formatVnd(waterPrice));
+                setText(['internetUnitPriceValue', 'internetUnitPriceValueMobile'], formatVnd(internetPrice));
+                setText(['cleaningUnitPriceValue', 'cleaningUnitPriceValueMobile'], formatVnd(cleaningPrice));
+                setText(['laundryUnitPriceValue', 'laundryUnitPriceValueMobile'], formatVnd(laundryPrice));
+                setText(['roomPriceAmount', 'roomPriceAmountMobile'], formatVnd(roomPrice));
+                setText(['electricityCostAmount', 'electricityCostAmountMobile'], formatVnd(electricityCost));
+                setText(['waterCostAmount', 'waterCostAmountMobile'], formatVnd(waterCost));
+                setText(['internetCostAmount', 'internetCostAmountMobile'], formatVnd(internetPrice));
+                setText(['cleaningCostAmount', 'cleaningCostAmountMobile'], formatVnd(cleaningCost));
+                setText(['laundryCostAmount', 'laundryCostAmountMobile'], formatVnd(laundryCost));
                 setText('usageTotalValue', formatVnd(total));
-                setText('usageTotalFooterValue', formatVnd(total));
-                setText('roomNoteValue', `1 {% trans "room" %} x ${formatPlainNumber(roomPrice)}`);
+                setText(['usageTotalFooterValue', 'usageTotalFooterValueMobile'], formatVnd(total));
+                setText(['usageTotalFormula', 'usageTotalFormulaMobile'], '');
+                setText(['roomNoteValue', 'roomNoteValueMobile'], `1 {% trans "room" %} x ${formatPlainNumber(roomPrice)}`);
                 setHtml(
-                    'electricityNoteValue',
+                    ['electricityNoteValue', 'electricityNoteValueMobile'],
                     `<div class="usage-note-lines"><ul class="usage-note-list"><li>{% trans "Previous electricity reading" %}: ${formatPlainNumber(previousElectricity)}</li><li>{% trans "Electricity reading" %}: ${formatPlainNumber(currentElectricity)}</li></ul><div class="usage-note-result">→ {% trans "Electricity consumed" %}: ${formatPlainNumber(currentElectricity)} - ${formatPlainNumber(previousElectricity)} = ${formatPlainNumber(electricityConsumed)}</div></div>`
                 );
                 setHtml(
-                    'waterNoteValue',
+                    ['waterNoteValue', 'waterNoteValueMobile'],
                     `<div class="usage-note-lines"><ul class="usage-note-list"><li>{% trans "Previous water reading" %}: ${formatPlainNumber(previousWater)}</li><li>{% trans "Water reading" %}: ${formatPlainNumber(currentWater)}</li></ul><div class="usage-note-result">→ {% trans "Water consumed" %}: ${formatPlainNumber(currentWater)} - ${formatPlainNumber(previousWater)} = ${formatPlainNumber(waterConsumed)}</div></div>`
                 );
-                setText('internetNoteValue', `1 {% trans "room" %} x ${formatPlainNumber(internetPrice)}`);
-                setText('cleaningNoteValue', `${formatPlainNumber(tenantCount)} {% trans "person" %} x ${formatPlainNumber(cleaningPrice)}`);
-                setText('laundryNoteValue', `${formatPlainNumber(tenantCount)} {% trans "person" %} x ${formatPlainNumber(laundryPrice)}`);
+                setText(['internetNoteValue', 'internetNoteValueMobile'], `1 {% trans "room" %} x ${formatPlainNumber(internetPrice)}`);
+                setText(['cleaningNoteValue', 'cleaningNoteValueMobile'], `${formatPlainNumber(tenantCount)} {% trans "person" %} x ${formatPlainNumber(cleaningPrice)}`);
+                setText(['laundryNoteValue', 'laundryNoteValueMobile'], `${formatPlainNumber(tenantCount)} {% trans "person" %} x ${formatPlainNumber(laundryPrice)}`);
                 renderLinkedRestroomUsageSection(tenantCount);
 
                 const baselineHint = document.getElementById('usageBaselineHint');
@@ -953,11 +1188,7 @@
                     setCopyStatus('{% trans "Preparing image..." %}');
 
                     try {
-                        const canvas = await renderUsageSummaryCanvas();
-                        const blob = await canvasToBlob(canvas);
-                        if (!blob) {
-                            throw new Error('no_blob');
-                        }
+                        const blob = await createUsageSummaryImageBlob();
 
                         const canCopyImage =
                             window.isSecureContext &&
@@ -973,8 +1204,13 @@
                             ]);
                             setCopyStatus('{% trans "Copied image to clipboard." %}');
                         } else {
-                            downloadUsageSummaryImage(blob);
-                            setCopyStatus('{% trans "Clipboard image copy is not available here. The image was downloaded instead." %}');
+                            const shared = await shareUsageSummaryImage(blob);
+                            if (shared) {
+                                setCopyStatus('{% trans "Clipboard image copy is not available here. The image was shared instead." %}');
+                            } else {
+                                downloadUsageSummaryImage(blob);
+                                setCopyStatus('{% trans "Clipboard image copy is not available here. The image was downloaded instead." %}');
+                            }
                         }
                     } catch (error) {
                         console.error('Failed to copy usage summary image', error);

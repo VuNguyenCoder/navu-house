@@ -68,6 +68,12 @@ SECRET_KEY = env('SECRET_KEY', 'django-insecure-z6wx6=0=9f$0ntjl(1sg7-74f_k36ft+
 DEBUG = as_bool(env('DEBUG', 'True'))
 
 ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+CSRF_TRUSTED_ORIGINS = env_list('CSRF_TRUSTED_ORIGINS', '')
+USE_X_FORWARDED_HOST = as_bool(env('USE_X_FORWARDED_HOST', 'False'))
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+HTTPS_ENABLED = as_bool(env('HTTPS_ENABLED', 'False'))
+SESSION_COOKIE_SECURE = HTTPS_ENABLED
+CSRF_COOKIE_SECURE = HTTPS_ENABLED
 
 
 # Application definition

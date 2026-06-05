@@ -61,6 +61,11 @@ Important values and how to fill them:
     - server IP
     - local loopback
     - internal reverse-proxy hostname if used
+- `csrf_trusted_origins`
+  - List every HTTPS origin that will submit Django forms.
+  - Example:
+    - `https://192.168.1.152`
+    - `https://localhost`
 - `postgres_db`
   - PostgreSQL database name used by Django.
   - Example: `navu_house`
@@ -81,7 +86,25 @@ Important values and how to fill them:
   - Usually keep `redis://redis:6379/1`
 - `web_port`
   - Public HTTP port on the remote server.
-  - Use `80` for normal HTTP, or another port if you run behind a reverse proxy.
+  - Usually keep `80` so HTTP can redirect to HTTPS cleanly.
+- `https_enabled`
+  - Enable the nginx HTTPS reverse proxy.
+  - Recommended: `true`
+- `https_port`
+  - Public HTTPS port on the remote server.
+  - Usually `443`
+- `https_server_name`
+  - Main hostname or IP used by nginx as `server_name`.
+  - Example: `192.168.1.152`
+- `https_cert_dir`
+  - Remote directory where the TLS certificate and private key are stored.
+  - Example: `/opt/navu-house/nginx/certs`
+- `https_subject_alt_names`
+  - Subject Alternative Names written into the self-signed certificate.
+  - For an IP-based LAN deployment, include the IP as `IP:...`
+  - Example:
+    - `IP:192.168.1.152`
+    - `DNS:localhost`
 - `gunicorn_workers`
   - Number of Gunicorn worker processes.
   - Start small, for example `2`
@@ -125,12 +148,16 @@ ansible-playbook -i ansible/inventory.yml ansible/deploy.yml
 3. Excludes local-only directories such as `.venv` and `volumes`
 4. Copies the archive to the remote host
 5. Renders `docker-compose.override.yml` with deployment-specific environment variables
-6. Runs `docker compose up -d --build`
-7. Ensures the target PostgreSQL database exists, even if the remote Postgres volume was initialized earlier with another database name
-8. Mounts the NFS backup share and schedules a weekly backup that stores PostgreSQL and uploaded media in one archive
+6. Renders nginx HTTPS config and generates a self-signed certificate if HTTPS is enabled
+7. Runs `docker compose up -d --build`
+8. Ensures the target PostgreSQL database exists, even if the remote Postgres volume was initialized earlier with another database name
+9. Mounts the NFS backup share and schedules a weekly backup that stores PostgreSQL and uploaded media in one archive
 
 ## Notes
 
 - Do not commit `ansible/group_vars/private.yml` or `ansible/inventory.yml`.
 - Commit the example files so other environments can start from the same template.
 - If you use Synology DSM for NFS, verify the exact export path with the DSM NFS settings before filling `backup_nfs_export`.
+- The current HTTPS flow uses a self-signed certificate generated on the remote host.
+- Browsers may still show a certificate warning until you explicitly trust that certificate.
+- For clipboard image copy on phones and stricter browsers, a fully trusted certificate is much more reliable than a self-signed one.

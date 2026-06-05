@@ -7,6 +7,9 @@ django_allowed_hosts:
   - 192.168.1.152
   - localhost
   - 127.0.0.1
+csrf_trusted_origins:
+  - https://192.168.1.152
+  - https://localhost
 
 postgres_db: navu_house
 postgres_user: postgres
@@ -17,6 +20,13 @@ redis_port: 6379
 redis_url: redis://redis:6379/1
 
 web_port: 80
+https_enabled: true
+https_port: 443
+https_server_name: 192.168.1.152
+https_cert_dir: /opt/navu-house/nginx/certs
+https_subject_alt_names:
+  - IP:192.168.1.152
+  - DNS:localhost
 gunicorn_workers: 1
 gunicorn_threads: 2
 

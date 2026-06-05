@@ -36,6 +36,22 @@
         state: directory
         mode: "0755"
 
+    - name: Ensure nginx directories exist on remote host
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - "{{ deploy_path }}/nginx"
+        - "{{ https_cert_dir }}"
+      when: https_enabled
+
+    - name: Ensure openssl is installed for HTTPS certificate generation
+      ansible.builtin.package:
+        name: openssl
+        state: present
+      when: https_enabled
+
     - name: Build deploy archive locally
       ansible.builtin.command:
         cmd: >-
@@ -63,6 +79,26 @@
         src: templates/docker-compose.override.yml.j2
         dest: "{{ deploy_path }}/docker-compose.override.yml"
         mode: "0644"
+
+    - name: Render nginx HTTPS config
+      ansible.builtin.template:
+        src: templates/nginx.conf.j2
+        dest: "{{ deploy_path }}/nginx/nginx.conf"
+        mode: "0644"
+      when: https_enabled
+
+    - name: Generate self-signed HTTPS certificate if missing
+      ansible.builtin.command:
+        cmd: >-
+          openssl req -x509 -nodes -newkey rsa:2048
+          -keyout {{ https_cert_dir }}/privkey.pem
+          -out {{ https_cert_dir }}/fullchain.pem
+          -days 3650
+          -subj /CN={{ https_server_name }}
+          -addext subjectAltName={{ https_subject_alt_names | join(',') }}
+      args:
+        creates: "{{ https_cert_dir }}/fullchain.pem"
+      when: https_enabled
 
     - name: Start docker compose stack
       ansible.builtin.command:

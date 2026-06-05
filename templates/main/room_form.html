@@ -115,7 +115,14 @@
                         {% for checkbox in form.remove_image_paths %}
                         <div class="image-preview-card room-image-preview" data-delete-preview style="width: 180px;">
                             {{ checkbox.tag }}
-                            <img src="{{ MEDIA_URL }}{{ checkbox.data.value }}" alt="" class="img-fluid rounded mb-2" style="height: 120px; width: 100%; object-fit: cover;">
+                            <button
+                                type="button"
+                                class="room-image-preview-trigger mb-2"
+                                data-preview-image-url="{{ MEDIA_URL }}{{ checkbox.data.value }}"
+                                data-preview-image-title="{% trans 'Room image' %}"
+                            >
+                                <img src="{{ MEDIA_URL }}{{ checkbox.data.value }}" alt="" class="img-fluid rounded" style="height: 120px; width: 100%; object-fit: cover;">
+                            </button>
                             <div class="small text-muted text-break">{{ checkbox.choice_label }}</div>
                             <div class="mt-2">
                                 <button type="button" class="image-delete-link" data-delete-trigger="{{ checkbox.id_for_label }}">
@@ -143,6 +150,22 @@
                     <a href="{{ cancel_url }}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="roomImagePreviewModal" tabindex="-1" aria-labelledby="roomImagePreviewTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h5 mb-0" id="roomImagePreviewTitle">{% trans "Image preview" %}</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
+            </div>
+            <div class="modal-body">
+                <div class="room-image-preview-frame">
+                    <img id="roomImagePreviewImage" src="" alt="{% trans 'Image preview' %}" class="img-fluid rounded shadow-sm d-none">
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -183,6 +206,36 @@
     pointer-events: none;
 }
 
+.room-image-preview-trigger {
+    display: inline-flex;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: zoom-in;
+}
+
+.room-image-preview-trigger img {
+    display: block;
+    width: 100%;
+}
+
+.room-image-preview-frame {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 12rem;
+    background: linear-gradient(180deg, rgba(248, 249, 250, 0.95), rgba(233, 236, 239, 0.85));
+    border: 1px solid rgba(13, 110, 253, 0.12);
+    border-radius: 1rem;
+    padding: 0.85rem;
+}
+
+.room-image-preview-frame img {
+    width: 100%;
+    height: auto;
+}
+
 .image-delete-link,
 .image-undo-link {
     appearance: none;
@@ -216,6 +269,7 @@
     cursor: pointer;
 }
 
+.room-image-preview.is-marked-for-delete .room-image-preview-trigger,
 .room-image-preview.is-marked-for-delete img,
 .room-image-preview.is-marked-for-delete .small.text-muted.text-break,
 .room-image-preview.is-marked-for-delete .image-delete-link {
@@ -227,6 +281,13 @@
 {{ block.super }}
 <script>
     window.addEventListener('DOMContentLoaded', () => {
+        const roomImagePreviewModalElement = document.getElementById('roomImagePreviewModal');
+        const roomImagePreviewTitle = document.getElementById('roomImagePreviewTitle');
+        const roomImagePreviewImage = document.getElementById('roomImagePreviewImage');
+        const roomImagePreviewModal = roomImagePreviewModalElement && window.bootstrap
+            ? new window.bootstrap.Modal(roomImagePreviewModalElement)
+            : null;
+
         const stripGrouping = (value) => `${value ?? ''}`.replace(/,/g, '').trim();
         const formatGroupedDigits = (value) => {
             const raw = stripGrouping(value).replace(/[^\d.-]/g, '');
@@ -287,6 +348,28 @@
                 }
             });
         });
+
+        document.querySelectorAll('[data-preview-image-url]').forEach((button) => {
+            button.addEventListener('click', () => {
+                if (!roomImagePreviewModal || !roomImagePreviewImage) {
+                    return;
+                }
+                roomImagePreviewImage.src = button.dataset.previewImageUrl;
+                roomImagePreviewImage.alt = button.dataset.previewImageTitle || '{% trans "Image preview" %}';
+                roomImagePreviewImage.classList.remove('d-none');
+                if (roomImagePreviewTitle) {
+                    roomImagePreviewTitle.textContent = button.dataset.previewImageTitle || '{% trans "Image preview" %}';
+                }
+                roomImagePreviewModal.show();
+            });
+        });
+
+        if (roomImagePreviewModalElement && roomImagePreviewImage) {
+            roomImagePreviewModalElement.addEventListener('hidden.bs.modal', () => {
+                roomImagePreviewImage.src = '';
+                roomImagePreviewImage.classList.add('d-none');
+            });
+        }
     });
 </script>
 {% endblock %}

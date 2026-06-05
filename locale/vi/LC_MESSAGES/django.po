@@ -929,6 +929,12 @@ msgstr "Nhấn giữ ảnh để sao chép, lưu hoặc chia sẻ."
 msgid "Generated image preview"
 msgstr "Xem trước ảnh đã tạo"
 
+msgid "Image preview"
+msgstr "Xem trước ảnh"
+
+msgid "Room image"
+msgstr "Ảnh phòng"
+
 msgid "Preview is not available here. The image was downloaded instead."
 msgstr "Không thể xem trước ảnh tại đây. Ảnh đã được tải xuống thay thế."
 

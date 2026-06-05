@@ -116,9 +116,14 @@
                                 {% if form.instance.pk and form.instance.electricity_meter_image_path %}
                                 <div class="pt-2 usage-image-preview image-preview-card" data-delete-preview>
                                     <div class="small text-muted mb-2">{% trans "Current electricity meter image" %}</div>
-                                    <a href="{{ MEDIA_URL }}{{ form.instance.electricity_meter_image_path }}" target="_blank" rel="noopener">
+                                    <button
+                                        type="button"
+                                        class="usage-image-preview-trigger"
+                                        data-preview-image-url="{{ MEDIA_URL }}{{ form.instance.electricity_meter_image_path }}"
+                                        data-preview-image-title="{% trans 'Current electricity meter image' %}"
+                                    >
                                         <img src="{{ MEDIA_URL }}{{ form.instance.electricity_meter_image_path }}" alt="" class="img-fluid rounded border" style="max-height: 220px; object-fit: cover;">
-                                    </a>
+                                    </button>
                                     <div class="mt-2">
                                         {{ form.remove_electricity_meter_image }}
                                         <button type="button" class="usage-delete-link" data-delete-trigger="{{ form.remove_electricity_meter_image.id_for_label }}">
@@ -164,9 +169,14 @@
                                 {% if form.instance.pk and form.instance.water_meter_image_path %}
                                 <div class="pt-2 usage-image-preview image-preview-card" data-delete-preview>
                                     <div class="small text-muted mb-2">{% trans "Current water meter image" %}</div>
-                                    <a href="{{ MEDIA_URL }}{{ form.instance.water_meter_image_path }}" target="_blank" rel="noopener">
+                                    <button
+                                        type="button"
+                                        class="usage-image-preview-trigger"
+                                        data-preview-image-url="{{ MEDIA_URL }}{{ form.instance.water_meter_image_path }}"
+                                        data-preview-image-title="{% trans 'Current water meter image' %}"
+                                    >
                                         <img src="{{ MEDIA_URL }}{{ form.instance.water_meter_image_path }}" alt="" class="img-fluid rounded border" style="max-height: 220px; object-fit: cover;">
-                                    </a>
+                                    </button>
                                     <div class="mt-2">
                                         {{ form.remove_water_meter_image }}
                                         <button type="button" class="usage-delete-link" data-delete-trigger="{{ form.remove_water_meter_image.id_for_label }}">
@@ -498,6 +508,22 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="meterImagePreviewModal" tabindex="-1" aria-labelledby="meterImagePreviewTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h5 mb-0" id="meterImagePreviewTitle">{% trans "Image preview" %}</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
+            </div>
+            <div class="modal-body">
+                <div class="usage-summary-preview-frame">
+                    <img id="meterImagePreviewImage" src="" alt="{% trans 'Image preview' %}" class="img-fluid rounded shadow-sm d-none">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_css %}
@@ -646,6 +672,18 @@
     -webkit-touch-callout: default;
 }
 
+.usage-image-preview-trigger {
+    display: inline-flex;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: zoom-in;
+}
+
+.usage-image-preview-trigger img {
+    display: block;
+}
+
 .usage-delete-input {
     position: absolute;
     opacity: 0;
@@ -691,7 +729,7 @@
     cursor: pointer;
 }
 
-.usage-image-preview.is-marked-for-delete a,
+.usage-image-preview.is-marked-for-delete .usage-image-preview-trigger,
 .usage-image-preview.is-marked-for-delete img,
 .usage-image-preview.is-marked-for-delete .small.text-muted.mb-2,
 .usage-image-preview.is-marked-for-delete .usage-delete-link {
@@ -706,6 +744,13 @@
 {{ subscription_room_names|json_script:"subscription-room-name-map" }}
 <script>
     window.addEventListener('DOMContentLoaded', () => {
+        const meterImagePreviewModalElement = document.getElementById('meterImagePreviewModal');
+        const meterImagePreviewTitle = document.getElementById('meterImagePreviewTitle');
+        const meterImagePreviewImage = document.getElementById('meterImagePreviewImage');
+        const meterImagePreviewModal = meterImagePreviewModalElement && window.bootstrap
+            ? new window.bootstrap.Modal(meterImagePreviewModalElement)
+            : null;
+
         const stripGrouping = (value) => `${value ?? ''}`.replace(/,/g, '').trim();
         const formatGroupedDigits = (value) => {
             const raw = stripGrouping(value).replace(/[^\d.-]/g, '');
@@ -1381,6 +1426,28 @@
                 }
             });
         });
+
+        document.querySelectorAll('[data-preview-image-url]').forEach((button) => {
+            button.addEventListener('click', () => {
+                if (!meterImagePreviewModal || !meterImagePreviewImage) {
+                    return;
+                }
+                meterImagePreviewImage.src = button.dataset.previewImageUrl;
+                meterImagePreviewImage.alt = button.dataset.previewImageTitle || '{% trans "Image preview" %}';
+                meterImagePreviewImage.classList.remove('d-none');
+                if (meterImagePreviewTitle) {
+                    meterImagePreviewTitle.textContent = button.dataset.previewImageTitle || '{% trans "Image preview" %}';
+                }
+                meterImagePreviewModal.show();
+            });
+        });
+
+        if (meterImagePreviewModalElement && meterImagePreviewImage) {
+            meterImagePreviewModalElement.addEventListener('hidden.bs.modal', () => {
+                meterImagePreviewImage.src = '';
+                meterImagePreviewImage.classList.add('d-none');
+            });
+        }
     });
 </script>
 {% endblock %}

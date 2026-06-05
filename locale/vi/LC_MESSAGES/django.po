@@ -1,7 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: navu-house\n"
-"POT-Creation-Date: 2026-05-29 00:00+0700\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-05 16:51+0000\n"
 "PO-Revision-Date: 2026-05-29 00:00+0700\n"
 "Last-Translator: Codex\n"
 "Language-Team: Vietnamese\n"
@@ -11,1013 +12,1605 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "English"
-msgstr "English"
-
-msgid "Vietnamese"
-msgstr "Tiếng Việt"
-
-msgid "Signed in as"
-msgstr "Đăng nhập với tên"
-
-msgid "Notifications"
-msgstr "Thông báo"
-
-msgid "Sent"
-msgstr "Đã gửi"
-
-msgid "Failed"
-msgstr "Thất bại"
-
-msgid "Pending"
-msgstr "Đang chờ"
-
-msgid "No notifications."
-msgstr "Không có thông báo."
-
-msgid "Home"
-msgstr "Trang chủ"
-
-msgid "Settings"
-msgstr "Cài đặt"
-
-msgid "Price template"
-msgstr "Bảng giá"
-
-msgid "Tools"
-msgstr "Công cụ"
-
-msgid "Admin tool"
-msgstr "Công cụ quản trị"
-
-msgid "Sign out"
-msgstr "Đăng xuất"
-
-msgid "Sign Out"
-msgstr "Đăng xuất"
-
-msgid "Welcome to Navu House"
-msgstr "Chào mừng đến với Navu House"
-
-msgid "Hello"
-msgstr "Xin chào"
-
-msgid "This is your home page."
-msgstr "Đây là trang chủ của bạn."
-
-msgid "A simple Django application template with user authentication, notifications, and API integration."
-msgstr "Mẫu ứng dụng Django đơn giản với xác thực người dùng, thông báo và tích hợp API."
-
-msgid "Account Settings"
-msgstr "Cài đặt tài khoản"
-
-msgid "Manage your account details"
-msgstr "Quản lý thông tin tài khoản của bạn"
-
-msgid "Go"
-msgstr "Mở"
-
-msgid "Security"
-msgstr "Bảo mật"
-
-msgid "Change your password"
-msgstr "Đổi mật khẩu của bạn"
-
-msgid "Profile"
-msgstr "Hồ sơ"
-
-msgid "View your profile"
-msgstr "Xem hồ sơ của bạn"
-
-msgid "Coming Soon"
-msgstr "Sắp ra mắt"
-
-msgid "Account Information"
-msgstr "Thông tin tài khoản"
-
-msgid "Username:"
-msgstr "Tên đăng nhập:"
-
-msgid "Email:"
-msgstr "Email:"
-
-msgid "Full Name:"
-msgstr "Họ và tên:"
-
-msgid "Member Since:"
-msgstr "Tham gia từ:"
-
-msgid "Access your account"
-msgstr "Truy cập tài khoản của bạn"
-
-msgid "Create Account"
-msgstr "Tạo tài khoản"
-
-msgid "Join our community"
-msgstr "Tham gia cùng chúng tôi"
-
-msgid "Sign Up"
-msgstr "Đăng ký"
-
-msgid "Sign In"
-msgstr "Đăng nhập"
-
-msgid "Change Email"
-msgstr "Đổi email"
-
-msgid "Change Password"
-msgstr "Đổi mật khẩu"
-
-msgid "Sign in with a passkey"
-msgstr "Đăng nhập bằng passkey"
-
-msgid "Mail me a sign-in code"
-msgstr "Gửi cho tôi mã đăng nhập"
-
-msgid "Shared price template"
-msgstr "Bảng giá chung"
-
-msgid "Manage the default pricing for rooms and shared services."
-msgstr "Quản lý mức giá mặc định cho phòng và các dịch vụ chung."
-
-msgid "Last updated:"
-msgstr "Cập nhật lần cuối:"
-
-msgid "Save price template"
-msgstr "Lưu bảng giá"
-
-msgid "Back"
-msgstr "Quay lại"
-
-msgid "Current pricing"
-msgstr "Mức giá hiện tại"
-
-msgid "Room price"
-msgstr "Giá phòng"
-
-msgid "Electricity price"
-msgstr "Giá điện"
-
-msgid "Water price"
-msgstr "Giá nước"
-
-msgid "Internet price"
-msgstr "Giá internet"
-
-msgid "Cleaning price"
-msgstr "Giá vệ sinh"
-
-msgid "Laundry price"
-msgstr "Giá giặt"
-
-msgid "VND / room"
-msgstr "VND / phòng"
-
-msgid "VND / kWh"
-msgstr "VND / số"
-
-msgid "VND / m3"
-msgstr "VND / khối"
-
-msgid "VND / person"
-msgstr "VND / người"
-
+#: apps/main/forms.py:113 apps/main/forms.py:272 apps/main/forms.py:455
 msgid "Room price (VND / room)"
 msgstr "Giá phòng (VND / phòng)"
 
-msgid "Electricity price (VND / kWh)"
-msgstr "Giá điện (VND / số)"
-
-msgid "Water price (VND / m3)"
-msgstr "Giá nước (VND / khối)"
-
-msgid "Internet price (VND / room)"
-msgstr "Giá internet (VND / phòng)"
-
-msgid "Cleaning price (VND / person)"
-msgstr "Giá vệ sinh (VND / người)"
-
-msgid "Laundry price (VND / person)"
-msgstr "Giá giặt (VND / người)"
-
-msgid "You do not have permission to access the price template page."
-msgstr "Bạn không có quyền truy cập trang bảng giá."
-
-msgid "Price template updated successfully."
-msgstr "Cập nhật bảng giá thành công."
-
-msgid "When you create a new subscription, this value is used as the baseline for calculating electricity charges in the following months. It is also updated automatically after each monthly usage record."
-msgstr "Khi bạn tạo hợp đồng thuê mới, giá trị này sẽ được dùng làm mốc để tính tiền điện cho các tháng tiếp theo. Sau mỗi kỳ khai báo sử dụng hằng tháng, giá trị này cũng sẽ được tự động cập nhật lại."
-
-msgid "When you create a new subscription, this value is used as the baseline for calculating water charges in the following months. It is also updated automatically after each monthly usage record."
-msgstr "Khi bạn tạo hợp đồng thuê mới, giá trị này sẽ được dùng làm mốc để tính tiền nước cho các tháng tiếp theo. Sau mỗi kỳ khai báo sử dụng hằng tháng, giá trị này cũng sẽ được tự động cập nhật lại."
-
-msgid "Manual update on Room details"
-msgstr "Cập nhật thủ công trên trang chi tiết phòng"
-
-msgid "Automatic update from subscription usage"
-msgstr "Tự động cập nhật từ khai báo sử dụng của hợp đồng"
-
-msgid "Manual update on Room details by %(username)s"
-msgstr "Cập nhật thủ công trên trang chi tiết phòng bởi %(username)s"
-
-msgid "Automatic update from subscription %(subscription_id)s (%(period)s)"
-msgstr "Tự động cập nhật từ hợp đồng %(subscription_id)s (%(period)s)"
-
-msgid "Automatic update from"
-msgstr "Tự động cập nhật từ"
-
-msgid "subscription %(subscription_id)s (%(period)s)"
-msgstr "hợp đồng %(subscription_id)s (%(period)s)"
-
-msgid "Not updated yet"
-msgstr "Chưa được cập nhật"
-
-msgid "Last updated"
-msgstr "Cập nhật lần cuối"
-
-msgid "Source"
-msgstr "Nguồn cập nhật"
-
-msgid "Rooms"
-msgstr "Phòng"
-
-msgid "Subscriptions"
-msgstr "Hợp đồng thuê"
-
-msgid "Vehicles"
-msgstr "Phương tiện"
-
-msgid "Usages"
-msgstr "Khai báo sử dụng"
-
-msgid "Image paths must be stored as a list."
-msgstr "Đường dẫn ảnh phải được lưu dưới dạng danh sách."
-
-msgid "A room can store at most 10 images."
-msgstr "Mỗi phòng chỉ được lưu tối đa 10 ảnh."
-
-msgid "Each image path must be a non-empty string."
-msgstr "Mỗi đường dẫn ảnh phải là một chuỗi không rỗng."
-
-msgid "Enabled"
-msgstr "Đang dùng"
-
-msgid "Disabled"
-msgstr "Ngưng dùng"
-
-msgid "Please select month and year only."
-msgstr "Vui lòng chỉ chọn tháng và năm."
-
-msgid "Water price (VND / cubic meter)"
-msgstr "Giá nước (VND / khối)"
-
+#: apps/main/forms.py:114 apps/main/forms.py:273 apps/main/forms.py:456
 msgid "Electricity price (VND / number)"
 msgstr "Giá điện (VND / số)"
 
-msgid "You do not have permission to access this page."
-msgstr "Bạn không có quyền truy cập trang này."
-
-msgid "Deleted successfully."
-msgstr "Xóa thành công."
-
-msgid "Room created successfully."
-msgstr "Tạo phòng thành công."
-
-msgid "Add room"
-msgstr "Thêm phòng"
-
-msgid "Create room"
-msgstr "Tạo phòng"
-
-msgid "Room updated successfully."
-msgstr "Cập nhật phòng thành công."
-
-msgid "Room details"
-msgstr "Chi tiết phòng"
-
-msgid "Save changes"
-msgstr "Lưu thay đổi"
-
-msgid "Delete room"
-msgstr "Xóa phòng"
-
-msgid "Room deleted successfully."
-msgstr "Xóa phòng thành công."
-
-msgid "Subscription created successfully."
-msgstr "Tạo hợp đồng thuê thành công."
-
-msgid "Add subscription"
-msgstr "Thêm hợp đồng thuê"
-
-msgid "Create subscription"
-msgstr "Tạo hợp đồng thuê"
-
-msgid "Subscription updated successfully."
-msgstr "Cập nhật hợp đồng thuê thành công."
-
-msgid "Subscription details"
-msgstr "Chi tiết hợp đồng thuê"
-
-msgid "Subscription deleted successfully."
-msgstr "Xóa hợp đồng thuê thành công."
-
-msgid "Vehicle created successfully."
-msgstr "Tạo phương tiện thành công."
-
-msgid "Add vehicle"
-msgstr "Thêm phương tiện"
-
-msgid "Create vehicle"
-msgstr "Tạo phương tiện"
-
-msgid "Vehicle updated successfully."
-msgstr "Cập nhật phương tiện thành công."
-
-msgid "Vehicle details"
-msgstr "Chi tiết phương tiện"
-
-msgid "Vehicle deleted successfully."
-msgstr "Xóa phương tiện thành công."
-
-msgid "Delete vehicle"
-msgstr "Xóa phương tiện"
-
-msgid "Delete subscription"
-msgstr "Xóa hợp đồng thuê"
-
-msgid "Usage record created successfully."
-msgstr "Tạo bản ghi sử dụng thành công."
-
-msgid "Add usage record"
-msgstr "Thêm bản ghi sử dụng"
-
-msgid "Create usage record"
-msgstr "Tạo bản ghi sử dụng"
-
-msgid "Usage record updated successfully."
-msgstr "Cập nhật bản ghi sử dụng thành công."
-
-msgid "Usage record details"
-msgstr "Chi tiết bản ghi sử dụng"
-
-msgid "Usage record deleted successfully."
-msgstr "Xóa bản ghi sử dụng thành công."
-
-msgid "Delete usage record"
-msgstr "Xóa bản ghi sử dụng"
-
-msgid "Fill in the information below and save your changes."
-msgstr "Điền thông tin bên dưới và lưu thay đổi."
-
-msgid "Cancel"
-msgstr "Hủy"
-
-msgid "Are you sure you want to delete \"%(label)s\"?"
-msgstr "Bạn có chắc muốn xóa \"%(label)s\" không?"
-
-msgid "Delete"
-msgstr "Xóa"
-
-msgid "Room management"
-msgstr "Quản lý phòng"
-
-msgid "Manage room information, image paths and the latest utility readings."
-msgstr "Quản lý thông tin phòng, đường dẫn ảnh và chỉ số điện nước mới nhất."
-
-msgid "Manage room information, uploaded images and the latest utility readings."
-msgstr "Quản lý thông tin phòng, ảnh đã tải lên và chỉ số điện nước mới nhất."
-
-msgid "Floor"
-msgstr "Tầng"
-
-msgid "Description"
-msgstr "Mô tả"
-
-msgid "Image paths"
-msgstr "Đường dẫn ảnh"
-
-msgid "Images"
-msgstr "Ảnh"
-
-msgid "Electricity"
-msgstr "Điện"
-
-msgid "Water"
-msgstr "Nước"
-
-msgid "Actions"
-msgstr "Thao tác"
-
-msgid "Details"
-msgstr "Chi tiết"
-
-msgid "No rooms yet."
-msgstr "Chưa có phòng nào."
-
-msgid "Subscription management"
-msgstr "Quản lý hợp đồng thuê"
-
-msgid "Manage active rentals and snapshot the pricing from the shared price template."
-msgstr "Quản lý hợp đồng thuê đang hoạt động và chụp lại đơn giá từ bảng giá chung."
-
-msgid "Vehicle management"
-msgstr "Quản lý phương tiện"
-
-msgid "Manage vehicles and search them by license plate."
-msgstr "Quản lý phương tiện và tìm kiếm theo biển số."
-
-msgid "Manage vehicles for this subscription from here."
-msgstr "Quản lý các phương tiện của hợp đồng thuê này ngay tại đây."
-
-msgid "Start date"
-msgstr "Ngày bắt đầu"
-
-msgid "Tenants"
-msgstr "Số người thuê"
-
-msgid "Contact email"
-msgstr "Email liên hệ"
-
-msgid "Contact phone number"
-msgstr "Số điện thoại liên hệ"
-
-msgid "Start electricity reading"
-msgstr "Chỉ số điện đầu kỳ"
-
-msgid "Start water reading"
-msgstr "Chỉ số nước đầu kỳ"
-
-msgid "Add usage"
-msgstr "Thêm sử dụng"
-
-msgid "Usage records"
-msgstr "Bản ghi sử dụng"
-
-msgid "Manage usage"
-msgstr "Quản lý sử dụng"
-
-msgid "No."
-msgstr "STT"
-
-msgid "Time"
-msgstr "Thời gian"
-
-msgid "Payment amount"
-msgstr "Số tiền thanh toán"
-
-msgid "Search by license plate"
-msgstr "Tìm theo biển số"
-
-msgid "Enter a license plate"
-msgstr "Nhập biển số"
-
-msgid "Search"
-msgstr "Tìm kiếm"
-
-msgid "Clear"
-msgstr "Xóa lọc"
-
-msgid "Flat rate"
-msgstr "Mức cố định"
-
-msgid "Basic information"
-msgstr "Thông tin cơ bản"
-
-msgid "Start readings"
-msgstr "Chỉ số đầu kỳ"
-
-msgid "Contact information"
-msgstr "Thông tin liên hệ"
-
-msgid "Please review the meter readings."
-msgstr "Vui lòng kiểm tra lại chỉ số đồng hồ."
-
-msgid "Current electricity reading cannot be lower than the previous month's reading."
-msgstr "Chỉ số điện hiện tại không được nhỏ hơn chỉ số của tháng trước."
-
-msgid "Current water reading cannot be lower than the previous month's reading."
-msgstr "Chỉ số nước hiện tại không được nhỏ hơn chỉ số của tháng trước."
-
-msgid "Manage usage records for this subscription from here."
-msgstr "Quản lý các bản ghi sử dụng của hợp đồng thuê này ngay tại đây."
-
-msgid "records"
-msgstr "bản ghi"
-
-msgid "No subscriptions yet."
-msgstr "Chưa có hợp đồng thuê nào."
-
-msgid "Usage management"
-msgstr "Quản lý sử dụng"
-
-msgid "Track monthly usage snapshots for each subscription."
-msgstr "Theo dõi bản chụp sử dụng theo tháng cho từng hợp đồng thuê."
-
-msgid "Billing month"
-msgstr "Tháng tính tiền"
-
-msgid "Electricity reading"
-msgstr "Chỉ số điện"
-
-msgid "Water reading"
-msgstr "Chỉ số nước"
-
-msgid "Meter images"
-msgstr "Ảnh đồng hồ"
-
-msgid "Electricity:"
-msgstr "Điện:"
-
-msgid "Water:"
-msgstr "Nước:"
-
-msgid "No usage records yet."
-msgstr "Chưa có bản ghi sử dụng nào."
-
-msgid "No usage records for this subscription yet."
-msgstr "Hợp đồng thuê này chưa có bản ghi sử dụng nào."
-
-msgid "Save this subscription first, then you can add usage records."
-msgstr "Hãy lưu hợp đồng thuê này trước, sau đó bạn có thể thêm các bản ghi sử dụng."
-
-msgid "Linked restroom usage"
-msgstr "Khai báo sử dụng của nhà vệ sinh liên kết"
-
-msgid "Restroom electricity"
-msgstr "Điện của nhà vệ sinh"
-
-msgid "Restroom water"
-msgstr "Nước của nhà vệ sinh"
-
-msgid "Linked restroom electricity"
-msgstr "Điện (WC chung)"
-
-msgid "Linked restroom water"
-msgstr "Nước (WC chung)"
-
-msgid "Linked restroom room"
-msgstr "Phòng vệ sinh liên kết"
-
-msgid "Restroom subscription"
-msgstr "Hợp đồng của phòng vệ sinh"
-
-msgid "No linked restroom subscription found yet."
-msgstr "Chưa tìm thấy hợp đồng tương ứng cho phòng vệ sinh liên kết."
-
-msgid "No usage record found for the linked restroom in this billing month."
-msgstr "Chưa có bản ghi sử dụng của phòng vệ sinh liên kết trong tháng này."
-
-msgid "Other linked tenants"
-msgstr "Số người của các phòng liên kết khác"
-
-msgid "Other linked subscription"
-msgstr "Các hợp đồng liên kết khác"
-
-msgid "Current subscription tenants"
-msgstr "Số người của hợp đồng hiện tại"
-
-msgid "Total linked tenants"
-msgstr "Tổng số người của các phòng liên kết"
-
-msgid "Shared per tenant"
-msgstr "Chi phí chia theo mỗi người"
-
-msgid "Allocated to this subscription"
-msgstr "Phần phân bổ cho hợp đồng này"
-
-msgid "Some other linked subscriptions do not have a usage record for this billing month yet, so these allocated numbers are not final."
-msgstr "Một số hợp đồng liên kết khác vẫn chưa có bản ghi sử dụng trong tháng này, nên các số liệu phân bổ hiện tại vẫn chưa phải kết quả cuối cùng."
-
-msgid "No other linked subscriptions."
-msgstr "Không có hợp đồng liên kết nào khác."
-
-msgid "Invoice summary"
-msgstr "Tóm tắt hóa đơn"
-
-msgid "Invoice for room %(room_name)s %(period)s"
-msgstr "Hóa đơn của phòng %(room_name)s %(period)s"
-
-msgid "Invoice for room"
-msgstr "Hóa đơn của phòng"
-
-msgid "Usage recorded"
-msgstr "Đã có usage"
-
-msgid "Usage not recorded yet"
-msgstr "Chưa có usage"
-
-msgid "Room name"
-msgstr "Tên phòng"
-
-msgid "Type"
-msgstr "Loại phòng"
-
-msgid "Enclosed"
-msgstr "Khép kín"
-
-msgid "Unenclosed"
-msgstr "Không khép kín"
-
-msgid "Rest"
-msgstr "Phòng vệ sinh"
-
-msgid "Linked restroom"
-msgstr "Nhà vệ sinh liên kết"
-
-msgid "For unenclosed rooms, optionally choose a restroom room to use as the shared toilet."
-msgstr "Với phòng không khép kín, bạn có thể chọn thêm một phòng vệ sinh để dùng làm nhà vệ sinh chung."
-
-msgid "Only unenclosed rooms can be linked to a shared restroom."
-msgstr "Chỉ phòng không khép kín mới có thể liên kết tới nhà vệ sinh chung."
-
-msgid "A room cannot be linked to itself as a shared restroom."
-msgstr "Một phòng không thể tự liên kết chính nó làm nhà vệ sinh chung."
-
-msgid "The linked room must be of type Rest."
-msgstr "Phòng được liên kết phải có loại là phòng vệ sinh."
-
-msgid "A restroom room cannot link to another shared restroom."
-msgstr "Một phòng vệ sinh không thể liên kết tới một nhà vệ sinh chung khác."
-
-msgid "License plate"
-msgstr "Biển số"
-
-msgid "Created at"
-msgstr "Thời gian tạo"
-
-msgid "No vehicles yet."
-msgstr "Chưa có phương tiện nào."
-
-msgid "No vehicles for this subscription yet."
-msgstr "Hợp đồng thuê này chưa có phương tiện nào."
-
-msgid "Save this subscription first, then you can add vehicles."
-msgstr "Hãy lưu hợp đồng thuê này trước, sau đó bạn có thể thêm phương tiện."
-
-msgid "Room number"
-msgstr "Số phòng"
-
-msgid "Latest electricity reading"
-msgstr "Chỉ số điện mới nhất"
-
-msgid "Latest water reading"
-msgstr "Chỉ số nước mới nhất"
-
-msgid "Enter one file path per line. Maximum 5 images."
-msgstr "Mỗi dòng nhập một đường dẫn ảnh. Tối đa 5 ảnh."
-
+#: apps/main/forms.py:115 apps/main/forms.py:274 apps/main/forms.py:457
+msgid "Water price (VND / cubic meter)"
+msgstr "Giá nước (VND / khối)"
+
+#: apps/main/forms.py:116 apps/main/forms.py:275 apps/main/forms.py:458
+msgid "Internet price (VND / room)"
+msgstr "Giá internet (VND / phòng)"
+
+#: apps/main/forms.py:117 apps/main/forms.py:276 apps/main/forms.py:459
+msgid "Cleaning price (VND / person)"
+msgstr "Giá vệ sinh (VND / người)"
+
+#: apps/main/forms.py:118 apps/main/forms.py:277 apps/main/forms.py:460
+msgid "Laundry price (VND / person)"
+msgstr "Giá giặt (VND / người)"
+
+#: apps/main/forms.py:126
 msgid "Room images"
 msgstr "Ảnh phòng"
 
-msgid "Upload up to 10 images in total."
-msgstr "Tải lên tối đa 10 ảnh cho mỗi phòng."
+#: apps/main/forms.py:127 apps/main/forms.py:243
+msgid ""
+"Upload up to 10 images in total. On supported devices, you can also capture "
+"from the camera."
+msgstr ""
+"Tải lên tối đa 10 ảnh cho mỗi phòng. Trên thiết bị hỗ trợ, bạn cũng có thể "
+"chụp trực tiếp từ camera."
 
-msgid "Upload up to 10 images in total. On supported devices, you can also capture from the camera."
-msgstr "Tải lên tối đa 10 ảnh cho mỗi phòng. Trên thiết bị hỗ trợ, bạn cũng có thể chụp trực tiếp từ camera."
-
+#: apps/main/forms.py:132 apps/main/forms.py:248
 msgid "Remove existing images"
 msgstr "Xóa ảnh hiện có"
 
-msgid "Current images"
-msgstr "Ảnh hiện có"
-
-msgid "Tick the images you want to delete, then save."
-msgstr "Chọn các ảnh bạn muốn xóa rồi bấm lưu."
-
-msgid "Delete this image"
-msgstr "Xóa ảnh này"
-
-msgid "No images uploaded yet."
-msgstr "Chưa có ảnh nào được tải lên."
-
-msgid "Room"
-msgstr "Phòng"
-
-msgid "Status"
-msgstr "Trạng thái"
-
-msgid "Rental start date"
-msgstr "Ngày bắt đầu thuê"
-
-msgid "Number of tenants"
-msgstr "Số người thuê"
-
-msgid "Subscription"
-msgstr "Hợp đồng thuê"
-
-msgid "Electricity meter image path"
-msgstr "Đường dẫn ảnh đồng hồ điện"
-
-msgid "Water meter image path"
-msgstr "Đường dẫn ảnh đồng hồ nước"
-
-msgid "This room cannot be deleted because it still has subscriptions attached."
-msgstr "Không thể xóa phòng này vì vẫn còn hợp đồng thuê đang gắn với nó."
-
-msgid "This room already has an active subscription. Disable the current one first."
-msgstr "Phòng này đã có một hợp đồng thuê đang hoạt động. Hãy ngưng hợp đồng hiện tại trước."
-
-msgid "Electricity meter image"
-msgstr "Ảnh đồng hồ điện"
-
-msgid "Water meter image"
-msgstr "Ảnh đồng hồ nước"
-
-msgid "Billing setup"
-msgstr "Thiết lập kỳ tính tiền"
-
-msgid "Pricing snapshot"
-msgstr "Đơn giá đang áp dụng"
-
-msgid "Current electricity meter image"
-msgstr "Ảnh đồng hồ điện hiện tại"
-
-msgid "Current water meter image"
-msgstr "Ảnh đồng hồ nước hiện tại"
-
-msgid "Choose an existing image or capture one from the camera on supported devices."
-msgstr "Chọn ảnh có sẵn hoặc chụp trực tiếp từ camera trên thiết bị được hỗ trợ."
-
-msgid "Format: MM/YYYY"
-msgstr "Định dạng: MM/YYYY"
-
-msgid "Billing month is required."
-msgstr "Tháng tính tiền là bắt buộc."
-
-msgid "Use MM/YYYY format, for example 06/2026."
-msgstr "Dùng định dạng MM/YYYY, ví dụ 06/2026."
-
-msgid "Choose billing month"
-msgstr "Chọn tháng tính tiền"
-
-msgid "Month"
-msgstr "Tháng"
-
-msgid "Year"
-msgstr "Năm"
-
-msgid "Invalid billing month selection."
-msgstr "Lựa chọn tháng tính tiền không hợp lệ."
-
-msgid "Delete current electricity meter image"
-msgstr "Xóa ảnh đồng hồ điện hiện tại"
-
-msgid "Delete current water meter image"
-msgstr "Xóa ảnh đồng hồ nước hiện tại"
-
-msgid "Image will be deleted after you save changes."
-msgstr "Ảnh sẽ bị xóa sau khi bạn lưu thay đổi."
-
-msgid "Undo"
-msgstr "Hoàn tác"
-
-msgid "Click the red text below an image to mark it for deletion, then save."
-msgstr "Bấm vào dòng chữ đỏ dưới ảnh để đánh dấu xóa, rồi lưu thay đổi."
-
-msgid "Total amount"
-msgstr "Tổng tiền"
-
-msgid "This amount is updated in real time from your pricing and meter inputs."
-msgstr "Giá trị này được cập nhật theo thời gian thực từ đơn giá và chỉ số bạn nhập."
-
-msgid "Estimated total"
-msgstr "Tổng dự kiến"
-
-msgid "Previous electricity reading"
-msgstr "Chỉ số điện tháng trước"
-
-msgid "Electricity consumed"
-msgstr "Số điện tiêu thụ"
-
-msgid "Previous water reading"
-msgstr "Chỉ số nước tháng trước"
-
-msgid "Water consumed"
-msgstr "Số nước tiêu thụ"
-
-msgid "Electricity cost"
-msgstr "Tiền điện"
-
-msgid "Water cost"
-msgstr "Tiền nước"
-
-msgid "Internet cost"
-msgstr "Tiền internet"
-
-msgid "Cleaning cost"
-msgstr "Tiền vệ sinh"
-
-msgid "Laundry cost"
-msgstr "Tiền giặt"
-
-msgid "For the first month of a subscription, previous readings are taken from the subscription's start readings."
-msgstr "Nếu đây là tháng đầu tiên của hợp đồng thuê, chỉ số tháng trước sẽ lấy từ chỉ số đầu kỳ của hợp đồng thuê."
-
-msgid "Deposit amount (VND)"
-msgstr "Tiền cọc (VND)"
-
-msgid "Deposit amount"
-msgstr "Tiền cọc"
-
-msgid "Deactivate"
-msgstr "Ngừng hợp đồng"
-
-msgid "Subscription deactivated successfully."
-msgstr "Ngừng hợp đồng thành công."
-
-msgid "A deactivated subscription cannot be activated again."
-msgstr "Hợp đồng đã ngừng thì không thể kích hoạt lại."
-
-msgid "Deactivate subscription"
-msgstr "Ngừng hợp đồng thuê"
-
-msgid "Are you sure you want to deactivate the subscription for %(room_name)s?"
-msgstr "Bạn có chắc muốn ngừng hợp đồng thuê của %(room_name)s không?"
-
-msgid "All rooms"
-msgstr "Tất cả phòng"
-
-msgid "From date"
-msgstr "Từ ngày"
-
-msgid "To date"
-msgstr "Đến ngày"
-
-msgid "Apply filters"
-msgstr "Lọc"
-
-msgid "Filters"
-msgstr "Bộ lọc"
-
-msgid "Filter subscriptions by room, status, and time range."
-msgstr "Lọc hợp đồng thuê theo phòng, trạng thái và khoảng thời gian."
-
-msgid "Toggle filters"
-msgstr "Ẩn/hiện bộ lọc"
-
-msgid "Time range"
-msgstr "Khoảng thời gian"
-
-msgid "All the time"
-msgstr "Toàn thời gian"
-
-msgid "Custom range"
-msgstr "Khoảng tùy chọn"
-
-msgid "All"
-msgstr "Tất cả"
-
-msgid "Content"
-msgstr "Nội dung"
-
-msgid "Quantity"
-msgstr "Số lượng"
-
-msgid "Unit price"
-msgstr "Đơn giá"
-
-msgid "Amount"
-msgstr "Thành tiền"
-
-msgid "Notes"
-msgstr "Chú thích"
-
-msgid "Sum of all rows"
-msgstr "Tổng cộng tất cả các dòng"
-
-msgid "room"
-msgstr "phòng"
-
-msgid "person"
-msgstr "người"
-
-msgid "kWh"
-msgstr "số"
-
-msgid "m3"
-msgstr "khối"
-
-msgid "Copy as image"
-msgstr "Sao chép thành ảnh"
-
-msgid "Copy image is not supported in this browser."
-msgstr "Trình duyệt này không hỗ trợ sao chép ảnh."
-
-msgid "Preparing image..."
-msgstr "Đang chuẩn bị ảnh..."
-
-msgid "Copied image to clipboard."
-msgstr "Đã sao chép ảnh vào clipboard."
-
-msgid "Clipboard image copy is not available here. The image was downloaded instead."
-msgstr "Môi trường hiện tại không hỗ trợ sao chép ảnh vào clipboard. Ảnh đã được tải xuống thay thế."
-
-msgid "Could not create the image. Please try again."
-msgstr "Không thể tạo ảnh. Vui lòng thử lại."
-
-msgid "Generate image"
-msgstr "Tạo ảnh"
-
-msgid "Generated image"
-msgstr "Ảnh đã tạo"
-
-msgid "Long-press the image to copy, save, or share it."
-msgstr "Nhấn giữ ảnh để sao chép, lưu hoặc chia sẻ."
-
-msgid "Generated image preview"
-msgstr "Xem trước ảnh đã tạo"
-
-msgid "Image preview"
-msgstr "Xem trước ảnh"
-
-msgid "Room image"
-msgstr "Ảnh phòng"
-
+#: apps/main/forms.py:147 templates/main/room_list.html:32
+msgid "Room name"
+msgstr "Tên phòng"
+
+#: apps/main/forms.py:148 templates/main/room_list.html:33
+msgid "Type"
+msgstr "Loại phòng"
+
+#: apps/main/forms.py:149
+msgid "Linked restroom"
+msgstr "Nhà vệ sinh liên kết"
+
+#: apps/main/forms.py:150 apps/main/forms.py:266 apps/main/forms.py:379
+#: templates/main/subscription_list.html:85
+msgid "Description"
+msgstr "Mô tả"
+
+#: apps/main/forms.py:151 apps/main/forms.py:461
+msgid "Latest electricity reading"
+msgstr "Chỉ số điện mới nhất"
+
+#: apps/main/forms.py:152 apps/main/forms.py:462
+msgid "Latest water reading"
+msgstr "Chỉ số nước mới nhất"
+
+#: apps/main/forms.py:163
+msgid ""
+"For unenclosed rooms, optionally choose a restroom room to use as the shared "
+"toilet."
+msgstr ""
+"Với phòng không khép kín, bạn có thể chọn thêm một phòng vệ sinh để dùng làm "
+"nhà vệ sinh chung."
+
+#: apps/main/forms.py:165
+msgid ""
+"When you create a new subscription, this value is used as the baseline for "
+"calculating electricity charges in the following months. It is also updated "
+"automatically after each monthly usage record."
+msgstr ""
+"Khi bạn tạo hợp đồng thuê mới, giá trị này sẽ được dùng làm mốc để tính tiền "
+"điện cho các tháng tiếp theo. Sau mỗi kỳ khai báo sử dụng hằng tháng, giá "
+"trị này cũng sẽ được tự động cập nhật lại."
+
+#: apps/main/forms.py:168
+msgid ""
+"When you create a new subscription, this value is used as the baseline for "
+"calculating water charges in the following months. It is also updated "
+"automatically after each monthly usage record."
+msgstr ""
+"Khi bạn tạo hợp đồng thuê mới, giá trị này sẽ được dùng làm mốc để tính tiền "
+"nước cho các tháng tiếp theo. Sau mỗi kỳ khai báo sử dụng hằng tháng, giá "
+"trị này cũng sẽ được tự động cập nhật lại."
+
+#: apps/main/forms.py:201 apps/main/models.py:130
+msgid "A room can store at most 10 images."
+msgstr "Mỗi phòng chỉ được lưu tối đa 10 ảnh."
+
+#: apps/main/forms.py:242
 msgid "Subscription images"
 msgstr "Ảnh hợp đồng"
 
-msgid "Subscription image"
-msgstr "Ảnh hợp đồng"
+#: apps/main/forms.py:267 templates/main/subscription_list.html:44
+#: templates/main/subscription_list.html:86 templates/main/usage_form.html:307
+#: templates/main/usage_form.html:385 templates/main/usage_list.html:23
+#: templates/main/vehicle_list.html:55
+msgid "Room"
+msgstr "Phòng"
 
+#: apps/main/forms.py:268
+msgid "Rental start date"
+msgstr "Ngày bắt đầu thuê"
+
+#: apps/main/forms.py:269
+msgid "Deposit amount (VND)"
+msgstr "Tiền cọc (VND)"
+
+#: apps/main/forms.py:270
+msgid "Start electricity reading"
+msgstr "Chỉ số điện đầu kỳ"
+
+#: apps/main/forms.py:271
+msgid "Start water reading"
+msgstr "Chỉ số nước đầu kỳ"
+
+#: apps/main/forms.py:278
+msgid "Contact phone number"
+msgstr "Số điện thoại liên hệ"
+
+#: apps/main/forms.py:279
+msgid "Contact email"
+msgstr "Email liên hệ"
+
+#: apps/main/forms.py:336 apps/main/models.py:234
 msgid "A subscription can store at most 10 images."
 msgstr "Một hợp đồng có thể lưu tối đa 10 ảnh."
 
+#: apps/main/forms.py:377 templates/main/subscription_form.html:251
+#: templates/main/vehicle_list.html:54
+msgid "License plate"
+msgstr "Biển số"
+
+#: apps/main/forms.py:378 apps/main/forms.py:453
+msgid "Subscription"
+msgstr "Hợp đồng thuê"
+
+#: apps/main/forms.py:402 templates/home.html:257
+msgid "Month"
+msgstr "Tháng"
+
+#: apps/main/forms.py:407
+msgid "Year"
+msgstr "Năm"
+
+#: apps/main/forms.py:413
+msgid "Electricity meter image"
+msgstr "Ảnh đồng hồ điện"
+
+#: apps/main/forms.py:414 apps/main/forms.py:420
+msgid ""
+"Choose an existing image or capture one from the camera on supported devices."
+msgstr ""
+"Chọn ảnh có sẵn hoặc chụp trực tiếp từ camera trên thiết bị được hỗ trợ."
+
+#: apps/main/forms.py:419
+msgid "Water meter image"
+msgstr "Ảnh đồng hồ nước"
+
+#: apps/main/forms.py:425
+msgid "Delete current electricity meter image"
+msgstr "Xóa ảnh đồng hồ điện hiện tại"
+
+#: apps/main/forms.py:430
+msgid "Delete current water meter image"
+msgstr "Xóa ảnh đồng hồ nước hiện tại"
+
+#: apps/main/forms.py:454
+msgid "Number of tenants"
+msgstr "Số người thuê"
+
+#: apps/main/forms.py:560
+msgid "Billing month is required."
+msgstr "Tháng tính tiền là bắt buộc."
+
+#: apps/main/forms.py:567
+msgid "Invalid billing month selection."
+msgstr "Lựa chọn tháng tính tiền không hợp lệ."
+
+#: apps/main/models.py:55
+msgid "Enclosed"
+msgstr "Khép kín"
+
+#: apps/main/models.py:56
+msgid "Unenclosed"
+msgstr "Không khép kín"
+
+#: apps/main/models.py:57
+msgid "Rest"
+msgstr "Phòng vệ sinh"
+
+#: apps/main/models.py:60 apps/main/models.py:165
+msgid "Manual update on Room details"
+msgstr "Cập nhật thủ công trên trang chi tiết phòng"
+
+#: apps/main/models.py:61 apps/main/models.py:173
+msgid "Automatic update from subscription usage"
+msgstr "Tự động cập nhật từ khai báo sử dụng của hợp đồng"
+
+#: apps/main/models.py:128 apps/main/models.py:232
+msgid "Image paths must be stored as a list."
+msgstr "Đường dẫn ảnh phải được lưu dưới dạng danh sách."
+
+#: apps/main/models.py:132 apps/main/models.py:236
+msgid "Each image path must be a non-empty string."
+msgstr "Mỗi đường dẫn ảnh phải là một chuỗi không rỗng."
+
+#: apps/main/models.py:135
+msgid "Only unenclosed rooms can be linked to a shared restroom."
+msgstr "Chỉ phòng không khép kín mới có thể liên kết tới nhà vệ sinh chung."
+
+#: apps/main/models.py:140
+msgid "A room cannot be linked to itself as a shared restroom."
+msgstr "Một phòng không thể tự liên kết chính nó làm nhà vệ sinh chung."
+
+#: apps/main/models.py:144
+msgid "The linked room must be of type Rest."
+msgstr "Phòng được liên kết phải có loại là phòng vệ sinh."
+
+#: apps/main/models.py:148
+msgid "A restroom room cannot link to another shared restroom."
+msgstr "Một phòng vệ sinh không thể liên kết tới một nhà vệ sinh chung khác."
+
+#: apps/main/models.py:162
+#, python-format
+msgid "Manual update on Room details by %(username)s"
+msgstr "Cập nhật thủ công trên trang chi tiết phòng bởi %(username)s"
+
+#: apps/main/models.py:169
+#, python-format
+msgid "Automatic update from subscription %(subscription_id)s (%(period)s)"
+msgstr "Tự động cập nhật từ hợp đồng %(subscription_id)s (%(period)s)"
+
+#: apps/main/models.py:175 templates/main/room_form.html:59
+#: templates/main/room_form.html:65
+msgid "Not updated yet"
+msgstr "Chưa được cập nhật"
+
+#: apps/main/models.py:194 templates/main/subscription_form.html:32
+#: templates/main/subscription_list.html:56
+#: templates/main/subscription_list.html:106
+msgid "Enabled"
+msgstr "Đang dùng"
+
+#: apps/main/models.py:195 templates/main/subscription_form.html:44
+#: templates/main/subscription_list.html:57
+#: templates/main/subscription_list.html:108
+msgid "Disabled"
+msgstr "Ngưng dùng"
+
+#: apps/main/models.py:241
+msgid "A deactivated subscription cannot be activated again."
+msgstr "Hợp đồng đã ngừng thì không thể kích hoạt lại."
+
+#: apps/main/models.py:256
+msgid ""
+"This room already has an active subscription. Disable the current one first."
+msgstr ""
+"Phòng này đã có một hợp đồng thuê đang hoạt động. Hãy ngưng hợp đồng hiện "
+"tại trước."
+
+#: apps/main/models.py:293
+msgid "New"
+msgstr ""
+
+#: apps/main/models.py:294
 msgid "Paid"
 msgstr "Đã thanh toán"
 
-msgid "Mark usage record as Paid"
-msgstr "Đánh dấu bản ghi sử dụng là Đã thanh toán"
+#: apps/main/models.py:341
+msgid "Please select month and year only."
+msgstr "Vui lòng chỉ chọn tháng và năm."
 
-msgid "Mark as Paid"
-msgstr "Đánh dấu Đã thanh toán"
-
-msgid "Are you sure you want to mark the usage record for %(room_name)s %(period)s as Paid?"
-msgstr "Bạn có chắc muốn đánh dấu bản ghi sử dụng của %(room_name)s %(period)s là Đã thanh toán không?"
-
+#: apps/main/models.py:346
 msgid "A paid usage record cannot be changed back to a different status."
-msgstr "Bản ghi sử dụng đã thanh toán không thể chuyển lại sang trạng thái khác."
+msgstr ""
+"Bản ghi sử dụng đã thanh toán không thể chuyển lại sang trạng thái khác."
 
+#: apps/main/models.py:352 apps/main/views.py:643
 msgid "A paid usage record cannot be edited."
 msgstr "Bản ghi sử dụng đã thanh toán không thể chỉnh sửa."
 
+#: apps/main/models.py:366 apps/main/views.py:678 apps/main/views.py:685
 msgid "A paid usage record cannot be deleted."
 msgstr "Bản ghi sử dụng đã thanh toán không thể bị xóa."
 
+#: apps/main/views.py:276 apps/main/views.py:578 apps/main/views.py:734
+#: apps/main/views.py:765
+msgid "You do not have permission to access this page."
+msgstr "Bạn không có quyền truy cập trang này."
+
+#: apps/main/views.py:287
+msgid "Deleted successfully."
+msgstr "Xóa thành công."
+
+#: apps/main/views.py:301
+msgid "Room created successfully."
+msgstr "Tạo phòng thành công."
+
+#: apps/main/views.py:306 templates/main/room_list.html:23
+msgid "Add room"
+msgstr "Thêm phòng"
+
+#: apps/main/views.py:307
+msgid "Create room"
+msgstr "Tạo phòng"
+
+#: apps/main/views.py:322
+msgid "Room updated successfully."
+msgstr "Cập nhật phòng thành công."
+
+#: apps/main/views.py:327
+msgid "Room details"
+msgstr "Chi tiết phòng"
+
+#: apps/main/views.py:328 apps/main/views.py:439 apps/main/views.py:543
+#: apps/main/views.py:654
+msgid "Save changes"
+msgstr "Lưu thay đổi"
+
+#: apps/main/views.py:348
+msgid "Room deleted successfully."
+msgstr "Xóa phòng thành công."
+
+#: apps/main/views.py:353
+msgid "Delete room"
+msgstr "Xóa phòng"
+
+#: apps/main/views.py:357 templates/base.html:275
+#: templates/main/room_form.html:10 templates/main/room_list.html:4
+#: templates/main/room_list.html:10
+msgid "Rooms"
+msgstr "Phòng"
+
+#: apps/main/views.py:367
+msgid ""
+"This room cannot be deleted because it still has subscriptions attached."
+msgstr "Không thể xóa phòng này vì vẫn còn hợp đồng thuê đang gắn với nó."
+
+#: apps/main/views.py:395
+msgid "Vehicle created successfully."
+msgstr "Tạo phương tiện thành công."
+
+#: apps/main/views.py:418 templates/main/subscription_form.html:240
+#: templates/main/vehicle_list.html:23
+msgid "Add vehicle"
+msgstr "Thêm phương tiện"
+
+#: apps/main/views.py:419
+msgid "Create vehicle"
+msgstr "Tạo phương tiện"
+
+#: apps/main/views.py:433
+msgid "Vehicle updated successfully."
+msgstr "Cập nhật phương tiện thành công."
+
+#: apps/main/views.py:438
+msgid "Vehicle details"
+msgstr "Chi tiết phương tiện"
+
+#: apps/main/views.py:455
+msgid "Vehicle deleted successfully."
+msgstr "Xóa phương tiện thành công."
+
+#: apps/main/views.py:460
+msgid "Delete vehicle"
+msgstr "Xóa phương tiện"
+
+#: apps/main/views.py:464 apps/main/views.py:542 apps/main/views.py:696
+msgid "Subscription details"
+msgstr "Chi tiết hợp đồng thuê"
+
+#: apps/main/views.py:514
+msgid "Subscription created successfully."
+msgstr "Tạo hợp đồng thuê thành công."
+
+#: apps/main/views.py:519 templates/main/subscription_list.html:34
+msgid "Add subscription"
+msgstr "Thêm hợp đồng thuê"
+
+#: apps/main/views.py:520
+msgid "Create subscription"
+msgstr "Tạo hợp đồng thuê"
+
+#: apps/main/views.py:534
+msgid "Subscription updated successfully."
+msgstr "Cập nhật hợp đồng thuê thành công."
+
+#: apps/main/views.py:560
+msgid "Subscription deleted successfully."
+msgstr "Xóa hợp đồng thuê thành công."
+
+#: apps/main/views.py:565
+msgid "Delete subscription"
+msgstr "Xóa hợp đồng thuê"
+
+#: apps/main/views.py:569 templates/base.html:270
+#: templates/main/subscription_form.html:10
+#: templates/main/subscription_list.html:4
+#: templates/main/subscription_list.html:10 templates/main/usage_form.html:10
+#: templates/main/vehicle_form.html:11
+msgid "Subscriptions"
+msgstr "Hợp đồng thuê"
+
+#: apps/main/views.py:586
+msgid "Subscription deactivated successfully."
+msgstr "Ngừng hợp đồng thành công."
+
+#: apps/main/views.py:604
+msgid "Usage record created successfully."
+msgstr "Tạo bản ghi sử dụng thành công."
+
+#: apps/main/views.py:620 templates/main/model_form.html:307
+#: templates/main/subscription_form.html:303 templates/main/usage_list.html:14
+msgid "Add usage record"
+msgstr "Thêm bản ghi sử dụng"
+
+#: apps/main/views.py:621
+msgid "Create usage record"
+msgstr "Tạo bản ghi sử dụng"
+
+#: apps/main/views.py:638
+msgid "Usage record updated successfully."
+msgstr "Cập nhật bản ghi sử dụng thành công."
+
+#: apps/main/views.py:653
+msgid "Usage record details"
+msgstr "Chi tiết bản ghi sử dụng"
+
+#: apps/main/views.py:673
+msgid "Usage record deleted successfully."
+msgstr "Xóa bản ghi sử dụng thành công."
+
+#: apps/main/views.py:692
+msgid "Delete usage record"
+msgstr "Xóa bản ghi sử dụng"
+
+#: apps/main/views.py:708
+msgid "You do not have permission to access the price template page."
+msgstr "Bạn không có quyền truy cập trang bảng giá."
+
+#: apps/main/views.py:716
+msgid "Price template updated successfully."
+msgstr "Cập nhật bảng giá thành công."
+
+#: apps/main/views.py:773
 msgid "Usage record marked as Paid successfully."
 msgstr "Đã đánh dấu bản ghi sử dụng là Đã thanh toán."
 
-msgid "Preview is not available here. The image was downloaded instead."
-msgstr "Không thể xem trước ảnh tại đây. Ảnh đã được tải xuống thay thế."
+#: config/settings.py:197 templates/allauth/layouts/base.html:92
+#: templates/allauth/layouts/base.html:96 templates/base.html:171
+#: templates/base.html:175
+msgid "English"
+msgstr "English"
 
-msgid "Image generated. Long-press it to copy or save."
-msgstr "Ảnh đã được tạo. Nhấn giữ để sao chép hoặc lưu."
+#: config/settings.py:198
+msgid "Vietnamese"
+msgstr "Tiếng Việt"
 
-msgid "Breadcrumb"
-msgstr "Điều hướng"
+#: config/views.py:162
+msgid "Not created"
+msgstr "Chưa tạo"
 
+msgid "Unpaid"
+msgstr "Chưa thanh toán"
+
+#: config/views.py:180
+msgid "Total subscriptions"
+msgstr "Tổng số hợp đồng"
+
+#: config/views.py:185
+msgid "Total electricity consumed"
+msgstr "Tổng số điện tiêu thụ"
+
+#: config/views.py:190
+msgid "Total electricity revenue"
+msgstr "Tổng tiền điện thu về"
+
+#: config/views.py:195
+msgid "Total water consumed"
+msgstr "Tổng số nước tiêu thụ"
+
+#: config/views.py:200
+msgid "Total water revenue"
+msgstr "Tổng tiền nước thu về"
+
+#: config/views.py:205
+msgid "Total room revenue"
+msgstr "Tổng tiền phòng"
+
+#: templates/account/login.html:6 templates/account/login.html:11
+#: templates/account/login.html:25 templates/allauth/layouts/base.html:128
+msgid "Sign In"
+msgstr "Đăng nhập"
+
+#: templates/account/login.html:37
+msgid "Sign in with a passkey"
+msgstr "Đăng nhập bằng passkey"
+
+#: templates/account/login.html:42
+msgid "Mail me a sign-in code"
+msgstr "Gửi cho tôi mã đăng nhập"
+
+#: templates/allauth/layouts/base.html:92
+#: templates/allauth/layouts/base.html:97 templates/base.html:171
+#: templates/base.html:176
 msgid "Tiếng Việt"
 msgstr "Tiếng Việt"
 
+#: templates/allauth/layouts/base.html:121
+msgid "Change Email"
+msgstr "Đổi email"
+
+#: templates/allauth/layouts/base.html:123
+msgid "Change Password"
+msgstr "Đổi mật khẩu"
+
+#: templates/allauth/layouts/base.html:125
+msgid "Sign Out"
+msgstr "Đăng xuất"
+
+#: templates/base.html:151
 msgid "Open menu"
 msgstr "Mở menu"
 
-msgid "Toggle navigation"
-msgstr "Chuyển điều hướng"
+#: templates/base.html:163
+msgid "Signed in as"
+msgstr "Đăng nhập với tên"
 
+#: templates/base.html:191
+msgid "Notifications"
+msgstr "Thông báo"
+
+#: templates/base.html:201
+msgid "Sent"
+msgstr "Đã gửi"
+
+#: templates/base.html:203
+msgid "Failed"
+msgstr "Thất bại"
+
+#: templates/base.html:205
+msgid "Pending"
+msgstr "Đang chờ"
+
+#: templates/base.html:213
+msgid "No notifications."
+msgstr "Không có thông báo."
+
+#: templates/base.html:230 templates/base.html:337
+msgid "Sign out"
+msgstr "Đăng xuất"
+
+#: templates/base.html:255
 msgid "Menu"
 msgstr "Menu"
 
-msgid "Quick actions"
-msgstr "Thao tác nhanh"
-
-msgid "Switch to English"
-msgstr "Chuyển sang English"
-
-msgid "Chuyen sang Tieng Viet"
-msgstr "Chuyển sang Tiếng Việt"
-
-msgid "Toggle dark mode"
-msgstr "Chuyển chế độ tối"
-
-msgid "Account settings"
-msgstr "Cài đặt tài khoản"
-
-msgid "Change password"
-msgstr "Đổi mật khẩu"
-
-msgid "Confirm delete"
-msgstr "Xác nhận xóa"
-
+#: templates/base.html:256 templates/base.html:365
+#: templates/main/room_form.html:162 templates/main/subscription_form.html:401
+#: templates/main/usage_form.html:529 templates/main/usage_form.html:545
 msgid "Close"
 msgstr "Đóng"
 
-msgid "This action cannot be undone."
-msgstr "Hành động này không thể hoàn tác."
+#: templates/base.html:263 templates/home.html:4
+#: templates/main/confirm_delete.html:9 templates/main/room_form.html:9
+#: templates/main/room_list.html:9 templates/main/subscription_form.html:9
+#: templates/main/subscription_list.html:9 templates/main/usage_form.html:9
+#: templates/main/vehicle_form.html:9 templates/main/vehicle_list.html:9
+#: templates/price_template.html:9
+msgid "Home"
+msgstr "Trang chủ"
 
+#: templates/base.html:280 templates/main/subscription_form.html:235
+#: templates/main/vehicle_form.html:16 templates/main/vehicle_list.html:4
+#: templates/main/vehicle_list.html:10
+msgid "Vehicles"
+msgstr "Phương tiện"
+
+#: templates/base.html:285 templates/price_template.html:4
+#: templates/price_template.html:10
+msgid "Price template"
+msgstr "Bảng giá"
+
+#: templates/base.html:292
+msgid "Settings"
+msgstr "Cài đặt"
+
+#: templates/base.html:298
+msgid "Quick actions"
+msgstr "Thao tác nhanh"
+
+#: templates/base.html:306
+msgid "Switch to English"
+msgstr "Chuyển sang English"
+
+#: templates/base.html:308
+msgid "Chuyen sang Tieng Viet"
+msgstr "Chuyển sang Tiếng Việt"
+
+#: templates/base.html:316
+msgid "Toggle dark mode"
+msgstr "Chuyển chế độ tối"
+
+#: templates/base.html:323
+msgid "Account settings"
+msgstr "Cài đặt tài khoản"
+
+#: templates/base.html:329
+msgid "Change password"
+msgstr "Đổi mật khẩu"
+
+#: templates/base.html:363 templates/base.html:364
+msgid "Confirm delete"
+msgstr "Xác nhận xóa"
+
+#: templates/base.html:369 templates/base.html:372
 msgid "Are you sure you want to delete this item?"
 msgstr "Bạn có chắc muốn xóa mục này không?"
 
-msgid "Are you sure you want to delete %s?"
+#: templates/base.html:370
+#, fuzzy, python-format
+#| msgid "Are you sure you want to delete %s?"
+msgid "Are you sure you want to delete %%s?"
 msgstr "Bạn có chắc muốn xóa %s không?"
+
+#: templates/base.html:373
+msgid "This action cannot be undone."
+msgstr "Hành động này không thể hoàn tác."
+
+#: templates/base.html:376 templates/main/confirm_delete.html:34
+#: templates/main/model_form.html:406 templates/main/room_form.html:150
+#: templates/main/subscription_form.html:225 templates/main/usage_form.html:514
+#: templates/main/vehicle_form.html:68
+msgid "Cancel"
+msgstr "Hủy"
+
+#: templates/base.html:383 templates/base.html:385
+#: templates/main/confirm_delete.html:33 templates/main/model_form.html:343
+#: templates/main/room_list.html:59 templates/main/room_list.html:60
+#: templates/main/room_list.html:63 templates/main/subscription_form.html:270
+#: templates/main/subscription_form.html:350
+#: templates/main/subscription_form.html:351
+#: templates/main/subscription_form.html:355
+#: templates/main/subscription_form.html:365
+#: templates/main/subscription_form.html:366
+#: templates/main/subscription_form.html:369
+#: templates/main/subscription_list.html:129
+#: templates/main/subscription_list.html:130
+#: templates/main/subscription_list.html:133 templates/main/usage_list.html:60
+#: templates/main/vehicle_list.html:81 templates/main/vehicle_list.html:82
+#: templates/main/vehicle_list.html:85
+msgid "Delete"
+msgstr "Xóa"
+
+#: templates/home.html:251
+msgid "Overview"
+msgstr "Tổng quan"
+
+#: templates/home.html:252
+#, python-format
+msgid "Monthly summary for %(period)s"
+msgstr "Tổng hợp tháng %(period)s"
+
+#: templates/home.html:253
+msgid ""
+"A quick snapshot of subscriptions, utility usage, and revenue for the "
+"selected month."
+msgstr ""
+"Tổng quan nhanh về hợp đồng, mức tiêu thụ tiện ích và doanh thu của tháng đã "
+"chọn."
+
+#: templates/home.html:280
+msgid "Usage status"
+msgstr "Trạng thái usage"
+
+#: templates/home.html:281
+#, python-format
+msgid "Usage record status for %(period)s"
+msgstr "Trạng thái usage record của %(period)s"
+
+#: templates/home.html:282
+msgid "Annotation"
+msgstr "Chú thích"
+
+#: templates/home.html:289
+msgid "Usage record has not been created yet."
+msgstr "Chưa tạo bản ghi sử dụng."
+
+#: templates/home.html:293
+msgid "Usage record exists but is not paid yet."
+msgstr "Chưa thanh toán."
+
+#: templates/home.html:297
+msgid "Usage record is already paid."
+msgstr "Đã được thanh toán."
+
+#: templates/home.html:320
+msgid "No subscriptions are available for this month yet."
+msgstr "Chưa có hợp đồng nào cho tháng này."
+
+#: templates/main/confirm_delete.html:7 templates/main/room_form.html:7
+#: templates/main/room_list.html:7 templates/main/subscription_form.html:7
+#: templates/main/subscription_list.html:7 templates/main/usage_form.html:7
+#: templates/main/vehicle_form.html:7 templates/main/vehicle_list.html:7
+#: templates/price_template.html:7
+msgid "Breadcrumb"
+msgstr "Điều hướng"
+
+#: templates/main/confirm_delete.html:27
+#, python-format
+msgid "Are you sure you want to delete \"%(label)s\"?"
+msgstr "Bạn có chắc muốn xóa \"%(label)s\" không?"
+
+#: templates/main/model_form.html:11 templates/main/room_form.html:27
+#: templates/main/subscription_form.html:27 templates/main/usage_form.html:32
+#: templates/main/vehicle_form.html:34
+msgid "Fill in the information below and save your changes."
+msgstr "Điền thông tin bên dưới và lưu thay đổi."
+
+#: templates/main/model_form.html:33 templates/main/usage_form.html:75
+msgid "Billing setup"
+msgstr "Thiết lập kỳ tính tiền"
+
+#: templates/main/model_form.html:57 templates/main/subscription_form.html:168
+#: templates/main/usage_form.html:99
+msgid "Pricing snapshot"
+msgstr "Đơn giá đang áp dụng"
+
+#: templates/main/model_form.html:80 templates/main/usage_form.html:122
+#: templates/main/usage_form.html:315 templates/main/usage_form.html:397
+msgid "Electricity"
+msgstr "Điện"
+
+#: templates/main/model_form.html:98 templates/main/usage_form.html:140
+#: templates/main/usage_form.html:145
+msgid "Current electricity meter image"
+msgstr "Ảnh đồng hồ điện hiện tại"
+
+#: templates/main/model_form.html:105 templates/main/model_form.html:153
+#: templates/main/model_form.html:385 templates/main/room_form.html:129
+#: templates/main/subscription_form.html:111 templates/main/usage_form.html:153
+#: templates/main/usage_form.html:208
+msgid "Delete this image"
+msgstr "Xóa ảnh này"
+
+#: templates/main/model_form.html:108 templates/main/model_form.html:156
+#: templates/main/model_form.html:388 templates/main/room_form.html:132
+#: templates/main/subscription_form.html:114 templates/main/usage_form.html:156
+#: templates/main/usage_form.html:211
+msgid "Image will be deleted after you save changes."
+msgstr "Ảnh sẽ bị xóa sau khi bạn lưu thay đổi."
+
+#: templates/main/model_form.html:110 templates/main/model_form.html:158
+#: templates/main/model_form.html:390 templates/main/room_form.html:134
+#: templates/main/subscription_form.html:116 templates/main/usage_form.html:158
+#: templates/main/usage_form.html:213
+msgid "Undo"
+msgstr "Hoàn tác"
+
+#: templates/main/model_form.html:128 templates/main/usage_form.html:177
+#: templates/main/usage_form.html:331 templates/main/usage_form.html:421
+msgid "Water"
+msgstr "Nước"
+
+#: templates/main/model_form.html:146 templates/main/usage_form.html:195
+#: templates/main/usage_form.html:200
+msgid "Current water meter image"
+msgstr "Ảnh đồng hồ nước hiện tại"
+
+#: templates/main/model_form.html:183 templates/main/usage_form.html:276
+#: templates/main/usage_form.html:372 templates/main/usage_form.html:480
+#: templates/main/usage_form.html:1041
+msgid "Total amount"
+msgstr "Tổng tiền"
+
+#: templates/main/model_form.html:184 templates/main/usage_form.html:284
+msgid "This amount is updated in real time from your pricing and meter inputs."
+msgstr ""
+"Giá trị này được cập nhật theo thời gian thực từ đơn giá và chỉ số bạn nhập."
+
+#: templates/main/model_form.html:187 templates/main/usage_form.html:287
+msgid "Estimated total"
+msgstr "Tổng dự kiến"
+
+#: templates/main/model_form.html:196 templates/main/usage_form.html:1156
+#: templates/main/usage_form.html:1266
+msgid "Previous electricity reading"
+msgstr "Chỉ số điện tháng trước"
+
+#: templates/main/model_form.html:202 templates/main/model_form.html:320
+#: templates/main/subscription_form.html:315
+#: templates/main/usage_form.html:1156 templates/main/usage_form.html:1266
+msgid "Electricity consumed"
+msgstr "Số điện tiêu thụ"
+
+#: templates/main/model_form.html:208 templates/main/usage_form.html:1160
+#: templates/main/usage_form.html:1270
+msgid "Previous water reading"
+msgstr "Chỉ số nước tháng trước"
+
+#: templates/main/model_form.html:214 templates/main/model_form.html:321
+#: templates/main/subscription_form.html:316
+#: templates/main/usage_form.html:1160 templates/main/usage_form.html:1270
+msgid "Water consumed"
+msgstr "Số nước tiêu thụ"
+
+#: templates/main/model_form.html:224
+msgid "Room price"
+msgstr "Giá phòng"
+
+#: templates/main/model_form.html:225 templates/main/model_form.html:252
+#: templates/main/model_form.html:661 templates/main/model_form.html:670
+#: templates/main/usage_form.html:311 templates/main/usage_form.html:351
+#: templates/main/usage_form.html:367 templates/main/usage_form.html:391
+#: templates/main/usage_form.html:451 templates/main/usage_form.html:475
+msgid "Flat rate"
+msgstr "Mức cố định"
+
+#: templates/main/model_form.html:233
+msgid "Electricity cost"
+msgstr "Tiền điện"
+
+#: templates/main/model_form.html:242
+msgid "Water cost"
+msgstr "Tiền nước"
+
+#: templates/main/model_form.html:251
+msgid "Internet cost"
+msgstr "Tiền internet"
+
+#: templates/main/model_form.html:260
+msgid "Cleaning cost"
+msgstr "Tiền vệ sinh"
+
+#: templates/main/model_form.html:269 templates/main/usage_form.html:487
+msgid "Please review the meter readings."
+msgstr "Vui lòng kiểm tra lại chỉ số đồng hồ."
+
+#: templates/main/model_form.html:274
+#, fuzzy
+#| msgid ""
+#| "For the first month of a subscription, previous readings are taken from "
+#| "the subscription's start readings."
+msgid ""
+"For the first month of a subscription, previous readings are taken from the "
+"room's latest readings."
+msgstr ""
+"Nếu đây là tháng đầu tiên của hợp đồng thuê, chỉ số tháng trước sẽ lấy từ "
+"chỉ số đầu kỳ của hợp đồng thuê."
+
+#: templates/main/model_form.html:302 templates/main/subscription_form.html:298
+msgid "Usage records"
+msgstr "Bản ghi sử dụng"
+
+#: templates/main/model_form.html:303 templates/main/subscription_form.html:299
+msgid "Manage usage records for this subscription from here."
+msgstr "Quản lý các bản ghi sử dụng của hợp đồng thuê này ngay tại đây."
+
+#: templates/main/model_form.html:318 templates/main/usage_form.html:296
+msgid "No."
+msgstr "STT"
+
+#: templates/main/model_form.html:319 templates/main/subscription_form.html:314
+#: templates/main/usage_form.html:1086 templates/main/usage_form.html:1088
+msgid "Time"
+msgstr "Thời gian"
+
+#: templates/main/model_form.html:322 templates/main/subscription_form.html:317
+msgid "Payment amount"
+msgstr "Số tiền thanh toán"
+
+#: templates/main/model_form.html:323 templates/main/room_list.html:34
+#: templates/main/subscription_form.html:253
+#: templates/main/subscription_form.html:319
+#: templates/main/subscription_list.html:89 templates/main/usage_list.html:29
+#: templates/main/vehicle_list.html:56
+msgid "Actions"
+msgstr "Thao tác"
+
+#: templates/main/model_form.html:335 templates/main/room_list.html:46
+#: templates/main/room_list.html:47 templates/main/room_list.html:50
+#: templates/main/subscription_form.html:262
+#: templates/main/subscription_form.html:340
+#: templates/main/subscription_form.html:341
+#: templates/main/subscription_form.html:344
+#: templates/main/subscription_list.html:116
+#: templates/main/subscription_list.html:117
+#: templates/main/subscription_list.html:120 templates/main/usage_list.html:52
+#: templates/main/vehicle_list.html:68 templates/main/vehicle_list.html:69
+#: templates/main/vehicle_list.html:72
+msgid "Details"
+msgstr "Chi tiết"
+
+#: templates/main/model_form.html:353 templates/main/subscription_form.html:381
+msgid "No usage records for this subscription yet."
+msgstr "Hợp đồng thuê này chưa có bản ghi sử dụng nào."
+
+#: templates/main/model_form.html:360 templates/main/subscription_form.html:388
+msgid "Save this subscription first, then you can add usage records."
+msgstr ""
+"Hãy lưu hợp đồng thuê này trước, sau đó bạn có thể thêm các bản ghi sử dụng."
+
+#: templates/main/model_form.html:371
+msgid "Current images"
+msgstr "Ảnh hiện có"
+
+#: templates/main/model_form.html:372
+msgid "Click the red text below an image to mark it for deletion, then save."
+msgstr "Bấm vào dòng chữ đỏ dưới ảnh để đánh dấu xóa, rồi lưu thay đổi."
+
+#: templates/main/model_form.html:397 templates/main/room_form.html:141
+#: templates/main/subscription_form.html:123
+msgid "No images uploaded yet."
+msgstr "Chưa có ảnh nào được tải lên."
+
+#: templates/main/model_form.html:690 templates/main/usage_form.html:1287
+msgid ""
+"Current electricity reading cannot be lower than the previous month's "
+"reading."
+msgstr "Chỉ số điện hiện tại không được nhỏ hơn chỉ số của tháng trước."
+
+#: templates/main/model_form.html:693 templates/main/usage_form.html:1290
+msgid ""
+"Current water reading cannot be lower than the previous month's reading."
+msgstr "Chỉ số nước hiện tại không được nhỏ hơn chỉ số của tháng trước."
+
+#: templates/main/room_form.html:53
+msgid "Last updated"
+msgstr "Cập nhật lần cuối"
+
+#: templates/main/room_form.html:71
+msgid "Source"
+msgstr "Nguồn cập nhật"
+
+#: templates/main/room_form.html:75 templates/main/room_form.html:84
+msgid "Automatic update from"
+msgstr "Tự động cập nhật từ"
+
+#: templates/main/room_form.html:77 templates/main/room_form.html:86
+#, python-format
+msgid "subscription %(subscription_id)s (%(period)s)"
+msgstr "hợp đồng %(subscription_id)s (%(period)s)"
+
+#: templates/main/room_form.html:122
+msgid "Room image"
+msgstr "Ảnh phòng"
+
+#: templates/main/room_form.html:161 templates/main/room_form.html:166
+#: templates/main/room_form.html:358 templates/main/room_form.html:361
+#: templates/main/subscription_form.html:400
+#: templates/main/subscription_form.html:405
+#: templates/main/subscription_form.html:662
+#: templates/main/subscription_form.html:665 templates/main/usage_form.html:544
+#: templates/main/usage_form.html:549 templates/main/usage_form.html:1465
+#: templates/main/usage_form.html:1468
+msgid "Image preview"
+msgstr "Xem trước ảnh"
+
+#: templates/main/room_list.html:19
+msgid "Room management"
+msgstr "Quản lý phòng"
+
+#: templates/main/room_list.html:20
+msgid ""
+"Manage room information, uploaded images and the latest utility readings."
+msgstr "Quản lý thông tin phòng, ảnh đã tải lên và chỉ số điện nước mới nhất."
+
+#: templates/main/room_list.html:69
+msgid "No rooms yet."
+msgstr "Chưa có phòng nào."
+
+#: templates/main/subscription_form.html:40
+msgid "Deactivate subscription"
+msgstr "Ngừng hợp đồng thuê"
+
+#: templates/main/subscription_form.html:41
+#, python-format
+msgid "Are you sure you want to deactivate the subscription for %(room_name)s?"
+msgstr "Bạn có chắc muốn ngừng hợp đồng thuê của %(room_name)s không?"
+
+#: templates/main/subscription_form.html:42
+msgid "Deactivate"
+msgstr "Ngừng hợp đồng"
+
+#: templates/main/subscription_form.html:70
+msgid "Basic information"
+msgstr "Thông tin cơ bản"
+
+#: templates/main/subscription_form.html:104
+msgid "Subscription image"
+msgstr "Ảnh hợp đồng"
+
+#: templates/main/subscription_form.html:138
+msgid "Start readings"
+msgstr "Chỉ số đầu kỳ"
+
+#: templates/main/subscription_form.html:198
+msgid "Contact information"
+msgstr "Thông tin liên hệ"
+
+#: templates/main/subscription_form.html:236
+msgid "Manage vehicles for this subscription from here."
+msgstr "Quản lý các phương tiện của hợp đồng thuê này ngay tại đây."
+
+#: templates/main/subscription_form.html:252
+msgid "Created at"
+msgstr "Thời gian tạo"
+
+#: templates/main/subscription_form.html:280
+msgid "No vehicles for this subscription yet."
+msgstr "Hợp đồng thuê này chưa có phương tiện nào."
+
+#: templates/main/subscription_form.html:287
+msgid "Save this subscription first, then you can add vehicles."
+msgstr "Hãy lưu hợp đồng thuê này trước, sau đó bạn có thể thêm phương tiện."
+
+#: templates/main/subscription_form.html:318
+#: templates/main/subscription_list.html:53
+#: templates/main/subscription_list.html:87
+msgid "Status"
+msgstr "Trạng thái"
+
+#: templates/main/subscription_list.html:19
+msgid "Subscription management"
+msgstr "Quản lý hợp đồng thuê"
+
+#: templates/main/subscription_list.html:20
+msgid ""
+"Manage active rentals and snapshot the pricing from the shared price "
+"template."
+msgstr ""
+"Quản lý hợp đồng thuê đang hoạt động và chụp lại đơn giá từ bảng giá chung."
+
+#: templates/main/subscription_list.html:31
+msgid "Toggle filters"
+msgstr "Ẩn/hiện bộ lọc"
+
+#: templates/main/subscription_list.html:46
+msgid "All rooms"
+msgstr "Tất cả phòng"
+
+#: templates/main/subscription_list.html:55
+msgid "All"
+msgstr "Tất cả"
+
+#: templates/main/subscription_list.html:61
+msgid "From date"
+msgstr "Từ ngày"
+
+#: templates/main/subscription_list.html:65
+msgid "To date"
+msgstr "Đến ngày"
+
+#: templates/main/subscription_list.html:69
+msgid "Apply filters"
+msgstr "Lọc"
+
+#: templates/main/subscription_list.html:70 templates/main/vehicle_list.html:43
+msgid "Clear"
+msgstr "Xóa lọc"
+
+#: templates/main/subscription_list.html:73
+msgid "Time range"
+msgstr "Khoảng thời gian"
+
+#: templates/main/subscription_list.html:73
+msgid "Custom range"
+msgstr "Khoảng tùy chọn"
+
+#: templates/main/subscription_list.html:73
+msgid "All the time"
+msgstr "Toàn thời gian"
+
+#: templates/main/subscription_list.html:88
+msgid "Start date"
+msgstr "Ngày bắt đầu"
+
+#: templates/main/subscription_list.html:139
+msgid "No subscriptions yet."
+msgstr "Chưa có hợp đồng thuê nào."
+
+#: templates/main/usage_form.html:46
+msgid "Mark usage record as Paid"
+msgstr "Đánh dấu bản ghi sử dụng là Đã thanh toán"
+
+#: templates/main/usage_form.html:47
+#, python-format
+msgid ""
+"Are you sure you want to mark the usage record for %(room_name)s %(period)s "
+"as Paid?"
+msgstr ""
+"Bạn có chắc muốn đánh dấu bản ghi sử dụng của %(room_name)s %(period)s là Đã "
+"thanh toán không?"
+
+#: templates/main/usage_form.html:48 templates/main/usage_form.html:51
+msgid "Mark as Paid"
+msgstr "Đánh dấu Đã thanh toán"
+
+#: templates/main/usage_form.html:232
+msgid "Linked restroom usage"
+msgstr "Khai báo sử dụng của nhà vệ sinh liên kết"
+
+#: templates/main/usage_form.html:239
+msgid "Other linked subscription"
+msgstr "Các hợp đồng liên kết khác"
+
+#: templates/main/usage_form.html:245
+msgid "Restroom electricity"
+msgstr "Điện của nhà vệ sinh"
+
+#: templates/main/usage_form.html:252
+msgid "Restroom water"
+msgstr "Nước của nhà vệ sinh"
+
+#: templates/main/usage_form.html:279
+#, python-format
+msgid "Invoice for room %(room_name)s %(period)s"
+msgstr "Hóa đơn của phòng %(room_name)s %(period)s"
+
+#: templates/main/usage_form.html:281 templates/main/usage_form.html:894
+msgid "Invoice summary"
+msgstr "Tóm tắt hóa đơn"
+
+#: templates/main/usage_form.html:297
+msgid "Content"
+msgstr "Nội dung"
+
+#: templates/main/usage_form.html:298 templates/main/usage_form.html:388
+#: templates/main/usage_form.html:400 templates/main/usage_form.html:412
+#: templates/main/usage_form.html:424 templates/main/usage_form.html:436
+#: templates/main/usage_form.html:448 templates/main/usage_form.html:460
+#: templates/main/usage_form.html:472
+msgid "Quantity"
+msgstr "Số lượng"
+
+#: templates/main/usage_form.html:299 templates/main/usage_form.html:389
+#: templates/main/usage_form.html:401 templates/main/usage_form.html:413
+#: templates/main/usage_form.html:425 templates/main/usage_form.html:437
+#: templates/main/usage_form.html:449 templates/main/usage_form.html:461
+#: templates/main/usage_form.html:473
+msgid "Unit price"
+msgstr "Đơn giá"
+
+#: templates/main/usage_form.html:300 templates/main/usage_form.html:390
+#: templates/main/usage_form.html:402 templates/main/usage_form.html:414
+#: templates/main/usage_form.html:426 templates/main/usage_form.html:438
+#: templates/main/usage_form.html:450 templates/main/usage_form.html:462
+#: templates/main/usage_form.html:474 templates/main/usage_form.html:1156
+#: templates/main/usage_form.html:1160
+msgid "Amount"
+msgstr "Thành tiền"
+
+#: templates/main/usage_form.html:301
+msgid "Notes"
+msgstr "Chú thích"
+
+#: templates/main/usage_form.html:323 templates/main/usage_form.html:409
+msgid "Linked restroom electricity"
+msgstr "Điện (WC chung)"
+
+#: templates/main/usage_form.html:339 templates/main/usage_form.html:433
+msgid "Linked restroom water"
+msgstr "Nước (WC chung)"
+
+#: templates/main/usage_form.html:347 templates/main/usage_form.html:445
+msgid "Internet price"
+msgstr "Giá internet"
+
+#: templates/main/usage_form.html:355 templates/main/usage_form.html:457
+msgid "Cleaning price"
+msgstr "Giá vệ sinh"
+
+#: templates/main/usage_form.html:363 templates/main/usage_form.html:469
+msgid "Laundry price"
+msgstr "Giá giặt"
+
+#: templates/main/usage_form.html:391 templates/main/usage_form.html:403
+#: templates/main/usage_form.html:415 templates/main/usage_form.html:427
+#: templates/main/usage_form.html:439 templates/main/usage_form.html:451
+#: templates/main/usage_form.html:463 templates/main/usage_form.html:475
+#, fuzzy
+#| msgid "Notes"
+msgid "Note"
+msgstr "Chú thích"
+
+#: templates/main/usage_form.html:492
+msgid ""
+"For the first month of a subscription, previous readings are taken from the "
+"subscription's start readings."
+msgstr ""
+"Nếu đây là tháng đầu tiên của hợp đồng thuê, chỉ số tháng trước sẽ lấy từ "
+"chỉ số đầu kỳ của hợp đồng thuê."
+
+#: templates/main/usage_form.html:498
+msgid "Copy as image"
+msgstr "Sao chép thành ảnh"
+
+#: templates/main/usage_form.html:502
+msgid "Generate image"
+msgstr "Tạo ảnh"
+
+#: templates/main/usage_form.html:526
+msgid "Generated image"
+msgstr "Ảnh đã tạo"
+
+#: templates/main/usage_form.html:527
+msgid "Long-press the image to copy, save, or share it."
+msgstr "Nhấn giữ ảnh để sao chép, lưu hoặc chia sẻ."
+
+#: templates/main/usage_form.html:533
+msgid "Generated image preview"
+msgstr "Xem trước ảnh đã tạo"
+
+#: templates/main/usage_form.html:897
+msgid "Invoice for room"
+msgstr "Hóa đơn của phòng"
+
+#: templates/main/usage_form.html:1019
+msgid "Preview is not available here. The image was downloaded instead."
+msgstr "Không thể xem trước ảnh tại đây. Ảnh đã được tải xuống thay thế."
+
+#: templates/main/usage_form.html:1086 templates/main/usage_form.html:1088
+msgid "Linked restroom room"
+msgstr "Phòng vệ sinh liên kết"
+
+#: templates/main/usage_form.html:1086
+msgid "Restroom subscription"
+msgstr "Hợp đồng của phòng vệ sinh"
+
+#: templates/main/usage_form.html:1096
+msgid "No linked restroom subscription found yet."
+msgstr "Chưa tìm thấy hợp đồng tương ứng cho phòng vệ sinh liên kết."
+
+#: templates/main/usage_form.html:1108
+msgid "No usage record found for the linked restroom in this billing month."
+msgstr "Chưa có bản ghi sử dụng của phòng vệ sinh liên kết trong tháng này."
+
+#: templates/main/usage_form.html:1120
+msgid ""
+"Some other linked subscriptions do not have a usage record for this billing "
+"month yet, so these allocated numbers are not final."
+msgstr ""
+"Một số hợp đồng liên kết khác vẫn chưa có bản ghi sử dụng trong tháng này, "
+"nên các số liệu phân bổ hiện tại vẫn chưa phải kết quả cuối cùng."
+
+#: templates/main/usage_form.html:1130
+msgid "No other linked subscriptions."
+msgstr "Không có hợp đồng liên kết nào khác."
+
+#: templates/main/usage_form.html:1138 templates/main/usage_form.html:1172
+#: templates/main/usage_form.html:1173 templates/main/usage_form.html:1178
+#: templates/main/usage_form.html:1179 templates/main/usage_form.html:1246
+#: templates/main/usage_form.html:1247 templates/main/usage_form.html:1273
+#: templates/main/usage_form.html:1274
+msgid "person"
+msgstr "người"
+
+#: templates/main/usage_form.html:1140
+msgid "Usage recorded"
+msgstr "Đã có usage"
+
+#: templates/main/usage_form.html:1140
+msgid "Usage not recorded yet"
+msgstr "Chưa có usage"
+
+#: templates/main/usage_form.html:1156 templates/main/usage_form.html:1266
+#: templates/main/usage_list.html:26
+msgid "Electricity reading"
+msgstr "Chỉ số điện"
+
+#: templates/main/usage_form.html:1156 templates/main/usage_form.html:1243
+msgid "kWh"
+msgstr "số"
+
+#: templates/main/usage_form.html:1156
+msgid "Electricity price"
+msgstr "Giá điện"
+
+#: templates/main/usage_form.html:1160 templates/main/usage_form.html:1270
+#: templates/main/usage_list.html:27
+msgid "Water reading"
+msgstr "Chỉ số nước"
+
+#: templates/main/usage_form.html:1160 templates/main/usage_form.html:1244
+msgid "m3"
+msgstr "khối"
+
+#: templates/main/usage_form.html:1160
+msgid "Water price"
+msgstr "Giá nước"
+
+#: templates/main/usage_form.html:1164 templates/main/usage_form.html:1168
+msgid "Other linked tenants"
+msgstr "Số người của các phòng liên kết khác"
+
+#: templates/main/usage_form.html:1164 templates/main/usage_form.html:1168
+msgid "Current subscription tenants"
+msgstr "Số người của hợp đồng hiện tại"
+
+#: templates/main/usage_form.html:1164 templates/main/usage_form.html:1168
+msgid "Total linked tenants"
+msgstr "Tổng số người của các phòng liên kết"
+
+#: templates/main/usage_form.html:1164 templates/main/usage_form.html:1168
+msgid "Shared per tenant"
+msgstr "Chi phí chia theo mỗi người"
+
+#: templates/main/usage_form.html:1164 templates/main/usage_form.html:1168
+msgid "Allocated to this subscription"
+msgstr "Phần phân bổ cho hợp đồng này"
+
+#: templates/main/usage_form.html:1242 templates/main/usage_form.html:1245
+#: templates/main/usage_form.html:1263 templates/main/usage_form.html:1272
+msgid "room"
+msgstr "phòng"
+
+#: templates/main/usage_form.html:1361 templates/main/usage_form.html:1400
+msgid "Preparing image..."
+msgstr "Đang chuẩn bị ảnh..."
+
+#: templates/main/usage_form.html:1378
+msgid "Copied image to clipboard."
+msgstr "Đã sao chép ảnh vào clipboard."
+
+#: templates/main/usage_form.html:1382
+#, fuzzy
+#| msgid ""
+#| "Clipboard image copy is not available here. The image was downloaded "
+#| "instead."
+msgid ""
+"Clipboard image copy is not available here. The image was shared instead."
+msgstr ""
+"Môi trường hiện tại không hỗ trợ sao chép ảnh vào clipboard. Ảnh đã được tải "
+"xuống thay thế."
+
+#: templates/main/usage_form.html:1385
+msgid ""
+"Clipboard image copy is not available here. The image was downloaded instead."
+msgstr ""
+"Môi trường hiện tại không hỗ trợ sao chép ảnh vào clipboard. Ảnh đã được tải "
+"xuống thay thế."
+
+#: templates/main/usage_form.html:1390 templates/main/usage_form.html:1408
+msgid "Could not create the image. Please try again."
+msgstr "Không thể tạo ảnh. Vui lòng thử lại."
+
+#: templates/main/usage_form.html:1405
+msgid "Image generated. Long-press it to copy or save."
+msgstr "Ảnh đã được tạo. Nhấn giữ để sao chép hoặc lưu."
+
+#: templates/main/usage_list.html:4
+msgid "Usages"
+msgstr "Khai báo sử dụng"
+
+#: templates/main/usage_list.html:10
+msgid "Usage management"
+msgstr "Quản lý sử dụng"
+
+#: templates/main/usage_list.html:11
+msgid "Track monthly usage snapshots for each subscription."
+msgstr "Theo dõi bản chụp sử dụng theo tháng cho từng hợp đồng thuê."
+
+#: templates/main/usage_list.html:24
+msgid "Billing month"
+msgstr "Tháng tính tiền"
+
+#: templates/main/usage_list.html:25
+msgid "Tenants"
+msgstr "Số người thuê"
+
+#: templates/main/usage_list.html:28
+msgid "Meter images"
+msgstr "Ảnh đồng hồ"
+
+#: templates/main/usage_list.html:42
+msgid "Electricity:"
+msgstr "Điện:"
+
+#: templates/main/usage_list.html:45
+msgid "Water:"
+msgstr "Nước:"
+
+#: templates/main/usage_list.html:65
+msgid "No usage records yet."
+msgstr "Chưa có bản ghi sử dụng nào."
+
+#: templates/main/vehicle_list.html:19
+msgid "Vehicle management"
+msgstr "Quản lý phương tiện"
+
+#: templates/main/vehicle_list.html:20
+msgid "Manage vehicles and search them by license plate."
+msgstr "Quản lý phương tiện và tìm kiếm theo biển số."
+
+#: templates/main/vehicle_list.html:31
+msgid "Search by license plate"
+msgstr "Tìm theo biển số"
+
+#: templates/main/vehicle_list.html:38
+msgid "Enter a license plate"
+msgstr "Nhập biển số"
+
+#: templates/main/vehicle_list.html:42
+msgid "Search"
+msgstr "Tìm kiếm"
+
+#: templates/main/vehicle_list.html:91
+msgid "No vehicles yet."
+msgstr "Chưa có phương tiện nào."
+
+#: templates/price_template.html:19
+msgid "Shared price template"
+msgstr "Bảng giá chung"
+
+#: templates/price_template.html:20
+msgid "Manage the default pricing for rooms and shared services."
+msgstr "Quản lý mức giá mặc định cho phòng và các dịch vụ chung."
+
+#: templates/price_template.html:23
+msgid "Last updated:"
+msgstr "Cập nhật lần cuối:"
+
+#: templates/price_template.html:45
+msgid "Save price template"
+msgstr "Lưu bảng giá"
+
+#: templates/price_template.html:46
+msgid "Back"
+msgstr "Quay lại"
+
+#~ msgid "Tools"
+#~ msgstr "Công cụ"
+
+#~ msgid "Admin tool"
+#~ msgstr "Công cụ quản trị"
+
+#~ msgid "Welcome to Navu House"
+#~ msgstr "Chào mừng đến với Navu House"
+
+#~ msgid "Hello"
+#~ msgstr "Xin chào"
+
+#~ msgid "This is your home page."
+#~ msgstr "Đây là trang chủ của bạn."
+
+#~ msgid ""
+#~ "A simple Django application template with user authentication, "
+#~ "notifications, and API integration."
+#~ msgstr ""
+#~ "Mẫu ứng dụng Django đơn giản với xác thực người dùng, thông báo và tích "
+#~ "hợp API."
+
+#~ msgid "Account Settings"
+#~ msgstr "Cài đặt tài khoản"
+
+#~ msgid "Manage your account details"
+#~ msgstr "Quản lý thông tin tài khoản của bạn"
+
+#~ msgid "Go"
+#~ msgstr "Mở"
+
+#~ msgid "Security"
+#~ msgstr "Bảo mật"
+
+#~ msgid "Change your password"
+#~ msgstr "Đổi mật khẩu của bạn"
+
+#~ msgid "Profile"
+#~ msgstr "Hồ sơ"
+
+#~ msgid "View your profile"
+#~ msgstr "Xem hồ sơ của bạn"
+
+#~ msgid "Coming Soon"
+#~ msgstr "Sắp ra mắt"
+
+#~ msgid "Username:"
+#~ msgstr "Tên đăng nhập:"
+
+#~ msgid "Email:"
+#~ msgstr "Email:"
+
+#~ msgid "Full Name:"
+#~ msgstr "Họ và tên:"
+
+#~ msgid "Member Since:"
+#~ msgstr "Tham gia từ:"
+
+#~ msgid "Access your account"
+#~ msgstr "Truy cập tài khoản của bạn"
+
+#~ msgid "Create Account"
+#~ msgstr "Tạo tài khoản"
+
+#~ msgid "Join our community"
+#~ msgstr "Tham gia cùng chúng tôi"
+
+#~ msgid "Sign Up"
+#~ msgstr "Đăng ký"
+
+#~ msgid "Current pricing"
+#~ msgstr "Mức giá hiện tại"
+
+#~ msgid "VND / room"
+#~ msgstr "VND / phòng"
+
+#~ msgid "VND / kWh"
+#~ msgstr "VND / số"
+
+#~ msgid "VND / m3"
+#~ msgstr "VND / khối"
+
+#~ msgid "VND / person"
+#~ msgstr "VND / người"
+
+#~ msgid "Electricity price (VND / kWh)"
+#~ msgstr "Giá điện (VND / số)"
+
+#~ msgid "Water price (VND / m3)"
+#~ msgstr "Giá nước (VND / khối)"
+
+#~ msgid ""
+#~ "Manage room information, image paths and the latest utility readings."
+#~ msgstr ""
+#~ "Quản lý thông tin phòng, đường dẫn ảnh và chỉ số điện nước mới nhất."
+
+#~ msgid "Floor"
+#~ msgstr "Tầng"
+
+#~ msgid "Image paths"
+#~ msgstr "Đường dẫn ảnh"
+
+#~ msgid "Images"
+#~ msgstr "Ảnh"
+
+#~ msgid "Add usage"
+#~ msgstr "Thêm sử dụng"
+
+#~ msgid "Manage usage"
+#~ msgstr "Quản lý sử dụng"
+
+#~ msgid "records"
+#~ msgstr "bản ghi"
+
+#~ msgid "Room number"
+#~ msgstr "Số phòng"
+
+#~ msgid "Enter one file path per line. Maximum 5 images."
+#~ msgstr "Mỗi dòng nhập một đường dẫn ảnh. Tối đa 5 ảnh."
+
+#~ msgid "Upload up to 10 images in total."
+#~ msgstr "Tải lên tối đa 10 ảnh cho mỗi phòng."
+
+#~ msgid "Tick the images you want to delete, then save."
+#~ msgstr "Chọn các ảnh bạn muốn xóa rồi bấm lưu."
+
+#~ msgid "Electricity meter image path"
+#~ msgstr "Đường dẫn ảnh đồng hồ điện"
+
+#~ msgid "Water meter image path"
+#~ msgstr "Đường dẫn ảnh đồng hồ nước"
+
+#~ msgid "Format: MM/YYYY"
+#~ msgstr "Định dạng: MM/YYYY"
+
+#~ msgid "Use MM/YYYY format, for example 06/2026."
+#~ msgstr "Dùng định dạng MM/YYYY, ví dụ 06/2026."
+
+#~ msgid "Choose billing month"
+#~ msgstr "Chọn tháng tính tiền"
+
+#~ msgid "Laundry cost"
+#~ msgstr "Tiền giặt"
+
+#~ msgid "Deposit amount"
+#~ msgstr "Tiền cọc"
+
+#~ msgid "Filters"
+#~ msgstr "Bộ lọc"
+
+#~ msgid "Filter subscriptions by room, status, and time range."
+#~ msgstr "Lọc hợp đồng thuê theo phòng, trạng thái và khoảng thời gian."
+
+#~ msgid "Sum of all rows"
+#~ msgstr "Tổng cộng tất cả các dòng"
+
+#~ msgid "Copy image is not supported in this browser."
+#~ msgstr "Trình duyệt này không hỗ trợ sao chép ảnh."
+
+#~ msgid "View month"
+#~ msgstr "Xem tháng"
+
+#~ msgid "Toggle navigation"
+#~ msgstr "Chuyển điều hướng"

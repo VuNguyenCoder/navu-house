@@ -330,7 +330,7 @@
                                     {% if row.usage.status == 'paid' %}
                                     <span class="badge text-bg-success">{{ row.usage.get_status_display }}</span>
                                     {% else %}
-                                    <span class="badge text-bg-primary">{{ row.usage.get_status_display }}</span>
+                                    <span class="badge text-bg-danger">{% trans "Unpaid" %}</span>
                                     {% endif %}
                                 </td>
                                 <td class="text-end">

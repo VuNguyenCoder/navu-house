@@ -290,11 +290,11 @@ class Vehicle(models.Model):
 
 class Usage(models.Model):
     class Status(models.TextChoices):
-        NEW = 'new', _('New')
+        UNPAID = 'unpaid', _('Unpaid')
         PAID = 'paid', _('Paid')
 
     subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, related_name='usages')
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.NEW)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.UNPAID)
     period = models.DateField()
     tenant_count = models.PositiveIntegerField(default=1, null=True, blank=True)
     room_price = models.DecimalField(max_digits=12, decimal_places=0, default=0, null=True, blank=True)

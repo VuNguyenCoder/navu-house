@@ -397,8 +397,15 @@ class VehicleCreateView(OperatorRequiredMixin, SuccessMessageMixin, CreateView):
     def get_initial(self):
         initial = super().get_initial()
         subscription_id = self.request.GET.get('subscription')
+        month_value = self.request.GET.get('month')
+        year_value = self.request.GET.get('year')
         if subscription_id:
             initial['subscription'] = subscription_id
+        try:
+            if month_value and year_value:
+                initial['period'] = date(year=int(year_value), month=int(month_value), day=1)
+        except ValueError:
+            pass
         return initial
 
     def get_context_data(self, **kwargs):

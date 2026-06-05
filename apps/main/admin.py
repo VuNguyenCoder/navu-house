@@ -37,6 +37,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_display = (
         'room',
         'status',
+        'image_count',
         'start_date',
         'contact_email',
         'updated_at',

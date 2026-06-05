@@ -49,7 +49,7 @@
 
     <div class="card shadow-sm border-0">
         <div class="card-body p-4">
-            <form method="post" novalidate>
+            <form method="post" enctype="multipart/form-data" novalidate>
                 {% csrf_token %}
                 {% for hidden_field in form.hidden_fields %}
                 {{ hidden_field }}
@@ -74,8 +74,8 @@
                         <div class="collapse{% if not form.instance.pk %} show{% endif %} subscription-section-body" id="subscriptionBasicInfo">
                             <div class="row g-3">
                                 {% for field in form %}
-                                {% if field.name == 'room' or field.name == 'description' or field.name == 'start_date' %}
-                                <div class="col-12 {% if field.name == 'description' %}col-lg-12{% else %}col-lg-6{% endif %}">
+                                {% if field.name == 'room' or field.name == 'description' or field.name == 'start_date' or field.name == 'images' %}
+                                <div class="col-12 {% if field.name == 'room' or field.name == 'start_date' %}col-lg-6{% else %}col-lg-12{% endif %}">
                                     <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
                                     {{ field }}
                                     {% if field.help_text %}
@@ -88,6 +88,44 @@
                                 {% endif %}
                                 {% endfor %}
                             </div>
+                            {% if form.instance.pk and form.instance.image_paths %}
+                            <div class="pt-4">
+                                {% if form.remove_image_paths.errors %}
+                                <div class="text-danger small mb-3">{{ form.remove_image_paths.errors|striptags }}</div>
+                                {% endif %}
+                                <div class="d-flex flex-wrap gap-3">
+                                    {% for checkbox in form.remove_image_paths %}
+                                    <div class="image-preview-card subscription-image-preview" data-delete-preview style="width: 180px;">
+                                        {{ checkbox.tag }}
+                                        <button
+                                            type="button"
+                                            class="subscription-image-preview-trigger mb-2"
+                                            data-preview-image-url="{{ MEDIA_URL }}{{ checkbox.data.value }}"
+                                            data-preview-image-title="{% trans 'Subscription image' %}"
+                                        >
+                                            <img src="{{ MEDIA_URL }}{{ checkbox.data.value }}" alt="" class="img-fluid rounded" style="height: 120px; width: 100%; object-fit: cover;">
+                                        </button>
+                                        <div class="small text-muted text-break">{{ checkbox.choice_label }}</div>
+                                        <div class="mt-2">
+                                            <button type="button" class="image-delete-link" data-delete-trigger="{{ checkbox.id_for_label }}">
+                                                {% trans "Delete this image" %}
+                                            </button>
+                                            <div class="image-delete-pending d-none" data-delete-pending>
+                                                <span>{% trans "Image will be deleted after you save changes." %}</span>
+                                                <button type="button" class="image-undo-link" data-delete-undo="{{ checkbox.id_for_label }}">
+                                                    {% trans "Undo" %}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% empty %}
+                                    <div class="text-muted small">
+                                        {% trans "No images uploaded yet." %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
                     </section>
 
@@ -333,6 +371,22 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="subscriptionImagePreviewModal" tabindex="-1" aria-labelledby="subscriptionImagePreviewTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h5 mb-0" id="subscriptionImagePreviewTitle">{% trans "Image preview" %}</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
+            </div>
+            <div class="modal-body">
+                <div class="subscription-image-preview-frame">
+                    <img id="subscriptionImagePreviewImage" src="" alt="{% trans 'Image preview' %}" class="img-fluid rounded shadow-sm d-none">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_css %}
@@ -412,6 +466,89 @@
     background: var(--bs-tertiary-bg);
 }
 
+.image-preview-card {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.85rem;
+    padding: 0.85rem;
+    background: var(--bs-body-bg);
+}
+
+.subscription-image-preview input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.subscription-image-preview-trigger {
+    display: inline-flex;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: zoom-in;
+}
+
+.subscription-image-preview-trigger img {
+    display: block;
+    width: 100%;
+}
+
+.subscription-image-preview-frame {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 12rem;
+    background: linear-gradient(180deg, rgba(248, 249, 250, 0.95), rgba(233, 236, 239, 0.85));
+    border: 1px solid rgba(13, 110, 253, 0.12);
+    border-radius: 1rem;
+    padding: 0.85rem;
+}
+
+.subscription-image-preview-frame img {
+    width: 100%;
+    height: auto;
+}
+
+.image-delete-link,
+.image-undo-link {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
+
+.image-delete-link {
+    color: #b02a37;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.image-delete-link:hover {
+    color: #8c1f2b;
+}
+
+.image-delete-pending {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.image-undo-link {
+    color: #0d6efd;
+    cursor: pointer;
+}
+
+.subscription-image-preview.is-marked-for-delete .subscription-image-preview-trigger,
+.subscription-image-preview.is-marked-for-delete img,
+.subscription-image-preview.is-marked-for-delete .small.text-muted.text-break,
+.subscription-image-preview.is-marked-for-delete .image-delete-link {
+    display: none !important;
+}
+
 @media (max-width: 767.98px) {
     .subscription-section-toggle {
         padding: 1rem 0;
@@ -427,6 +564,13 @@
 {{ block.super }}
 <script>
     window.addEventListener('DOMContentLoaded', () => {
+        const subscriptionImagePreviewModalElement = document.getElementById('subscriptionImagePreviewModal');
+        const subscriptionImagePreviewTitle = document.getElementById('subscriptionImagePreviewTitle');
+        const subscriptionImagePreviewImage = document.getElementById('subscriptionImagePreviewImage');
+        const subscriptionImagePreviewModal = subscriptionImagePreviewModalElement && window.bootstrap
+            ? new window.bootstrap.Modal(subscriptionImagePreviewModalElement)
+            : null;
+
         const stripGrouping = (value) => `${value ?? ''}`.replace(/,/g, '').trim();
         const formatGroupedDigits = (value) => {
             const raw = stripGrouping(value).replace(/[^\d.-]/g, '');
@@ -448,6 +592,67 @@
             });
             input.value = formatGroupedDigits(input.value);
         });
+
+        const syncPreviewState = (wrapper, input) => {
+            const pending = wrapper.querySelector('[data-delete-pending]');
+            wrapper.classList.toggle('is-marked-for-delete', input.checked);
+            if (pending) {
+                pending.classList.toggle('d-none', !input.checked);
+            }
+        };
+
+        document.querySelectorAll('[data-delete-trigger]').forEach((button) => {
+            const input = document.getElementById(button.dataset.deleteTrigger);
+            const wrapper = button.closest('[data-delete-preview]');
+            if (!input) {
+                return;
+            }
+            button.addEventListener('click', () => {
+                input.checked = true;
+                if (wrapper) {
+                    syncPreviewState(wrapper, input);
+                }
+            });
+            if (wrapper) {
+                syncPreviewState(wrapper, input);
+            }
+        });
+
+        document.querySelectorAll('[data-delete-undo]').forEach((button) => {
+            const input = document.getElementById(button.dataset.deleteUndo);
+            const wrapper = button.closest('[data-delete-preview]');
+            if (!input) {
+                return;
+            }
+            button.addEventListener('click', () => {
+                input.checked = false;
+                if (wrapper) {
+                    syncPreviewState(wrapper, input);
+                }
+            });
+        });
+
+        document.querySelectorAll('[data-preview-image-url]').forEach((button) => {
+            button.addEventListener('click', () => {
+                if (!subscriptionImagePreviewModal || !subscriptionImagePreviewImage) {
+                    return;
+                }
+                subscriptionImagePreviewImage.src = button.dataset.previewImageUrl;
+                subscriptionImagePreviewImage.alt = button.dataset.previewImageTitle || '{% trans "Image preview" %}';
+                subscriptionImagePreviewImage.classList.remove('d-none');
+                if (subscriptionImagePreviewTitle) {
+                    subscriptionImagePreviewTitle.textContent = button.dataset.previewImageTitle || '{% trans "Image preview" %}';
+                }
+                subscriptionImagePreviewModal.show();
+            });
+        });
+
+        if (subscriptionImagePreviewModalElement && subscriptionImagePreviewImage) {
+            subscriptionImagePreviewModalElement.addEventListener('hidden.bs.modal', () => {
+                subscriptionImagePreviewImage.src = '';
+                subscriptionImagePreviewImage.classList.add('d-none');
+            });
+        }
     });
 </script>
 {% endblock %}

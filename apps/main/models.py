@@ -126,8 +126,8 @@ class Room(models.Model):
         super().clean()
         if not isinstance(self.image_paths, list):
             raise ValidationError({'image_paths': _('Image paths must be stored as a list.')})
-        if len(self.image_paths) > 5:
-            raise ValidationError({'image_paths': _('A room can store at most 5 images.')})
+        if len(self.image_paths) > 10:
+            raise ValidationError({'image_paths': _('A room can store at most 10 images.')})
         if any(not isinstance(path, str) or not path.strip() for path in self.image_paths):
             raise ValidationError({'image_paths': _('Each image path must be a non-empty string.')})
         if self.type != self.RoomType.UNENCLOSED and self.linked_restroom_id:
@@ -196,6 +196,7 @@ class Subscription(models.Model):
 
     room = models.ForeignKey(Room, on_delete=models.PROTECT, related_name='subscriptions')
     description = models.TextField(blank=True)
+    image_paths = models.JSONField(default=list, blank=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.ENABLED)
     start_date = models.DateField()
     start_electricity_reading = models.PositiveIntegerField(default=0)
@@ -227,6 +228,12 @@ class Subscription(models.Model):
 
     def clean(self):
         super().clean()
+        if not isinstance(self.image_paths, list):
+            raise ValidationError({'image_paths': _('Image paths must be stored as a list.')})
+        if len(self.image_paths) > 10:
+            raise ValidationError({'image_paths': _('A subscription can store at most 10 images.')})
+        if any(not isinstance(path, str) or not path.strip() for path in self.image_paths):
+            raise ValidationError({'image_paths': _('Each image path must be a non-empty string.')})
         if self.pk:
             previous_status = Subscription.objects.filter(pk=self.pk).values_list('status', flat=True).first()
             if previous_status == self.Status.DISABLED and self.status == self.Status.ENABLED:
@@ -255,6 +262,16 @@ class Subscription(models.Model):
             for field in PRICE_FIELD_NAMES:
                 setattr(self, field, getattr(template, field))
         super().save(*args, **kwargs)
+
+    @property
+    def image_count(self):
+        return len(self.image_paths or [])
+
+    def delete(self, *args, **kwargs):
+        for path in self.image_paths or []:
+            if default_storage.exists(path):
+                default_storage.delete(path)
+        super().delete(*args, **kwargs)
 
 
 class Vehicle(models.Model):

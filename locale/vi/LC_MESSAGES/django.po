@@ -254,8 +254,8 @@ msgstr "Khai báo sử dụng"
 msgid "Image paths must be stored as a list."
 msgstr "Đường dẫn ảnh phải được lưu dưới dạng danh sách."
 
-msgid "A room can store at most 5 images."
-msgstr "Mỗi phòng chỉ được lưu tối đa 5 ảnh."
+msgid "A room can store at most 10 images."
+msgstr "Mỗi phòng chỉ được lưu tối đa 10 ảnh."
 
 msgid "Each image path must be a non-empty string."
 msgstr "Mỗi đường dẫn ảnh phải là một chuỗi không rỗng."
@@ -671,11 +671,11 @@ msgstr "Mỗi dòng nhập một đường dẫn ảnh. Tối đa 5 ảnh."
 msgid "Room images"
 msgstr "Ảnh phòng"
 
-msgid "Upload up to 5 images in total."
-msgstr "Tải lên tối đa 5 ảnh cho mỗi phòng."
+msgid "Upload up to 10 images in total."
+msgstr "Tải lên tối đa 10 ảnh cho mỗi phòng."
 
-msgid "Upload up to 5 images in total. On supported devices, you can also capture from the camera."
-msgstr "Tải lên tối đa 5 ảnh cho mỗi phòng. Trên thiết bị hỗ trợ, bạn cũng có thể chụp trực tiếp từ camera."
+msgid "Upload up to 10 images in total. On supported devices, you can also capture from the camera."
+msgstr "Tải lên tối đa 10 ảnh cho mỗi phòng. Trên thiết bị hỗ trợ, bạn cũng có thể chụp trực tiếp từ camera."
 
 msgid "Remove existing images"
 msgstr "Xóa ảnh hiện có"
@@ -934,6 +934,15 @@ msgstr "Xem trước ảnh"
 
 msgid "Room image"
 msgstr "Ảnh phòng"
+
+msgid "Subscription images"
+msgstr "Ảnh hợp đồng"
+
+msgid "Subscription image"
+msgstr "Ảnh hợp đồng"
+
+msgid "A subscription can store at most 10 images."
+msgstr "Một hợp đồng có thể lưu tối đa 10 ảnh."
 
 msgid "Preview is not available here. The image was downloaded instead."
 msgstr "Không thể xem trước ảnh tại đây. Ảnh đã được tải xuống thay thế."

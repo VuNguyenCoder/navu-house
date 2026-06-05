@@ -124,7 +124,7 @@ class RoomForm(StyledModelForm):
     images = MultipleFileField(
         required=False,
         label=_('Room images'),
-        help_text=_('Upload up to 5 images in total. On supported devices, you can also capture from the camera.'),
+        help_text=_('Upload up to 10 images in total. On supported devices, you can also capture from the camera.'),
         widget=MultipleFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
     )
     remove_image_paths = forms.MultipleChoiceField(
@@ -197,8 +197,8 @@ class RoomForm(StyledModelForm):
         existing_paths = [path for path in (self.instance.image_paths or []) if path not in removed_paths]
         uploaded_files = cleaned_data.get('images') or []
 
-        if len(existing_paths) + len(uploaded_files) > 5:
-            raise forms.ValidationError(_('A room can store at most 5 images.'))
+        if len(existing_paths) + len(uploaded_files) > 10:
+            raise forms.ValidationError(_('A room can store at most 10 images.'))
 
         cleaned_data['uploaded_images'] = uploaded_files
         cleaned_data['remaining_image_paths'] = existing_paths
@@ -237,6 +237,18 @@ class RoomForm(StyledModelForm):
 
 
 class SubscriptionForm(StyledModelForm):
+    images = MultipleFileField(
+        required=False,
+        label=_('Subscription images'),
+        help_text=_('Upload up to 10 images in total. On supported devices, you can also capture from the camera.'),
+        widget=MultipleFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+    )
+    remove_image_paths = forms.MultipleChoiceField(
+        required=False,
+        label=_('Remove existing images'),
+        widget=forms.CheckboxSelectMultiple,
+    )
+
     class Meta:
         model = Subscription
         fields = [
@@ -285,12 +297,27 @@ class SubscriptionForm(StyledModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.order_fields([
+            'room',
+            'start_date',
+            'description',
+            'remove_image_paths',
+            'images',
+            'start_electricity_reading',
+            'start_water_reading',
+            'deposit_amount',
+            *PRICE_FIELD_NAMES,
+            'contact_phonenumber',
+            'contact_email',
+        ])
         enabled_room_ids = Subscription.objects.filter(
             status=Subscription.Status.ENABLED,
         ).exclude(
             pk=self.instance.pk,
         ).values_list('room_id', flat=True)
         self.fields['room'].queryset = Room.objects.exclude(pk__in=enabled_room_ids).order_by('room_name')
+        existing_paths = self.instance.image_paths or []
+        self.fields['remove_image_paths'].choices = [(path, Path(path).name) for path in existing_paths]
         if not self.is_bound and not self.instance.pk:
             template = PriceTemplate.get_solo()
             for field in PRICE_FIELD_NAMES:
@@ -298,6 +325,44 @@ class SubscriptionForm(StyledModelForm):
         if not self.is_bound and self.instance.pk and self.instance.room_id:
             self.fields['start_electricity_reading'].initial = self.instance.start_electricity_reading
             self.fields['start_water_reading'].initial = self.instance.start_water_reading
+
+    def clean(self):
+        cleaned_data = super().clean()
+        removed_paths = cleaned_data.get('remove_image_paths') or []
+        existing_paths = [path for path in (self.instance.image_paths or []) if path not in removed_paths]
+        uploaded_files = cleaned_data.get('images') or []
+
+        if len(existing_paths) + len(uploaded_files) > 10:
+            raise forms.ValidationError(_('A subscription can store at most 10 images.'))
+
+        cleaned_data['uploaded_images'] = uploaded_files
+        cleaned_data['remaining_image_paths'] = existing_paths
+        return cleaned_data
+
+    def save(self, commit=True):
+        removed_paths = set(self.cleaned_data.get('remove_image_paths') or [])
+        remaining_paths = list(self.cleaned_data.get('remaining_image_paths', []))
+
+        for path in removed_paths:
+            if default_storage.exists(path):
+                default_storage.delete(path)
+
+        instance = super().save(commit=False)
+        instance.image_paths = remaining_paths
+
+        if commit:
+            instance.save()
+
+        subscription_slug = str(instance.pk) if instance.pk else f"draft-{instance.room_id or 'room'}-{(instance.start_date or timezone.localdate()).isoformat()}"
+        for uploaded_file in self.cleaned_data.get('uploaded_images', []):
+            filename = os.path.basename(uploaded_file.name)
+            saved_path = default_storage.save(f'subscriptions/{subscription_slug}/{filename}', uploaded_file)
+            remaining_paths.append(saved_path)
+
+        instance.image_paths = remaining_paths
+        if commit:
+            instance.save(update_fields=['image_paths', 'updated_at'])
+        return instance
 
 
 class VehicleForm(StyledModelForm):

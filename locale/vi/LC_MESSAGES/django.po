@@ -917,6 +917,24 @@ msgstr "Môi trường hiện tại không hỗ trợ sao chép ảnh vào clipb
 msgid "Could not create the image. Please try again."
 msgstr "Không thể tạo ảnh. Vui lòng thử lại."
 
+msgid "Generate image"
+msgstr "Tạo ảnh"
+
+msgid "Generated image"
+msgstr "Ảnh đã tạo"
+
+msgid "Long-press the image to copy, save, or share it."
+msgstr "Nhấn giữ ảnh để sao chép, lưu hoặc chia sẻ."
+
+msgid "Generated image preview"
+msgstr "Xem trước ảnh đã tạo"
+
+msgid "Preview is not available here. The image was downloaded instead."
+msgstr "Không thể xem trước ảnh tại đây. Ảnh đã được tải xuống thay thế."
+
+msgid "Image generated. Long-press it to copy or save."
+msgstr "Ảnh đã được tạo. Nhấn giữ để sao chép hoặc lưu."
+
 msgid "Breadcrumb"
 msgstr "Điều hướng"
 

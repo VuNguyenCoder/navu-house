@@ -238,17 +238,17 @@
                                 <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
                                     <div>
                                         <h2 class="h5 mb-1">{% trans "Total amount" %}</h2>
-                                        <div class="small fw-semibold text-body-secondary mb-1" id="usageInvoiceHeading">
+                                        <div class="usage-invoice-heading mb-2" id="usageInvoiceHeading">
                                             {% if selected_subscription %}
                                                 {% blocktrans with room_name=selected_subscription.room.room_name period=form.instance.period|date:"m/Y"|default:form.fields.period.initial|date:"m/Y" %}Invoice for room {{ room_name }} {{ period }}{% endblocktrans %}
                                             {% else %}
                                                 {% trans "Invoice summary" %}
                                             {% endif %}
                                         </div>
-                                        <p class="text-muted mb-0">{% trans "This amount is updated in real time from your pricing and meter inputs." %}</p>
+                                        <p class="text-muted mb-0" data-export-hidden>{% trans "This amount is updated in real time from your pricing and meter inputs." %}</p>
                                     </div>
                                     <div class="text-end">
-                                        <div class="small text-muted">{% trans "Estimated total" %}</div>
+                                        <div class="small text-muted" data-export-hidden>{% trans "Estimated total" %}</div>
                                         <div class="usage-total-value" id="usageTotalValue">0 VND</div>
                                     </div>
                                 </div>
@@ -452,14 +452,18 @@
                                     <div id="usageValidationWarningItems"></div>
                                 </div>
 
-                                <div class="small text-muted mt-3" id="usageBaselineHint">
+                                <div class="small text-muted mt-3" id="usageBaselineHint" data-export-hidden>
                                     {% trans "For the first month of a subscription, previous readings are taken from the subscription's start readings." %}
                                 </div>
 
-                                <div class="d-flex justify-content-end align-items-center gap-2 mt-4">
+                                <div class="d-flex justify-content-end align-items-center gap-2 mt-4" data-export-hidden>
                                     <span class="small text-muted d-none" id="copyUsageSummaryStatus"></span>
-                                    <button type="button" class="btn btn-sm btn-outline-success" id="copyUsageSummaryButton">
+                                    <button type="button" class="btn btn-sm btn-outline-success d-none d-lg-inline-flex" id="copyUsageSummaryButton">
                                         <i class="bi bi-clipboard-plus me-1"></i>{% trans "Copy as image" %}
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-success d-inline-flex d-lg-none" id="generateUsageSummaryButton">
+                                        <span class="spinner-border spinner-border-sm me-2 d-none" id="generateUsageSummarySpinner" aria-hidden="true"></span>
+                                        <i class="bi bi-image me-1"></i>{% trans "Generate image" %}
                                     </button>
                                 </div>
                             </div>
@@ -472,6 +476,25 @@
                     <a href="{{ cancel_url }}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="usageSummaryPreviewModal" tabindex="-1" aria-labelledby="usageSummaryPreviewTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2 class="modal-title h5 mb-1" id="usageSummaryPreviewTitle">{% trans "Generated image" %}</h2>
+                    <div class="small text-muted">{% trans "Long-press the image to copy, save, or share it." %}</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
+            </div>
+            <div class="modal-body">
+                <div class="usage-summary-preview-frame">
+                    <img id="usageSummaryPreviewImage" src="" alt="{% trans 'Generated image preview' %}" class="img-fluid rounded shadow-sm d-none">
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -503,6 +526,14 @@
     margin-top: 0.45rem;
     font-size: 0.9rem;
     color: var(--bs-secondary-color);
+}
+
+.usage-invoice-heading {
+    font-size: clamp(1.05rem, 1rem + 0.55vw, 1.45rem);
+    font-weight: 800;
+    line-height: 1.25;
+    color: #14532d;
+    letter-spacing: 0.01em;
 }
 
 .usage-total-table {
@@ -594,6 +625,25 @@
     border: 1px solid rgba(25, 135, 84, 0.14);
     border-radius: 0.95rem;
     background: rgba(255, 255, 255, 0.78);
+}
+
+.usage-summary-preview-frame {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 12rem;
+    background: linear-gradient(180deg, rgba(248, 249, 250, 0.95), rgba(233, 236, 239, 0.85));
+    border: 1px solid rgba(25, 135, 84, 0.12);
+    border-radius: 1rem;
+    padding: 0.85rem;
+}
+
+.usage-summary-preview-frame img {
+    width: 100%;
+    height: auto;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: default;
 }
 
 .usage-delete-input {
@@ -694,8 +744,15 @@
         const usageTotalCard = document.getElementById('usageTotalCard');
         if (usageTotalCard) {
             const copyUsageSummaryButton = document.getElementById('copyUsageSummaryButton');
+            const generateUsageSummaryButton = document.getElementById('generateUsageSummaryButton');
+            const generateUsageSummarySpinner = document.getElementById('generateUsageSummarySpinner');
             const copyUsageSummaryStatus = document.getElementById('copyUsageSummaryStatus');
             const usageInvoiceHeading = document.getElementById('usageInvoiceHeading');
+            const usageSummaryPreviewModalElement = document.getElementById('usageSummaryPreviewModal');
+            const usageSummaryPreviewImage = document.getElementById('usageSummaryPreviewImage');
+            const usageSummaryPreviewModal = usageSummaryPreviewModalElement && window.bootstrap
+                ? new window.bootstrap.Modal(usageSummaryPreviewModalElement)
+                : null;
             const restRoomSubscriptionIds = JSON.parse(
                 document.getElementById('rest-room-subscription-ids')?.textContent || '[]'
             );
@@ -791,6 +848,7 @@
                     scrollX: 0,
                     scrollY: -window.scrollY,
                     windowWidth: document.documentElement.clientWidth,
+                    ignoreElements: (element) => element.hasAttribute('data-export-hidden'),
                 });
             };
 
@@ -838,12 +896,23 @@
                     scrollX: 0,
                     scrollY: -window.scrollY,
                     windowWidth: document.documentElement.clientWidth,
+                    ignoreElements: (element) => element.hasAttribute('data-export-hidden'),
                 });
                 const fallbackBlob = await canvasToBlob(fallbackCanvas);
                 if (!fallbackBlob) {
                     throw new Error('no_blob');
                 }
                 return fallbackBlob;
+            };
+
+            const setGenerateButtonLoading = (isLoading) => {
+                if (!generateUsageSummaryButton) {
+                    return;
+                }
+                generateUsageSummaryButton.disabled = isLoading;
+                if (generateUsageSummarySpinner) {
+                    generateUsageSummarySpinner.classList.toggle('d-none', !isLoading);
+                }
             };
 
             const downloadUsageSummaryImage = (blob) => {
@@ -855,6 +924,32 @@
                 link.click();
                 link.remove();
                 window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+            };
+
+            let usageSummaryPreviewObjectUrl = null;
+
+            const clearUsageSummaryPreview = () => {
+                if (usageSummaryPreviewObjectUrl) {
+                    URL.revokeObjectURL(usageSummaryPreviewObjectUrl);
+                    usageSummaryPreviewObjectUrl = null;
+                }
+                if (usageSummaryPreviewImage) {
+                    usageSummaryPreviewImage.src = '';
+                    usageSummaryPreviewImage.classList.add('d-none');
+                }
+            };
+
+            const showUsageSummaryPreview = (blob) => {
+                if (!usageSummaryPreviewModal || !usageSummaryPreviewImage) {
+                    downloadUsageSummaryImage(blob);
+                    setCopyStatus('{% trans "Preview is not available here. The image was downloaded instead." %}');
+                    return;
+                }
+                clearUsageSummaryPreview();
+                usageSummaryPreviewObjectUrl = URL.createObjectURL(blob);
+                usageSummaryPreviewImage.src = usageSummaryPreviewObjectUrl;
+                usageSummaryPreviewImage.classList.remove('d-none');
+                usageSummaryPreviewModal.show();
             };
 
             const shareUsageSummaryImage = async (blob) => {
@@ -873,6 +968,10 @@
                 });
                 return true;
             };
+
+            if (usageSummaryPreviewModalElement) {
+                usageSummaryPreviewModalElement.addEventListener('hidden.bs.modal', clearUsageSummaryPreview);
+            }
 
             const renumberUsageSummaryRowsInCollection = (rows) => {
                 let visibleRowNumber = 1;
@@ -1217,6 +1316,24 @@
                         setCopyStatus('{% trans "Could not create the image. Please try again." %}', true);
                     } finally {
                         copyUsageSummaryButton.disabled = false;
+                    }
+                });
+            }
+
+            if (generateUsageSummaryButton) {
+                generateUsageSummaryButton.addEventListener('click', async () => {
+                    setGenerateButtonLoading(true);
+                    setCopyStatus('{% trans "Preparing image..." %}');
+
+                    try {
+                        const blob = await createUsageSummaryImageBlob();
+                        showUsageSummaryPreview(blob);
+                        setCopyStatus('{% trans "Image generated. Long-press it to copy or save." %}');
+                    } catch (error) {
+                        console.error('Failed to generate usage summary preview image', error);
+                        setCopyStatus('{% trans "Could not create the image. Please try again." %}', true);
+                    } finally {
+                        setGenerateButtonLoading(false);
                     }
                 });
             }

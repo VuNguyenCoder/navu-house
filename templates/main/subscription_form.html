@@ -315,6 +315,7 @@
                                 <th class="d-none d-md-table-cell">{% trans "Electricity consumed" %}</th>
                                 <th class="d-none d-md-table-cell">{% trans "Water consumed" %}</th>
                                 <th>{% trans "Payment amount" %}</th>
+                                <th>{% trans "Status" %}</th>
                                 <th class="text-end">{% trans "Actions" %}</th>
                             </tr>
                         </thead>
@@ -325,6 +326,13 @@
                                 <td class="d-none d-md-table-cell">{{ row.electricity_consumed }}</td>
                                 <td class="d-none d-md-table-cell">{{ row.water_consumed }}</td>
                                 <td>{{ row.total_amount_display }} VND</td>
+                                <td>
+                                    {% if row.usage.status == 'paid' %}
+                                    <span class="badge text-bg-success">{{ row.usage.get_status_display }}</span>
+                                    {% else %}
+                                    <span class="badge text-bg-primary">{{ row.usage.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
                                 <td class="text-end">
                                     <a
                                         href="{% url 'usage_details' row.usage.pk %}"
@@ -335,9 +343,21 @@
                                         <i class="bi bi-eye"></i>
                                         <span class="ms-1">{% trans "Details" %}</span>
                                     </a>
+                                    {% if row.usage.status == 'paid' %}
                                     <button
                                         type="button"
-                                        class="btn btn-sm btn-outline-danger"
+                                        class="btn btn-sm btn-outline-danger ms-1"
+                                        aria-label="{% trans 'Delete' %}"
+                                        title="{% trans 'Delete' %}"
+                                        disabled
+                                    >
+                                        <i class="bi bi-trash"></i>
+                                        <span class="d-none d-md-inline ms-md-1">{% trans "Delete" %}</span>
+                                    </button>
+                                    {% else %}
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-danger ms-1"
                                         data-bs-toggle="modal"
                                         data-bs-target="#confirmDeleteModal"
                                         data-delete-url="{% url 'usage_delete' row.usage.pk %}"
@@ -348,6 +368,7 @@
                                         <i class="bi bi-trash"></i>
                                         <span class="d-none d-md-inline ms-md-1">{% trans "Delete" %}</span>
                                     </button>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}

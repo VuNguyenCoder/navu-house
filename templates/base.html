@@ -376,7 +376,13 @@
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <form method="post" id="confirmDeleteForm" class="d-inline">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
+                        <button
+                            type="submit"
+                            class="btn btn-danger"
+                            id="confirmDeleteSubmitButton"
+                            data-default-label="{% trans 'Delete' %}"
+                            data-default-class="btn-danger"
+                        >{% trans "Delete" %}</button>
                     </form>
                 </div>
             </div>
@@ -462,14 +468,17 @@
             const confirmDeleteForm = document.getElementById('confirmDeleteForm');
             const confirmDeleteMessage = document.getElementById('confirmDeleteMessage');
             const confirmDeleteTitle = document.getElementById('confirmDeleteModalLabel');
+            const confirmDeleteSubmitButton = document.getElementById('confirmDeleteSubmitButton');
             const deleteMessageContainer = confirmDeleteMessage ? confirmDeleteMessage.parentElement : null;
-            if (!confirmDeleteModal || !confirmDeleteForm || !confirmDeleteMessage || !deleteMessageContainer || !confirmDeleteTitle) {
+            if (!confirmDeleteModal || !confirmDeleteForm || !confirmDeleteMessage || !deleteMessageContainer || !confirmDeleteTitle || !confirmDeleteSubmitButton) {
                 return;
             }
 
             const defaultDeleteMessage = deleteMessageContainer.dataset.deleteMessageDefault || 'Are you sure you want to delete this item?';
             const labelledDeleteMessage = deleteMessageContainer.dataset.deleteMessageWithLabel || 'Are you sure you want to delete "%s"?';
             const defaultDeleteTitle = confirmDeleteTitle.dataset.defaultTitle || 'Confirm delete';
+            const defaultSubmitLabel = confirmDeleteSubmitButton.dataset.defaultLabel || 'Delete';
+            const defaultSubmitClass = confirmDeleteSubmitButton.dataset.defaultClass || 'btn-danger';
 
             confirmDeleteModal.addEventListener('show.bs.modal', (event) => {
                 const trigger = event.relatedTarget;
@@ -481,8 +490,13 @@
                 const deleteLabel = trigger.getAttribute('data-delete-label') || '';
                 const dialogTitle = trigger.getAttribute('data-dialog-title') || '';
                 const dialogMessage = trigger.getAttribute('data-dialog-message') || '';
+                const submitLabel = trigger.getAttribute('data-submit-label') || '';
+                const submitClass = trigger.getAttribute('data-submit-class') || '';
                 confirmDeleteForm.setAttribute('action', deleteUrl || '#');
                 confirmDeleteTitle.textContent = dialogTitle || defaultDeleteTitle;
+                confirmDeleteSubmitButton.textContent = submitLabel || defaultSubmitLabel;
+                confirmDeleteSubmitButton.classList.remove('btn-danger', 'btn-primary', 'btn-warning', 'btn-success', 'btn-secondary');
+                confirmDeleteSubmitButton.classList.add(submitClass || defaultSubmitClass);
 
                 if (dialogMessage) {
                     confirmDeleteMessage.textContent = dialogMessage;

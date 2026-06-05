@@ -944,6 +944,30 @@ msgstr "Ảnh hợp đồng"
 msgid "A subscription can store at most 10 images."
 msgstr "Một hợp đồng có thể lưu tối đa 10 ảnh."
 
+msgid "Paid"
+msgstr "Đã thanh toán"
+
+msgid "Mark usage record as Paid"
+msgstr "Đánh dấu bản ghi sử dụng là Đã thanh toán"
+
+msgid "Mark as Paid"
+msgstr "Đánh dấu Đã thanh toán"
+
+msgid "Are you sure you want to mark the usage record for %(room_name)s %(period)s as Paid?"
+msgstr "Bạn có chắc muốn đánh dấu bản ghi sử dụng của %(room_name)s %(period)s là Đã thanh toán không?"
+
+msgid "A paid usage record cannot be changed back to a different status."
+msgstr "Bản ghi sử dụng đã thanh toán không thể chuyển lại sang trạng thái khác."
+
+msgid "A paid usage record cannot be edited."
+msgstr "Bản ghi sử dụng đã thanh toán không thể chỉnh sửa."
+
+msgid "A paid usage record cannot be deleted."
+msgstr "Bản ghi sử dụng đã thanh toán không thể bị xóa."
+
+msgid "Usage record marked as Paid successfully."
+msgstr "Đã đánh dấu bản ghi sử dụng là Đã thanh toán."
+
 msgid "Preview is not available here. The image was downloaded instead."
 msgstr "Không thể xem trước ảnh tại đây. Ảnh đã được tải xuống thay thế."
 

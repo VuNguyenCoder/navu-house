@@ -22,5 +22,6 @@ urlpatterns = [
     path('usages/', views.usage_list_redirect, name='usage_list'),
     path('usages/create/', views.UsageCreateView.as_view(), name='usage_create'),
     path('usages/<int:pk>/details/', views.UsageUpdateView.as_view(), name='usage_details'),
+    path('usages/<int:pk>/mark-paid/', views.usage_mark_paid, name='usage_mark_paid'),
     path('usages/<int:pk>/delete/', views.UsageDeleteView.as_view(), name='usage_delete'),
 ]

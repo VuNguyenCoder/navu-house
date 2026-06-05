@@ -289,7 +289,12 @@ class Vehicle(models.Model):
 
 
 class Usage(models.Model):
+    class Status(models.TextChoices):
+        NEW = 'new', _('New')
+        PAID = 'paid', _('Paid')
+
     subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, related_name='usages')
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.NEW)
     period = models.DateField()
     tenant_count = models.PositiveIntegerField(default=1, null=True, blank=True)
     room_price = models.DecimalField(max_digits=12, decimal_places=0, default=0, null=True, blank=True)
@@ -311,6 +316,22 @@ class Usage(models.Model):
             models.UniqueConstraint(fields=['subscription', 'period'], name='unique_subscription_usage_period'),
         ]
 
+    LOCKED_FIELDS = (
+        'subscription_id',
+        'period',
+        'tenant_count',
+        'room_price',
+        'electricity_price',
+        'water_price',
+        'internet_price',
+        'cleaning_price',
+        'laundry_price',
+        'latest_electricity_reading',
+        'electricity_meter_image_path',
+        'latest_water_reading',
+        'water_meter_image_path',
+    )
+
     def __str__(self):
         return f"{self.subscription.room.room_name} - {self.period:%m/%Y}"
 
@@ -318,6 +339,17 @@ class Usage(models.Model):
         super().clean()
         if self.period and self.period.day != 1:
             raise ValidationError({'period': _('Please select month and year only.')})
+        if self.pk:
+            previous = Usage.objects.filter(pk=self.pk).first()
+            if previous and previous.status == self.Status.PAID:
+                if self.status != self.Status.PAID:
+                    raise ValidationError({'status': _('A paid usage record cannot be changed back to a different status.')})
+                changed_fields = [
+                    field_name for field_name in self.LOCKED_FIELDS
+                    if getattr(previous, field_name) != getattr(self, field_name)
+                ]
+                if changed_fields:
+                    raise ValidationError(_('A paid usage record cannot be edited.'))
 
     def save(self, *args, **kwargs):
         if self.period:
@@ -325,10 +357,13 @@ class Usage(models.Model):
         if self._state.adding and all(getattr(self, field) in (None, 0, Decimal('0')) for field in PRICE_FIELD_NAMES):
             for field in PRICE_FIELD_NAMES:
                 setattr(self, field, getattr(self.subscription, field))
+        self.full_clean()
         super().save(*args, **kwargs)
         self._sync_room_readings_for_room(self.subscription.room)
 
     def delete(self, *args, **kwargs):
+        if self.status == self.Status.PAID:
+            raise ValidationError(_('A paid usage record cannot be deleted.'))
         room = self.subscription.room
         super().delete(*args, **kwargs)
         self._sync_room_readings_for_room(room)

@@ -31,6 +31,28 @@
             <h1 class="h3 mb-1">{{ page_title }}</h1>
             <p class="text-muted mb-0">{% trans "Fill in the information below and save your changes." %}</p>
         </div>
+        {% if form.instance.pk %}
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            {% if form.instance.status == 'paid' %}
+            <span class="badge rounded-pill text-bg-success px-3 py-2">{{ form.instance.get_status_display }}</span>
+            {% else %}
+            <button
+                type="button"
+                class="btn btn-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#confirmDeleteModal"
+                data-delete-url="{% url 'usage_mark_paid' form.instance.pk %}"
+                data-delete-label="{{ form.instance.period|date:'m/Y' }}"
+                data-dialog-title="{% trans 'Mark usage record as Paid' %}"
+                data-dialog-message="{% blocktrans with period=form.instance.period|date:'m/Y' room_name=form.instance.subscription.room.room_name %}Are you sure you want to mark the usage record for {{ room_name }} {{ period }} as Paid?{% endblocktrans %}"
+                data-submit-label="{% trans 'Mark as Paid' %}"
+                data-submit-class="btn-danger"
+            >
+                <i class="bi bi-cash-coin me-1"></i>{% trans "Mark as Paid" %}
+            </button>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 
     <div class="card shadow-sm border-0">
@@ -124,6 +146,7 @@
                                     >
                                         <img src="{{ MEDIA_URL }}{{ form.instance.electricity_meter_image_path }}" alt="" class="img-fluid rounded border" style="max-height: 220px; object-fit: cover;">
                                     </button>
+                                    {% if form.instance.status != 'paid' %}
                                     <div class="mt-2">
                                         {{ form.remove_electricity_meter_image }}
                                         <button type="button" class="usage-delete-link" data-delete-trigger="{{ form.remove_electricity_meter_image.id_for_label }}">
@@ -138,6 +161,7 @@
                                     </div>
                                     {% if form.remove_electricity_meter_image.errors %}
                                     <div class="text-danger small mt-1">{{ form.remove_electricity_meter_image.errors|striptags }}</div>
+                                    {% endif %}
                                     {% endif %}
                                 </div>
                                 {% endif %}
@@ -177,6 +201,7 @@
                                     >
                                         <img src="{{ MEDIA_URL }}{{ form.instance.water_meter_image_path }}" alt="" class="img-fluid rounded border" style="max-height: 220px; object-fit: cover;">
                                     </button>
+                                    {% if form.instance.status != 'paid' %}
                                     <div class="mt-2">
                                         {{ form.remove_water_meter_image }}
                                         <button type="button" class="usage-delete-link" data-delete-trigger="{{ form.remove_water_meter_image.id_for_label }}">
@@ -191,6 +216,7 @@
                                     </div>
                                     {% if form.remove_water_meter_image.errors %}
                                     <div class="text-danger small mt-1">{{ form.remove_water_meter_image.errors|striptags }}</div>
+                                    {% endif %}
                                     {% endif %}
                                 </div>
                                 {% endif %}
@@ -482,7 +508,9 @@
                 </div>
 
                 <div class="d-flex gap-2 pt-4">
+                    {% if form.instance.status != 'paid' or not form.instance.pk %}
                     <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
+                    {% endif %}
                     <a href="{{ cancel_url }}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
                 </div>
             </form>
@@ -786,6 +814,7 @@
         const subscriptionRoomNameMap = JSON.parse(
             document.getElementById('subscription-room-name-map')?.textContent || '{}'
         );
+        const usageIsPaidLocked = {% if usage_is_paid %}true{% else %}false{% endif %};
         const usageTotalCard = document.getElementById('usageTotalCard');
         if (usageTotalCard) {
             const copyUsageSummaryButton = document.getElementById('copyUsageSummaryButton');
@@ -1159,8 +1188,8 @@
                         if (!input.dataset.originalRequired) {
                             input.dataset.originalRequired = input.required ? 'true' : 'false';
                         }
-                        input.disabled = restRoomSubscription;
-                        input.required = restRoomSubscription ? false : input.dataset.originalRequired === 'true';
+                        input.disabled = usageIsPaidLocked || restRoomSubscription;
+                        input.required = (usageIsPaidLocked || restRoomSubscription) ? false : input.dataset.originalRequired === 'true';
                     });
                 });
                 restroomOptionalRows.forEach((row) => {

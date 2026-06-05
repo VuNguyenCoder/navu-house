@@ -21,6 +21,10 @@ def user_can_manage_pricing(user):
     return user.is_authenticated and (user.is_superuser or getattr(user, 'role', None) == 'operator')
 
 
+def usage_is_locked(usage):
+    return usage.status == Usage.Status.PAID
+
+
 def get_previous_usage_context(subscription, period, exclude_usage_id=None):
     previous_usage = (
         Usage.objects.filter(subscription=subscription, period__lt=period)
@@ -626,6 +630,13 @@ class UsageUpdateView(OperatorRequiredMixin, SuccessMessageMixin, UpdateView):
     template_name = 'main/usage_form.html'
     success_message = _('Usage record updated successfully.')
 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if usage_is_locked(self.object):
+            messages.error(request, _('A paid usage record cannot be edited.'))
+            return redirect('usage_details', pk=self.object.pk)
+        return super().post(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         form = context.get('form')
@@ -639,6 +650,7 @@ class UsageUpdateView(OperatorRequiredMixin, SuccessMessageMixin, UpdateView):
             'selected_subscription': self.object.subscription,
             'rest_room_subscription_ids': form.rest_room_subscription_ids if form else [],
             'subscription_room_names': form.subscription_room_names if form else {},
+            'usage_is_paid': usage_is_locked(self.object),
         })
         return context
 
@@ -652,6 +664,20 @@ class UsageDeleteView(ManagementDeleteView):
 
     def get_success_message(self):
         return _('Usage record deleted successfully.')
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if usage_is_locked(self.object):
+            messages.error(request, _('A paid usage record cannot be deleted.'))
+            return redirect('usage_details', pk=self.object.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if usage_is_locked(self.object):
+            messages.error(request, _('A paid usage record cannot be deleted.'))
+            return redirect('usage_details', pk=self.object.pk)
+        return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -724,3 +750,19 @@ def usage_pricing_context(request):
 @login_required(login_url='account_login')
 def usage_list_redirect(request):
     return redirect('subscription_list')
+
+
+@login_required(login_url='account_login')
+def usage_mark_paid(request, pk):
+    if not user_can_manage_pricing(request.user):
+        raise PermissionDenied(_("You do not have permission to access this page."))
+    if request.method != 'POST':
+        return redirect('usage_details', pk=pk)
+
+    usage = get_object_or_404(Usage, pk=pk)
+    if usage.status != Usage.Status.PAID:
+        usage.status = Usage.Status.PAID
+        usage.save(update_fields=['status', 'updated_at'])
+        messages.success(request, _('Usage record marked as Paid successfully.'))
+
+    return redirect('usage_details', pk=usage.pk)

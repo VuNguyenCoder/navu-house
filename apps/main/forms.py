@@ -527,6 +527,11 @@ class UsageForm(StyledModelForm):
                 self.fields['latest_electricity_reading'].initial = subscription.start_electricity_reading
                 self.fields['latest_water_reading'].initial = subscription.start_water_reading
         self._apply_rest_room_rules(subscription)
+        self.is_paid_locked = bool(self.instance.pk and self.instance.status == Usage.Status.PAID)
+        if self.is_paid_locked:
+            for field in self.fields.values():
+                field.disabled = True
+                field.required = False
 
     def _get_selected_subscription(self):
         if self.instance.pk:

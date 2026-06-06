@@ -1,3 +1,4 @@
+from django.conf import settings
 from notifications.models import Notification
 
 
@@ -14,4 +15,10 @@ def notifications_dropdown(request):
     return {
         'navbar_notifications': notifications,
         'navbar_notifications_count': qs.count(),
+    }
+
+
+def app_footer(request):
+    return {
+        'app_build_time': settings.APP_BUILD_TIME or 'Unknown',
     }

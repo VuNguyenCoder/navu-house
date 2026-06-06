@@ -30,6 +30,7 @@ services:
       GUNICORN_BIND: 0.0.0.0:8000
       GUNICORN_WORKERS: "{{ gunicorn_workers }}"
       GUNICORN_THREADS: "{{ gunicorn_threads }}"
+      APP_BUILD_TIME: "{{ app_build_time_result.stdout }}"
       HTTPS_ENABLED: "{{ 'True' if https_enabled else 'False' }}"
       USE_X_FORWARDED_HOST: "True"
 {% if https_enabled %}

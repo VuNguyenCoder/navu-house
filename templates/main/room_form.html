@@ -46,7 +46,7 @@
                     {% if field.name != 'remove_image_paths' %}
                     <div class="col-12 {% if field.name == 'description' or field.name == 'images' %}col-lg-12{% else %}col-lg-6{% endif %}">
                         {% if field.name == 'latest_electricity_reading' or field.name == 'latest_water_reading' %}
-                        {% include "components/numeric_input.html" with field=field show_spinner_controls=True %}
+                        {% include "components/numeric_input/main.html" with field=field show_spinner_controls=True %}
                         <div class="room-reading-meta mt-2">
                             <div class="room-reading-meta-row">
                                 <span class="room-reading-meta-label">{% trans "Last updated" %}:</span>

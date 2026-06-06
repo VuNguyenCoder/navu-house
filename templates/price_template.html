@@ -32,7 +32,7 @@
                         {% csrf_token %}
 
                         {% for field in form %}
-                        {% include "components/numeric_input.html" with field=field show_spinner_controls=True step_value=1000 %}
+                        {% include "components/numeric_input/main.html" with field=field show_spinner_controls=True step_value=1000 %}
                         {% endfor %}
 
                         <div class="d-flex gap-2 pt-2">

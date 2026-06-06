@@ -492,7 +492,7 @@ class SubscriptionListView(OperatorRequiredMixin, ListView):
         if date_to:
             queryset = queryset.filter(start_date__lte=date_to)
 
-        return queryset
+        return queryset.order_by('room__room_name', '-start_date', '-updated_at', '-id')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

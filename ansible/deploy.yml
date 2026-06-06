@@ -68,6 +68,14 @@
         state: present
       when: https_enabled
 
+    - name: Capture deployment build time in Vietnam timezone
+      ansible.builtin.command:
+        cmd: date "+%Y-%m-%d %H:%M:%S %Z"
+      environment:
+        TZ: Asia/Ho_Chi_Minh
+      register: app_build_time_result
+      changed_when: false
+
     - name: Build deploy archive locally
       ansible.builtin.command:
         cmd: >-

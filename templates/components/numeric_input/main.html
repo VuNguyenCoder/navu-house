@@ -20,6 +20,16 @@
         z-index: 3;
     }
 
+    .price-spinner-group--standalone .form-control {
+        border-right: 1px solid var(--bs-border-color);
+        border-top-right-radius: 0.375rem;
+        border-bottom-right-radius: 0.375rem;
+    }
+
+    .price-spinner-group--standalone .form-control:focus {
+        border-right: 2px solid #000;
+    }
+
     .price-spinner-actions {
         display: flex;
         flex-shrink: 0;
@@ -137,9 +147,9 @@
 
 <div class="mb-3">
     <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
-    <div class="price-spinner-group">
+    <div class="price-spinner-group{% if not show_spinner_controls or field.field.disabled %} price-spinner-group--standalone{% endif %}">
         {{ field }}
-        {% if show_spinner_controls %}
+        {% if show_spinner_controls and not field.field.disabled %}
         <div class="price-spinner-actions">
             <button
                 type="button"
@@ -234,7 +244,7 @@
                 button.dataset.numericInputBound = 'true';
                 button.addEventListener('click', () => {
                     const input = document.getElementById(button.dataset.targetId);
-                    if (!input) {
+                    if (!input || input.disabled || button.disabled) {
                         return;
                     }
 

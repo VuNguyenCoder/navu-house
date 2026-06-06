@@ -72,6 +72,7 @@ CSRF_TRUSTED_ORIGINS = env_list('CSRF_TRUSTED_ORIGINS', '')
 USE_X_FORWARDED_HOST = as_bool(env('USE_X_FORWARDED_HOST', 'False'))
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 HTTPS_ENABLED = as_bool(env('HTTPS_ENABLED', 'False'))
+APP_BUILD_TIME = env('APP_BUILD_TIME', '')
 SESSION_COOKIE_SECURE = HTTPS_ENABLED
 CSRF_COOKIE_SECURE = HTTPS_ENABLED
 
@@ -123,6 +124,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.media',
                 'config.context_processors.notifications_dropdown',
+                'config.context_processors.app_footer',
             ],
         },
     },

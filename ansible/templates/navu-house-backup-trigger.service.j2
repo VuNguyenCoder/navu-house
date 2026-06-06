@@ -1,0 +1,6 @@
+[Unit]
+Description=Run Navu House backup on demand
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/navu-house-backup-trigger.sh

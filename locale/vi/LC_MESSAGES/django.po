@@ -153,6 +153,76 @@ msgstr "Mô tả phụ thu"
 msgid "Surcharge"
 msgstr "Phụ thu"
 
+msgid "Backups"
+msgstr "Sao lưu"
+
+msgid "Backup history"
+msgstr "Lịch sử sao lưu"
+
+msgid "Review backup archives and trigger a new backup when needed."
+msgstr "Theo dõi các bản sao lưu và chủ động chạy sao lưu mới khi cần."
+
+msgid "Run backup now"
+msgstr "Chạy sao lưu ngay"
+
+msgid "A backup request is currently queued. Please wait for the host service to start it."
+msgstr "Yêu cầu sao lưu hiện đang được xếp hàng. Vui lòng chờ dịch vụ trên máy chủ bắt đầu chạy."
+
+msgid "A backup is currently running on the host."
+msgstr "Một tác vụ sao lưu hiện đang chạy trên máy chủ."
+
+msgid "Backup directory"
+msgstr "Thư mục sao lưu"
+
+msgid "%(count)s backup file"
+msgid_plural "%(count)s backup files"
+msgstr[0] "%(count)s tệp sao lưu"
+
+msgid "File name"
+msgstr "Tên tệp"
+
+msgid "Modified at"
+msgstr "Cập nhật lúc"
+
+msgid "No backup files found yet."
+msgstr "Chưa tìm thấy tệp sao lưu nào."
+
+msgid "You do not have permission to access the backup page."
+msgstr "Bạn không có quyền truy cập trang sao lưu."
+
+msgid "You do not have permission to run backups."
+msgstr "Bạn không có quyền chạy sao lưu."
+
+msgid "A backup request is already queued."
+msgstr "Một yêu cầu sao lưu đã được xếp hàng."
+
+msgid "Backup request queued successfully."
+msgstr "Đã xếp hàng yêu cầu sao lưu thành công."
+
+msgid "Delete backup"
+msgstr "Xóa bản sao lưu"
+
+msgid "Are you sure you want to delete backup %(file_name)s?"
+msgstr "Bạn có chắc muốn xóa bản sao lưu %(file_name)s không?"
+
+msgid "You do not have permission to delete backups."
+msgstr "Bạn không có quyền xóa bản sao lưu."
+
+msgid "Invalid backup file name."
+msgstr "Tên tệp sao lưu không hợp lệ."
+
+msgid "Backup file not found."
+msgstr "Không tìm thấy tệp sao lưu."
+
+msgid "Backup deleted successfully."
+msgstr "Đã xóa bản sao lưu thành công."
+
+msgid "A delete request for this backup is already queued."
+msgstr "Một yêu cầu xóa cho bản sao lưu này đã được xếp hàng."
+
+msgid "Backup delete request queued successfully."
+msgstr "Đã xếp hàng yêu cầu xóa bản sao lưu thành công."
+
 #: apps/main/forms.py:336 apps/main/models.py:234
 msgid "A subscription can store at most 10 images."
 msgstr "Một hợp đồng có thể lưu tối đa 10 ảnh."

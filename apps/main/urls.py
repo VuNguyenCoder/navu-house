@@ -5,6 +5,9 @@ from . import views
 
 urlpatterns = [
     path('settings/', views.settings_page, name='settings_page'),
+    path('backups/', views.backup_history, name='backup_history'),
+    path('backups/run-now/', views.backup_run_now, name='backup_run_now'),
+    path('backups/delete/', views.backup_delete, name='backup_delete'),
     path('price-template/', views.price_template, name='price_template'),
     path('usage-pricing-context/', views.usage_pricing_context, name='usage_pricing_context'),
     path('vehicles/', views.VehicleListView.as_view(), name='vehicle_list'),

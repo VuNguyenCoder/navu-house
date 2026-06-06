@@ -52,6 +52,43 @@
         state: directory
         mode: "0755"
 
+    - name: Ensure backup trigger directory exists on remote host
+      ansible.builtin.file:
+        path: "{{ deploy_path }}/backup-trigger"
+        state: directory
+        mode: "0775"
+
+    - name: Ensure backup delete request directory exists on remote host
+      ansible.builtin.file:
+        path: "{{ deploy_path }}/backup-trigger/delete-requests"
+        state: directory
+        mode: "0775"
+
+    - name: Install NFS client packages
+      ansible.builtin.package:
+        name: "{{ 'nfs-common' if ansible_os_family == 'Debian' else 'nfs-utils' }}"
+        state: present
+
+    - name: Ensure NFS mount point exists
+      ansible.builtin.file:
+        path: "{{ backup_nfs_mount_point }}"
+        state: directory
+        mode: "0755"
+
+    - name: Mount NFS backup share
+      ansible.posix.mount:
+        src: "{{ backup_nfs_server }}:{{ backup_nfs_export }}"
+        path: "{{ backup_nfs_mount_point }}"
+        fstype: nfs
+        opts: rw,sync,hard
+        state: mounted
+
+    - name: Ensure backup directory exists on NFS share
+      ansible.builtin.file:
+        path: "{{ backup_nfs_mount_point }}/{{ backup_folder_name }}"
+        state: directory
+        mode: "0755"
+
     - name: Ensure nginx directories exist on remote host
       ansible.builtin.file:
         path: "{{ item }}"
@@ -156,36 +193,43 @@
 
     - name: Backup data weekly
       block:
-        - name: Install NFS client packages
-          ansible.builtin.package:
-            name: "{{ 'nfs-common' if ansible_os_family == 'Debian' else 'nfs-utils' }}"
-            state: present
-
-        - name: Ensure NFS mount point exists
-          ansible.builtin.file:
-            path: "{{ backup_nfs_mount_point }}"
-            state: directory
-            mode: "0755"
-
-        - name: Mount NFS backup share
-          ansible.posix.mount:
-            src: "{{ backup_nfs_server }}:{{ backup_nfs_export }}"
-            path: "{{ backup_nfs_mount_point }}"
-            fstype: nfs
-            opts: rw,sync,hard
-            state: mounted
-
-        - name: Ensure backup directory exists on NFS share
-          ansible.builtin.file:
-            path: "{{ backup_nfs_mount_point }}/{{ backup_folder_name }}"
-            state: directory
-            mode: "0755"
-
         - name: Render weekly backup script
           ansible.builtin.template:
             src: templates/weekly_backup.sh.j2
             dest: /usr/local/bin/navu-house-weekly-backup.sh
             mode: "0755"
+
+        - name: Render backup trigger systemd service
+          ansible.builtin.template:
+            src: templates/navu-house-backup-trigger.service.j2
+            dest: /etc/systemd/system/navu-house-backup-trigger.service
+            mode: "0644"
+          register: backup_trigger_service_unit
+
+        - name: Render backup trigger script
+          ansible.builtin.template:
+            src: templates/navu-house-backup-trigger.sh.j2
+            dest: /usr/local/bin/navu-house-backup-trigger.sh
+            mode: "0755"
+          register: backup_trigger_script
+
+        - name: Render backup trigger systemd path
+          ansible.builtin.template:
+            src: templates/navu-house-backup-trigger.path.j2
+            dest: /etc/systemd/system/navu-house-backup-trigger.path
+            mode: "0644"
+          register: backup_trigger_path_unit
+
+        - name: Reload systemd after backup trigger unit changes
+          ansible.builtin.systemd:
+            daemon_reload: true
+          when: backup_trigger_service_unit.changed or backup_trigger_path_unit.changed or backup_trigger_script.changed
+
+        - name: Enable and start backup trigger path
+          ansible.builtin.systemd:
+            name: navu-house-backup-trigger.path
+            enabled: true
+            state: started
 
         - name: Schedule weekly backup
           ansible.builtin.cron:

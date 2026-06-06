@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Backups" %}{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="{% trans 'Breadcrumb' %}" class="page-breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% trans "Backups" %}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">{% trans "Backup history" %}</h1>
+            <p class="text-muted mb-0">{% trans "Review backup archives and trigger a new backup when needed." %}</p>
+        </div>
+        <form method="post" action="{% url 'backup_run_now' %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger" {% if backup_trigger_pending %}disabled{% endif %}>
+                <i class="bi bi-play-circle me-1"></i>{% trans "Run backup now" %}
+            </button>
+        </form>
+    </div>
+
+    {% if backup_is_running %}
+    <div class="alert alert-info">
+        {% trans "A backup is currently running on the host." %}
+    </div>
+    {% elif backup_trigger_pending %}
+    <div class="alert alert-warning">
+        {% trans "A backup request is currently queued. Please wait for the host service to start it." %}
+    </div>
+    {% endif %}
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <div class="text-muted small">
+                    Backup mount point (NFS): <code>{{ backup_display_path }}</code>
+                </div>
+                <div class="text-muted small">
+                    {% blocktrans count count=backup_items|length %}{{ count }} backup file{% plural %}{{ count }} backup files{% endblocktrans %}
+                </div>
+            </div>
+
+            {% if backup_items %}
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>{% trans "File name" %}</th>
+                            <th>{% trans "Size" %}</th>
+                            <th>{% trans "Modified at" %}</th>
+                            <th class="text-end">{% trans "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in backup_items %}
+                        <tr>
+                            <td class="fw-semibold">{{ item.name }}</td>
+                            <td>{{ item.size_display }}</td>
+                            <td>{{ item.modified_at|date:"d/m/Y H:i:s" }}</td>
+                            <td class="text-end">
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#confirmDeleteModal"
+                                    data-delete-url="{% url 'backup_delete' %}"
+                                    data-delete-label="{{ item.name }}"
+                                    data-dialog-title="{% trans 'Delete backup' %}"
+                                    data-dialog-message="{% blocktrans with file_name=item.name %}Are you sure you want to delete backup {{ file_name }}?{% endblocktrans %}"
+                                    data-hidden-input-name="file_name"
+                                    data-hidden-input-value="{{ item.name }}"
+                                >
+                                    <i class="bi bi-trash me-1"></i>{% trans "Delete" %}
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-muted">
+                {% trans "No backup files found yet." %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

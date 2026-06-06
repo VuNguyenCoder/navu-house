@@ -342,6 +342,11 @@
                                     <i class="bi bi-cash-coin"></i> {% trans "Price template" %}
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path|slice:':9' == '/backups/' %}active{% endif %}" href="{% url 'backup_history' %}">
+                                    <i class="bi bi-hdd-stack"></i> {% trans "Backups" %}
+                                </a>
+                            </li>
                             {% endif %}
                         {% endif %}
                         <li class="nav-item">
@@ -437,6 +442,7 @@
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                     <form method="post" id="confirmDeleteForm" class="d-inline">
                         {% csrf_token %}
+                        <div id="confirmDeleteHiddenFields"></div>
                         <button
                             type="submit"
                             class="btn btn-danger"
@@ -530,8 +536,9 @@
             const confirmDeleteMessage = document.getElementById('confirmDeleteMessage');
             const confirmDeleteTitle = document.getElementById('confirmDeleteModalLabel');
             const confirmDeleteSubmitButton = document.getElementById('confirmDeleteSubmitButton');
+            const confirmDeleteHiddenFields = document.getElementById('confirmDeleteHiddenFields');
             const deleteMessageContainer = confirmDeleteMessage ? confirmDeleteMessage.parentElement : null;
-            if (!confirmDeleteModal || !confirmDeleteForm || !confirmDeleteMessage || !deleteMessageContainer || !confirmDeleteTitle || !confirmDeleteSubmitButton) {
+            if (!confirmDeleteModal || !confirmDeleteForm || !confirmDeleteMessage || !deleteMessageContainer || !confirmDeleteTitle || !confirmDeleteSubmitButton || !confirmDeleteHiddenFields) {
                 return;
             }
 
@@ -553,11 +560,22 @@
                 const dialogMessage = trigger.getAttribute('data-dialog-message') || '';
                 const submitLabel = trigger.getAttribute('data-submit-label') || '';
                 const submitClass = trigger.getAttribute('data-submit-class') || '';
+                const hiddenInputName = trigger.getAttribute('data-hidden-input-name') || '';
+                const hiddenInputValue = trigger.getAttribute('data-hidden-input-value') || '';
                 confirmDeleteForm.setAttribute('action', deleteUrl || '#');
                 confirmDeleteTitle.textContent = dialogTitle || defaultDeleteTitle;
                 confirmDeleteSubmitButton.textContent = submitLabel || defaultSubmitLabel;
                 confirmDeleteSubmitButton.classList.remove('btn-danger', 'btn-primary', 'btn-warning', 'btn-success', 'btn-secondary');
                 confirmDeleteSubmitButton.classList.add(submitClass || defaultSubmitClass);
+                confirmDeleteHiddenFields.innerHTML = '';
+
+                if (hiddenInputName) {
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = hiddenInputName;
+                    hiddenInput.value = hiddenInputValue;
+                    confirmDeleteHiddenFields.appendChild(hiddenInput);
+                }
 
                 if (dialogMessage) {
                     confirmDeleteMessage.textContent = dialogMessage;

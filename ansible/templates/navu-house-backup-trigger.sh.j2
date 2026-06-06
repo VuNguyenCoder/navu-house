@@ -1,0 +1,30 @@
+#!/bin/sh
+set -eu
+
+trigger_dir="{{ deploy_path }}/backup-trigger"
+request_now_file="${trigger_dir}/request-now"
+running_file="${trigger_dir}/running"
+delete_requests_dir="${trigger_dir}/delete-requests"
+backup_dir="{{ backup_nfs_mount_point }}/{{ backup_folder_name }}"
+
+if [ -f "${request_now_file}" ]; then
+  rm -f "${request_now_file}"
+  touch "${running_file}"
+  trap 'rm -f "${running_file}"' EXIT
+  /usr/local/bin/navu-house-weekly-backup.sh
+fi
+
+if [ -d "${delete_requests_dir}" ]; then
+  for request_file in "${delete_requests_dir}"/*.request; do
+    [ -e "${request_file}" ] || break
+    file_name="$(cat "${request_file}")"
+    case "${file_name}" in
+      ""|*/*)
+        rm -f "${request_file}"
+        continue
+        ;;
+    esac
+    rm -f "${backup_dir}/${file_name}"
+    rm -f "${request_file}"
+  done
+fi

@@ -1,5 +1,8 @@
-from datetime import date
+from datetime import date, datetime, timezone as dt_timezone
 from decimal import Decimal
+from pathlib import Path
+import os
+from django.conf import settings
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -59,6 +62,47 @@ def get_subscription_vehicle_url(subscription_id=None):
     if subscription_id:
         return f"{reverse('subscription_details', kwargs={'pk': subscription_id})}#vehicle-records"
     return base_url
+
+
+def _format_file_size(size_bytes):
+    size = float(size_bytes)
+    units = ['B', 'KB', 'MB', 'GB', 'TB']
+    for unit in units:
+        if size < 1024 or unit == units[-1]:
+            if unit == 'B':
+                return f'{int(size)} {unit}'
+            return f'{size:.1f} {unit}'
+        size /= 1024
+
+
+def get_backup_history_items():
+    backup_root = Path(settings.BACKUP_HISTORY_ROOT)
+    if not backup_root.exists() or not backup_root.is_dir():
+        return []
+
+    items = []
+    for backup_file in sorted(backup_root.glob('*.tar.gz'), key=lambda item: item.stat().st_mtime, reverse=True):
+        stat = backup_file.stat()
+        modified_at = datetime.fromtimestamp(stat.st_mtime, tz=dt_timezone.utc)
+        items.append({
+            'name': backup_file.name,
+            'size_bytes': stat.st_size,
+            'size_display': _format_file_size(stat.st_size),
+            'modified_at': modified_at,
+        })
+    return items
+
+
+def get_backup_trigger_file():
+    return Path(settings.BACKUP_TRIGGER_DIR) / 'request-now'
+
+
+def get_backup_running_file():
+    return Path(settings.BACKUP_TRIGGER_DIR) / 'running'
+
+
+def get_backup_delete_request_dir():
+    return Path(settings.BACKUP_TRIGGER_DIR) / 'delete-requests'
 
 
 def get_usage_period_from_form(form, fallback=None):
@@ -753,6 +797,83 @@ def settings_page(request):
             'app_settings': instance,
         },
     )
+
+
+@login_required(login_url='account_login')
+def backup_history(request):
+    if not user_can_manage_pricing(request.user):
+        raise PermissionDenied(_("You do not have permission to access the backup page."))
+
+    trigger_file = get_backup_trigger_file()
+    running_file = get_backup_running_file()
+    return render(
+        request,
+        'backup_history.html',
+        {
+            'backup_items': get_backup_history_items(),
+            'backup_trigger_pending': trigger_file.exists() or running_file.exists(),
+            'backup_is_running': running_file.exists(),
+            'backup_display_path': settings.BACKUP_DISPLAY_PATH,
+        },
+    )
+
+
+@login_required(login_url='account_login')
+def backup_run_now(request):
+    if not user_can_manage_pricing(request.user):
+        raise PermissionDenied(_("You do not have permission to run backups."))
+    if request.method != 'POST':
+        return redirect('backup_history')
+
+    trigger_file = get_backup_trigger_file()
+    running_file = get_backup_running_file()
+    trigger_file.parent.mkdir(parents=True, exist_ok=True)
+
+    if trigger_file.exists() or running_file.exists():
+        messages.info(request, _('A backup request is already queued.'))
+        return redirect('backup_history')
+
+    trigger_file.write_text(
+        f"user={request.user.username or request.user.pk}\nrequested_at={datetime.now(dt_timezone.utc).isoformat()}\n",
+        encoding='utf-8',
+    )
+    messages.success(request, _('Backup request queued successfully.'))
+    return redirect('backup_history')
+
+
+@login_required(login_url='account_login')
+def backup_delete(request):
+    if not user_can_manage_pricing(request.user):
+        raise PermissionDenied(_("You do not have permission to delete backups."))
+    if request.method != 'POST':
+        return redirect('backup_history')
+
+    requested_name = (request.POST.get('file_name') or '').strip()
+    safe_name = Path(requested_name).name
+    if not safe_name or safe_name != requested_name or not safe_name.endswith('.tar.gz'):
+        messages.error(request, _('Invalid backup file name.'))
+        return redirect('backup_history')
+
+    backup_file = Path(settings.BACKUP_HISTORY_ROOT) / safe_name
+    if not backup_file.exists():
+        messages.error(request, _('Backup file not found.'))
+        return redirect('backup_history')
+
+    if os.access(backup_file, os.W_OK) and os.access(backup_file.parent, os.W_OK):
+        backup_file.unlink()
+        messages.success(request, _('Backup deleted successfully.'))
+        return redirect('backup_history')
+
+    delete_request_dir = get_backup_delete_request_dir()
+    delete_request_dir.mkdir(parents=True, exist_ok=True)
+    queued_request = delete_request_dir / f'{safe_name}.request'
+    if queued_request.exists():
+        messages.info(request, _('A delete request for this backup is already queued.'))
+        return redirect('backup_history')
+
+    queued_request.write_text(safe_name, encoding='utf-8')
+    messages.success(request, _('Backup delete request queued successfully.'))
+    return redirect('backup_history')
 
 
 @login_required(login_url='account_login')

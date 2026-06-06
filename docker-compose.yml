@@ -47,6 +47,7 @@ services:
       GUNICORN_BIND: 0.0.0.0:8000
       GUNICORN_WORKERS: "2"
       GUNICORN_THREADS: "4"
+      BACKUP_DISPLAY_PATH: "${PWD}/volumes/backup"
     depends_on:
       db:
         condition: service_healthy
@@ -58,3 +59,5 @@ services:
       - 8000:8000
     volumes:
       - ./media:/app/media
+      - ./volumes/backup:/app/backup-history
+      - ./volumes/backup-trigger:/app/backup-trigger

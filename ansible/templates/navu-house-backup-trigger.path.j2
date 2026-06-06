@@ -1,0 +1,10 @@
+[Unit]
+Description=Watch for on-demand Navu House backup requests
+
+[Path]
+PathExists={{ deploy_path }}/backup-trigger/request-now
+PathExistsGlob={{ deploy_path }}/backup-trigger/delete-requests/*.request
+Unit=navu-house-backup-trigger.service
+
+[Install]
+WantedBy=multi-user.target

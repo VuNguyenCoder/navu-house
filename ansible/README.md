@@ -152,6 +152,7 @@ ansible-playbook -i ansible/inventory.yml ansible/deploy.yml
 7. Runs `docker compose up -d --build`
 8. Ensures the target PostgreSQL database exists, even if the remote Postgres volume was initialized earlier with another database name
 9. Mounts the NFS backup share and schedules a weekly backup that stores PostgreSQL and uploaded media in one archive
+10. Exposes backup history to the web container in read-only mode and enables an on-demand backup trigger via host-side systemd units
 
 ## Notes
 

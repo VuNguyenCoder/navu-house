@@ -9,19 +9,13 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from main.models import Subscription, Usage
+from main.models import Settings, Subscription, Usage
 from main.views import get_linked_restroom_usage_context, get_previous_usage_context
 
 
 def _get_dashboard_period(request):
-    local_today = timezone.localdate()
-    if local_today.day < 15:
-        if local_today.month == 1:
-            today = date(year=local_today.year - 1, month=12, day=1)
-        else:
-            today = date(year=local_today.year, month=local_today.month - 1, day=1)
-    else:
-        today = local_today.replace(day=1)
+    default_settings = Settings.get_solo()
+    today = default_settings.get_default_usage_period(timezone.localdate())
     period_value = request.GET.get('period')
     month_value = request.GET.get('month')
     year_value = request.GET.get('year')

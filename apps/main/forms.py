@@ -7,7 +7,7 @@ from django.core.files.storage import default_storage
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from .models import PRICE_FIELD_NAMES, PriceTemplate, Room, Subscription, Usage, Vehicle
+from .models import PRICE_FIELD_NAMES, PriceTemplate, Room, Settings, Subscription, Usage, Vehicle
 
 
 PRICE_WIDGET = forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'step': '1'})
@@ -118,6 +118,23 @@ class PriceTemplateForm(StyledModelForm):
             'laundry_price': _('Laundry price (VND / person)'),
         }
         widgets = {field: PRICE_WIDGET for field in PRICE_FIELD_NAMES}
+
+
+class SettingsForm(StyledModelForm):
+    class Meta:
+        model = Settings
+        fields = ['payment_period']
+        labels = {
+            'payment_period': _('Payment period'),
+        }
+        widgets = {
+            'payment_period': forms.NumberInput(attrs={'min': '1', 'max': '28', 'step': '1'}),
+        }
+        help_texts = {
+            'payment_period': _(
+                'If today is before this day, the default billing month will be the previous month. From this day onward, the default billing month will be the current month.'
+            ),
+        }
 
 
 class RoomForm(StyledModelForm):
@@ -507,7 +524,8 @@ class UsageForm(StyledModelForm):
             .filter(room__type=Room.RoomType.REST)
             .values_list('pk', flat=True)
         )
-        default_period = self.instance.period if self.instance.pk and self.instance.period else timezone.localdate().replace(day=1)
+        default_billing_period = Settings.get_solo().get_default_usage_period(timezone.localdate())
+        default_period = self.instance.period if self.instance.pk and self.instance.period else default_billing_period
         current_year = timezone.localdate().year
         self.fields['billing_month'].choices = [(f'{month:02d}', f'{month:02d}') for month in range(1, 13)]
         self.fields['billing_year'].choices = [(str(year), str(year)) for year in range(current_year - 2, current_year + 6)]

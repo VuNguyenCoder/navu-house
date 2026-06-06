@@ -486,6 +486,30 @@ msgstr "Chưa tạo"
 msgid "Unpaid"
 msgstr "Chưa thanh toán"
 
+msgid "Payment period"
+msgstr "Kỳ thanh toán"
+
+msgid "If today is before this day, the default billing month will be the previous month."
+msgstr "Nếu hôm nay trước ngày này, tháng tính tiền mặc định sẽ là tháng trước."
+
+msgid "If today is before this day, the default billing month will be the previous month. From this day onward, the default billing month will be the current month."
+msgstr "Nếu hôm nay trước ngày này, tháng tính tiền mặc định sẽ là tháng trước. Từ ngày này trở đi, tháng tính tiền mặc định sẽ là tháng hiện tại."
+
+msgid "You do not have permission to access the settings page."
+msgstr "Bạn không có quyền truy cập trang cài đặt."
+
+msgid "Settings updated successfully."
+msgstr "Đã cập nhật cài đặt thành công."
+
+msgid "Application settings"
+msgstr "Cài đặt ứng dụng"
+
+msgid "Configure shared operational rules used across the billing workflow."
+msgstr "Cấu hình các quy tắc dùng chung trong toàn bộ quy trình tính tiền."
+
+msgid "Save settings"
+msgstr "Lưu cài đặt"
+
 #: config/views.py:180
 msgid "Total subscriptions"
 msgstr "Tổng số hợp đồng"
@@ -698,7 +722,7 @@ msgstr "Trạng thái usage"
 #: templates/home.html:281
 #, python-format
 msgid "Usage record status for %(period)s"
-msgstr "Trạng thái usage record của %(period)s"
+msgstr "Tình trạng các hợp đồng tháng %(period)s"
 
 #: templates/home.html:282
 msgid "Annotation"
@@ -1136,8 +1160,8 @@ msgstr "Nước của nhà vệ sinh"
 
 #: templates/main/usage_form.html:279
 #, python-format
-msgid "Invoice for room %(room_name)s %(period)s"
-msgstr "Hóa đơn của phòng %(room_name)s %(period)s"
+msgid "Invoice for %(room_name)s %(period)s"
+msgstr "Hóa đơn của %(room_name)s %(period)s"
 
 #: templates/main/usage_form.html:281 templates/main/usage_form.html:894
 msgid "Invoice summary"
@@ -1234,8 +1258,8 @@ msgid "Generated image preview"
 msgstr "Xem trước ảnh đã tạo"
 
 #: templates/main/usage_form.html:897
-msgid "Invoice for room"
-msgstr "Hóa đơn của phòng"
+msgid "Invoice for"
+msgstr "Hóa đơn của"
 
 #: templates/main/usage_form.html:1019
 msgid "Preview is not available here. The image was downloaded instead."

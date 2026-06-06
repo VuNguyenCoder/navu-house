@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import PriceTemplate, Room, Subscription, Usage, Vehicle
+from .models import PriceTemplate, Room, Settings, Subscription, Usage, Vehicle
 
 
 @admin.register(PriceTemplate)
@@ -15,6 +15,15 @@ class PriceTemplateAdmin(admin.ModelAdmin):
         'updated_at',
     )
     readonly_fields = ('created_at', 'updated_at')
+
+
+@admin.register(Settings)
+class SettingsAdmin(admin.ModelAdmin):
+    list_display = (
+        'payment_period',
+        'updated_at',
+    )
+    readonly_fields = ('updated_at',)
 
 
 @admin.register(Room)

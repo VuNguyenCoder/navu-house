@@ -29,6 +29,9 @@ https_subject_alt_names:
   - DNS:localhost
 gunicorn_workers: 1
 gunicorn_threads: 2
+docker_daemon_dns:
+  - 1.1.1.1
+  - 8.8.8.8
 
 backup_nfs_server: 192.168.1.10
 backup_nfs_export: /volume1/navu-house

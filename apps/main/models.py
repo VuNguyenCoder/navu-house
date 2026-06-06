@@ -1,8 +1,10 @@
+from datetime import date
 from decimal import Decimal
 
-from django.conf import settings
+from django.conf import settings as django_settings
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
@@ -48,6 +50,36 @@ class PriceTemplate(models.Model):
                 'laundry_price': 0,
             },
         )[0]
+
+
+class Settings(models.Model):
+    payment_period = models.PositiveSmallIntegerField(
+        default=15,
+        validators=[MinValueValidator(1), MaxValueValidator(28)],
+        help_text=_('If today is before this day, the default billing month will be the previous month.'),
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _('Settings')
+        verbose_name_plural = _('Settings')
+
+    def __str__(self):
+        return _('Settings')
+
+    @classmethod
+    def get_solo(cls):
+        return cls.objects.get_or_create(pk=1, defaults={'payment_period': 15})[0]
+
+    def get_default_usage_period(self, today=None):
+        if today is None:
+            from django.utils import timezone
+            today = timezone.localdate()
+        if today.day < self.payment_period:
+            if today.month == 1:
+                return date(year=today.year - 1, month=12, day=1)
+            return date(year=today.year, month=today.month - 1, day=1)
+        return today.replace(day=1)
 
 
 class Room(models.Model):
@@ -100,14 +132,14 @@ class Room(models.Model):
         related_name='+',
     )
     latest_electricity_reading_updated_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        django_settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name='+',
     )
     latest_water_reading_updated_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        django_settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
         on_delete=models.SET_NULL,

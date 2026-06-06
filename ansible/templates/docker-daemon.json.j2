@@ -1,0 +1,3 @@
+{
+  "dns": [{% for server in docker_daemon_dns %}"{{ server }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+}

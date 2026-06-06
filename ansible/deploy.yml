@@ -24,6 +24,22 @@
         enabled: true
         state: started
 
+    - name: Configure Docker daemon DNS resolvers
+      ansible.builtin.template:
+        src: templates/docker-daemon.json.j2
+        dest: /etc/docker/daemon.json
+        mode: "0644"
+      register: docker_daemon_dns_config
+      when: docker_daemon_dns | default([]) | length > 0
+
+    - name: Restart Docker after DNS configuration change
+      ansible.builtin.service:
+        name: docker
+        state: restarted
+      when:
+        - docker_daemon_dns | default([]) | length > 0
+        - docker_daemon_dns_config.changed
+
     - name: Ensure deploy parent directory exists
       ansible.builtin.file:
         path: "{{ project_parent_dir }}"

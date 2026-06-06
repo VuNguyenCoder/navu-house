@@ -288,7 +288,7 @@
                             {% endif %}
                         {% endif %}
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link {% if request.path == '/settings/' %}active{% endif %}" href="{% url 'settings_page' %}">
                                 <i class="bi bi-gear"></i> {% trans "Settings" %}
                             </a>
                         </li>

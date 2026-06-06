@@ -276,7 +276,7 @@
                                         <h2 class="h5 mb-1">{% trans "Total amount" %}</h2>
                                         <div class="usage-invoice-heading mb-2" id="usageInvoiceHeading">
                                             {% if selected_subscription %}
-                                                {% blocktrans with room_name=selected_subscription.room.room_name period=form.instance.period|date:"m/Y"|default:form.fields.period.initial|date:"m/Y" %}Invoice for room {{ room_name }} {{ period }}{% endblocktrans %}
+                                                {% blocktrans with room_name=selected_subscription.room.room_name period=form.instance.period|date:"m/Y"|default:form.fields.period.initial|date:"m/Y" %}Invoice for {{ room_name }} {{ period }}{% endblocktrans %}
                                             {% else %}
                                                 {% trans "Invoice summary" %}
                                             {% endif %}
@@ -894,7 +894,7 @@
                     usageInvoiceHeading.textContent = '{% trans "Invoice summary" %}';
                     return;
                 }
-                usageInvoiceHeading.textContent = `{% trans "Invoice for room" %} ${roomLabel} ${month}/${year}`;
+                usageInvoiceHeading.textContent = `{% trans "Invoice for" %} ${roomLabel} ${month}/${year}`;
             };
 
             const setCopyStatus = (message, isError = false) => {

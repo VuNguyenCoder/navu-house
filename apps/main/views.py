@@ -13,8 +13,8 @@ from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
-from .forms import PriceTemplateForm, RoomForm, SubscriptionForm, UsageForm, VehicleForm
-from .models import PriceTemplate, Room, Subscription, Usage, Vehicle
+from .forms import PriceTemplateForm, RoomForm, SettingsForm, SubscriptionForm, UsageForm, VehicleForm
+from .models import PriceTemplate, Room, Settings, Subscription, Usage, Vehicle
 
 
 def user_can_manage_pricing(user):
@@ -724,6 +724,32 @@ def price_template(request):
         {
             'form': form,
             'price_template': instance,
+        },
+    )
+
+
+@login_required(login_url='account_login')
+def settings_page(request):
+    if not user_can_manage_pricing(request.user):
+        raise PermissionDenied(_("You do not have permission to access the settings page."))
+
+    instance = Settings.get_solo()
+
+    if request.method == 'POST':
+        form = SettingsForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _('Settings updated successfully.'))
+            return redirect('settings_page')
+    else:
+        form = SettingsForm(instance=instance)
+
+    return render(
+        request,
+        'setting.html',
+        {
+            'form': form,
+            'app_settings': instance,
         },
     )
 

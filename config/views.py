@@ -127,40 +127,49 @@ def home(request):
     total_electricity_revenue = Decimal('0')
     total_water_revenue = Decimal('0')
     total_room_revenue = Decimal('0')
+    total_revenue = Decimal('0')
 
     usage_status_cells = []
     for subscription in subscriptions:
+        is_rest_room_subscription = subscription.room.type == subscription.room.RoomType.REST
         usage = usage_by_subscription_id.get(subscription.pk)
         if usage:
             usage_totals = _build_usage_dashboard_totals(usage)
             total_electricity_consumed += usage_totals['electricity_consumed']
             total_water_consumed += usage_totals['water_consumed']
-            total_electricity_revenue += usage_totals['electricity_revenue']
-            total_water_revenue += usage_totals['water_revenue']
+            if not is_rest_room_subscription:
+                total_electricity_revenue += usage_totals['electricity_revenue']
+                total_water_revenue += usage_totals['water_revenue']
             total_room_revenue += usage_totals['room_revenue']
+            if not is_rest_room_subscription:
+                total_revenue += usage_totals['total_amount']
             is_paid = usage.status == Usage.Status.PAID
-            usage_status_cells.append({
-                'room_name': subscription.room.room_name,
-                'description': subscription.description or '',
-                'status': usage.status,
-                'status_label': _('Paid') if is_paid else _('Unpaid'),
-                'status_class': 'dashboard-cell-paid' if is_paid else 'dashboard-cell-new',
-                'usage_id': usage.pk,
-                'target_url': reverse('usage_details', kwargs={'pk': usage.pk}),
-            })
+            if not is_rest_room_subscription:
+                usage_status_cells.append({
+                    'room_name': subscription.room.room_name,
+                    'description': subscription.description or '',
+                    'status': usage.status,
+                    'status_label': _('Paid') if is_paid else _('Unpaid'),
+                    'status_class': 'dashboard-cell-paid' if is_paid else 'dashboard-cell-new',
+                    'total_amount_display': f"{_format_number(usage_totals['total_amount'])} VND",
+                    'usage_id': usage.pk,
+                    'target_url': reverse('usage_details', kwargs={'pk': usage.pk}),
+                })
         else:
-            usage_status_cells.append({
-                'room_name': subscription.room.room_name,
-                'description': subscription.description or '',
-                'status': 'missing',
-                'status_label': _('Not created'),
-                'status_class': 'dashboard-cell-missing',
-                'usage_id': None,
-                'target_url': (
-                    f"{reverse('usage_create')}?subscription={subscription.pk}"
-                    f"&month={selected_month}&year={selected_year}"
-                ),
-            })
+            if not is_rest_room_subscription:
+                usage_status_cells.append({
+                    'room_name': subscription.room.room_name,
+                    'description': subscription.description or '',
+                    'status': 'missing',
+                    'status_label': _('Not created'),
+                    'status_class': 'dashboard-cell-missing',
+                    'total_amount_display': '',
+                    'usage_id': None,
+                    'target_url': (
+                        f"{reverse('usage_create')}?subscription={subscription.pk}"
+                        f"&month={selected_month}&year={selected_year}"
+                    ),
+                })
 
     context = {
         'dashboard_period': period,
@@ -169,39 +178,67 @@ def home(request):
         'period_choices': _build_dashboard_period_choices(period),
         'selected_month': selected_month,
         'selected_year': selected_year,
-        'summary_cards': [
+        'summary_groups': [
             {
-                'title': _('Total subscriptions'),
-                'value': _format_number(len(subscriptions)),
+                'title': _('Subscriptions'),
                 'accent_class': 'summary-card-subscriptions',
+                'items': [
+                    {
+                        'label': _('Total subscriptions'),
+                        'value': _format_number(len(subscriptions)),
+                    },
+                ],
             },
             {
-                'title': _('Total electricity consumed'),
-                'value': f"{_format_number(total_electricity_consumed)} kWh",
+                'title': _('Electricity'),
                 'accent_class': 'summary-card-electricity',
+                'items': [
+                    {
+                        'label': _('Total electricity consumed'),
+                        'value': f"{_format_number(total_electricity_consumed)} kWh",
+                    },
+                    {
+                        'label': _('Total electricity revenue'),
+                        'value': f"{_format_number(total_electricity_revenue)} VND",
+                    },
+                ],
             },
             {
-                'title': _('Total electricity revenue'),
-                'value': f"{_format_number(total_electricity_revenue)} VND",
-                'accent_class': 'summary-card-electricity',
-            },
-            {
-                'title': _('Total water consumed'),
-                'value': f"{_format_number(total_water_consumed)} m3",
+                'title': _('Water'),
                 'accent_class': 'summary-card-water',
+                'items': [
+                    {
+                        'label': _('Total water consumed'),
+                        'value': f"{_format_number(total_water_consumed)} m3",
+                    },
+                    {
+                        'label': _('Total water revenue'),
+                        'value': f"{_format_number(total_water_revenue)} VND",
+                    },
+                ],
             },
             {
-                'title': _('Total water revenue'),
-                'value': f"{_format_number(total_water_revenue)} VND",
-                'accent_class': 'summary-card-water',
-            },
-            {
-                'title': _('Total room revenue'),
-                'value': f"{_format_number(total_room_revenue)} VND",
+                'title': _('Room'),
                 'accent_class': 'summary-card-room',
+                'items': [
+                    {
+                        'label': _('Total room revenue'),
+                        'value': f"{_format_number(total_room_revenue)} VND",
+                    },
+                ],
+            },
+            {
+                'title': _('Total'),
+                'accent_class': 'summary-card-total',
+                'items': [
+                    {
+                        'label': _('Grand total amount'),
+                        'value': f"{_format_number(total_revenue)} VND",
+                    },
+                ],
             },
         ],
-        'usage_status_cells': usage_status_cells,
+        'usage_status_cells': sorted(usage_status_cells, key=lambda cell: cell['room_name'].lower()),
     }
     return render(request, 'home.html', context)
 

@@ -62,7 +62,7 @@
 
     .summary-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 1rem;
         padding: 1.5rem;
     }
@@ -73,8 +73,8 @@
         border-radius: 1rem;
         border: 1px solid rgba(15, 23, 42, 0.08);
         background: #fff;
-        padding: 1.15rem 1.1rem;
-        min-height: 132px;
+        padding: 0.95rem 1rem;
+        min-height: 110px;
     }
 
     .summary-card::before {
@@ -90,18 +90,46 @@
     .summary-card-electricity::before { background: #d97706; }
     .summary-card-water::before { background: #0d6efd; }
     .summary-card-room::before { background: #7c3aed; }
+    .summary-card-total::before { background: #dc2626; }
 
     .summary-card-label {
-        color: #64748b;
-        font-size: 0.88rem;
-        margin-bottom: 0.55rem;
+        color: #0f172a;
+        font-size: 0.96rem;
+        font-weight: 700;
+        margin-bottom: 0.65rem;
     }
 
     .summary-card-value {
-        font-size: clamp(1.35rem, 2vw, 1.9rem);
+        font-size: clamp(1rem, 1.8vw, 1.2rem);
         font-weight: 700;
         line-height: 1.15;
         color: #0f172a;
+    }
+
+    .summary-card-list {
+        display: grid;
+        gap: 0.55rem;
+    }
+
+    .summary-card-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 0.75rem;
+    }
+
+    .summary-card-item-label {
+        font-size: 0.78rem;
+        color: #64748b;
+        line-height: 1.25;
+    }
+
+    .summary-card-item-value {
+        font-size: 0.96rem;
+        font-weight: 700;
+        color: #0f172a;
+        text-align: right;
+        white-space: nowrap;
     }
 
     .status-legend {
@@ -210,6 +238,16 @@
         color: rgba(255, 255, 255, 0.9);
     }
 
+    .usage-status-amount {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
     .dashboard-empty {
         padding: 2rem 1.5rem;
         text-align: center;
@@ -265,12 +303,22 @@
             </div>
 
             <div class="summary-grid">
-                {% for card in summary_cards %}
-                <article class="summary-card {{ card.accent_class }}">
-                    <div class="summary-card-label">{{ card.title }}</div>
-                    <div class="summary-card-value">{{ card.value }}</div>
+                {% for group in summary_groups %}
+                <article class="summary-card {{ group.accent_class }}">
+                    <div class="summary-card-label">{{ group.title }}</div>
+                    <div class="summary-card-list">
+                        {% for item in group.items %}
+                        <div class="summary-card-item">
+                            <div class="summary-card-item-label">{{ item.label }}</div>
+                            <div class="summary-card-item-value">{{ item.value }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </article>
                 {% endfor %}
+            </div>
+            <div class="px-4 pb-4 small text-muted">
+                {% trans "Shared restroom usage is excluded from revenue totals and usage status." %}
             </div>
         </section>
 
@@ -310,6 +358,8 @@
                     </div>
                     {% if cell.status == 'missing' %}
                     <div class="usage-status-plus" aria-hidden="true">+</div>
+                    {% else %}
+                    <div class="usage-status-amount">{{ cell.total_amount_display }}</div>
                     {% endif %}
                     <div class="usage-status-footer">{{ cell.status_label }}</div>
                 </a>

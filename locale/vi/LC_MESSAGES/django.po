@@ -510,6 +510,12 @@ msgstr "Cấu hình các quy tắc dùng chung trong toàn bộ quy trình tính
 msgid "Save settings"
 msgstr "Lưu cài đặt"
 
+msgid "Grand total amount"
+msgstr "Tổng tiền tất cả"
+
+msgid "Shared restroom usage is excluded from revenue totals and usage status."
+msgstr "Usage của phòng vệ sinh chung được loại khỏi các tổng doanh thu và phần trạng thái usage."
+
 #: config/views.py:180
 msgid "Total subscriptions"
 msgstr "Tổng số hợp đồng"

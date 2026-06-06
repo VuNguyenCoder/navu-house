@@ -93,5 +93,21 @@
             {% endif %}
         </div>
     </div>
+
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body p-4">
+            <h2 class="h5 mb-3">{% trans "Restore guide" %}</h2>
+            <p class="text-muted mb-3">
+                {% trans "Use the restore playbook on the operator machine to restore PostgreSQL and media from one backup archive." %}
+            </p>
+            <ol class="mb-3">
+                <li>{% trans "Choose a backup file from the list above." %}</li>
+                <li>{% trans "Run the restore playbook with the selected file name." %}</li>
+                <li>{% trans "Wait for the playbook to recreate the database, restore media, and restart the stack." %}</li>
+            </ol>
+            <div class="small text-muted mb-2">{% trans "Example command" %}:</div>
+            <pre class="bg-body-tertiary border rounded p-3 mb-0"><code>ansible-playbook -i ansible/inventory.yml ansible/restore.yml -e "backup_file_name=&lt;backup-file-name&gt;"</code></pre>
+        </div>
+    </div>
 </div>
 {% endblock %}

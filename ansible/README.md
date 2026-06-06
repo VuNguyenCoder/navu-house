@@ -141,6 +141,37 @@ Important values and how to fill them:
 ansible-playbook -i ansible/inventory.yml ansible/deploy.yml
 ```
 
+## Restore from backup
+
+Use the restore playbook when you need to replace the current PostgreSQL database and media with one backup archive.
+
+```bash
+ansible-playbook -i ansible/inventory.yml ansible/restore.yml -e "backup_file_name=<backup-file-name>"
+```
+
+Example:
+
+```bash
+ansible-playbook -i ansible/inventory.yml ansible/restore.yml -e "backup_file_name=20260605-021500.tar.gz"
+```
+
+What it restores:
+
+- PostgreSQL database from `postgres.sql`
+- uploaded files from `media/`
+
+The restore playbook performs a PostgreSQL permission preflight check before destructive steps begin. It fails early if the configured database role cannot:
+
+- terminate active connections
+- recreate the target database
+- operate on the existing target database ownership model
+
+Important:
+
+- This overwrites the current deployed database and media
+- Use it only when you intentionally want to roll the system back or recover it
+- The archive must exist under `{{ backup_nfs_mount_point }}/{{ backup_folder_name }}/`
+
 ## What the playbook does
 
 1. Installs Docker and Docker Compose plugin with `geerlingguy.docker`

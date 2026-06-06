@@ -1,0 +1,209 @@
+---
+- name: Restore Navu House backup
+  hosts: private
+  become: true
+  vars:
+    restore_archive_path: "{{ backup_nfs_mount_point }}/{{ backup_folder_name }}/{{ backup_file_name }}"
+    restore_extract_dir: "/tmp/navu-house-restore"
+  tasks:
+    - name: Validate backup_file_name is provided
+      ansible.builtin.assert:
+        that:
+          - backup_file_name is defined
+          - backup_file_name | length > 0
+        fail_msg: "Provide backup_file_name, for example: -e backup_file_name=20260605-021500.tar.gz"
+
+    - name: Ensure backup archive exists
+      ansible.builtin.stat:
+        path: "{{ restore_archive_path }}"
+      register: restore_archive_stat
+
+    - name: Stop if backup archive is missing
+      ansible.builtin.assert:
+        that:
+          - restore_archive_stat.stat.exists
+          - restore_archive_stat.stat.isreg
+        fail_msg: "Backup archive not found at {{ restore_archive_path }}"
+
+    - name: Ensure restore temp directory is clean
+      ansible.builtin.file:
+        path: "{{ restore_extract_dir }}"
+        state: absent
+
+    - name: Create restore temp directory
+      ansible.builtin.file:
+        path: "{{ restore_extract_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Extract backup archive
+      ansible.builtin.unarchive:
+        src: "{{ restore_archive_path }}"
+        dest: "{{ restore_extract_dir }}"
+        remote_src: true
+
+    - name: Validate extracted postgres dump exists
+      ansible.builtin.stat:
+        path: "{{ restore_extract_dir }}/postgres.sql"
+      register: restore_postgres_dump
+
+    - name: Stop if postgres.sql is missing in archive
+      ansible.builtin.assert:
+        that:
+          - restore_postgres_dump.stat.exists
+          - restore_postgres_dump.stat.isreg
+        fail_msg: "postgres.sql was not found inside {{ restore_archive_path }}"
+
+    - name: Check current PostgreSQL role inside database container
+      ansible.builtin.command:
+        cmd: >-
+          docker compose exec -T db
+          psql -U {{ postgres_user }} -d postgres -tA -c
+          "SELECT current_user;"
+      args:
+        chdir: "{{ deploy_path }}"
+      register: restore_pg_current_user
+      changed_when: false
+
+    - name: Check PostgreSQL superuser flag
+      ansible.builtin.command:
+        cmd: >-
+          docker compose exec -T db
+          psql -U {{ postgres_user }} -d postgres -tA -c
+          "SELECT rolsuper::int FROM pg_roles WHERE rolname = current_user;"
+      args:
+        chdir: "{{ deploy_path }}"
+      register: restore_pg_is_superuser
+      changed_when: false
+
+    - name: Check PostgreSQL CREATEDB privilege
+      ansible.builtin.command:
+        cmd: >-
+          docker compose exec -T db
+          psql -U {{ postgres_user }} -d postgres -tA -c
+          "SELECT rolcreatedb::int FROM pg_roles WHERE rolname = current_user;"
+      args:
+        chdir: "{{ deploy_path }}"
+      register: restore_pg_can_createdb
+      changed_when: false
+
+    - name: Check PostgreSQL backend signal privilege
+      ansible.builtin.command:
+        cmd: >-
+          docker compose exec -T db
+          psql -U {{ postgres_user }} -d postgres -tA -c
+          "SELECT pg_has_role(current_user, 'pg_signal_backend', 'MEMBER')::int;"
+      args:
+        chdir: "{{ deploy_path }}"
+      register: restore_pg_can_signal_backend
+      changed_when: false
+
+    - name: Check whether target database exists
+      ansible.builtin.command:
+        cmd: >-
+          docker compose exec -T db
+          psql -U {{ postgres_user }} -d postgres -tA -c
+          "SELECT EXISTS (SELECT 1 FROM pg_database WHERE datname='{{ postgres_db }}')::int;"
+      args:
+        chdir: "{{ deploy_path }}"
+      register: restore_pg_db_exists
+      changed_when: false
+
+    - name: Read owner of existing target database
+      ansible.builtin.command:
+        cmd: >-
+          docker compose exec -T db
+          psql -U {{ postgres_user }} -d postgres -tA -c
+          "SELECT pg_get_userbyid(datdba) FROM pg_database WHERE datname='{{ postgres_db }}';"
+      args:
+        chdir: "{{ deploy_path }}"
+      register: restore_pg_db_owner
+      changed_when: false
+      when: restore_pg_db_exists.stdout | trim == '1'
+
+    - name: Assert restore role can terminate backend connections
+      ansible.builtin.assert:
+        that:
+          - restore_pg_can_signal_backend.stdout | trim == '1' or restore_pg_is_superuser.stdout | trim == '1'
+        fail_msg: >-
+          Restore preflight failed: PostgreSQL role {{ restore_pg_current_user.stdout | trim }}
+          cannot terminate active connections for {{ postgres_db }}.
+          Use a role with pg_signal_backend membership or a superuser role such as postgres.
+
+    - name: Assert restore role can recreate database
+      ansible.builtin.assert:
+        that:
+          - restore_pg_can_createdb.stdout | trim == '1' or restore_pg_is_superuser.stdout | trim == '1'
+        fail_msg: >-
+          Restore preflight failed: PostgreSQL role {{ restore_pg_current_user.stdout | trim }}
+          cannot create database {{ postgres_db }}.
+          Use a role with CREATEDB or a superuser role such as postgres.
+
+    - name: Assert restore role owns existing target database or is superuser
+      ansible.builtin.assert:
+        that:
+          - restore_pg_db_owner.stdout | trim == restore_pg_current_user.stdout | trim or restore_pg_is_superuser.stdout | trim == '1'
+        fail_msg: >-
+          Restore preflight failed: PostgreSQL role {{ restore_pg_current_user.stdout | trim }}
+          does not own existing database {{ postgres_db }}.
+          Current owner: {{ restore_pg_db_owner.stdout | trim }}.
+          Use the owner role or a superuser role such as postgres.
+      when: restore_pg_db_exists.stdout | trim == '1'
+
+    - name: Terminate active connections to target database
+      ansible.builtin.command:
+        cmd: >-
+          docker compose exec -T db
+          psql -U {{ postgres_user }} -d postgres -c
+          "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='{{ postgres_db }}' AND pid <> pg_backend_pid();"
+      args:
+        chdir: "{{ deploy_path }}"
+
+    - name: Drop target database
+      ansible.builtin.command:
+        cmd: >-
+          docker compose exec -T db
+          psql -U {{ postgres_user }} -d postgres -c
+          "DROP DATABASE IF EXISTS {{ postgres_db }};"
+      args:
+        chdir: "{{ deploy_path }}"
+
+    - name: Recreate target database
+      ansible.builtin.command:
+        cmd: >-
+          docker compose exec -T db
+          psql -U {{ postgres_user }} -d postgres -c
+          "CREATE DATABASE {{ postgres_db }};"
+      args:
+        chdir: "{{ deploy_path }}"
+
+    - name: Restore PostgreSQL dump
+      ansible.builtin.shell: >
+        docker compose exec -T db
+        psql -U {{ postgres_user }} -d {{ postgres_db }}
+        < {{ restore_extract_dir }}/postgres.sql
+      args:
+        chdir: "{{ deploy_path }}"
+
+    - name: Remove current media directory
+      ansible.builtin.file:
+        path: "{{ deploy_path }}/media"
+        state: absent
+
+    - name: Restore media directory
+      ansible.builtin.copy:
+        src: "{{ restore_extract_dir }}/media/"
+        dest: "{{ deploy_path }}/media/"
+        remote_src: true
+        mode: preserve
+
+    - name: Restart docker compose stack after restore
+      ansible.builtin.command:
+        cmd: docker compose up -d
+      args:
+        chdir: "{{ deploy_path }}"
+
+    - name: Remove restore temp directory
+      ansible.builtin.file:
+        path: "{{ restore_extract_dir }}"
+        state: absent

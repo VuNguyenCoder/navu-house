@@ -223,6 +223,24 @@ msgstr "Một yêu cầu xóa cho bản sao lưu này đã được xếp hàng.
 msgid "Backup delete request queued successfully."
 msgstr "Đã xếp hàng yêu cầu xóa bản sao lưu thành công."
 
+msgid "Restore guide"
+msgstr "Hướng dẫn phục hồi"
+
+msgid "Use the restore playbook on the operator machine to restore PostgreSQL and media from one backup archive."
+msgstr "Dùng playbook restore trên máy vận hành để phục hồi PostgreSQL và media từ một file sao lưu."
+
+msgid "Choose a backup file from the list above."
+msgstr "Chọn một file sao lưu từ danh sách ở trên."
+
+msgid "Run the restore playbook with the selected file name."
+msgstr "Chạy playbook restore với tên file sao lưu đã chọn."
+
+msgid "Wait for the playbook to recreate the database, restore media, and restart the stack."
+msgstr "Chờ playbook tạo lại database, phục hồi media và khởi động lại stack."
+
+msgid "Example command"
+msgstr "Ví dụ lệnh"
+
 #: apps/main/forms.py:336 apps/main/models.py:234
 msgid "A subscription can store at most 10 images."
 msgstr "Một hợp đồng có thể lưu tối đa 10 ảnh."

@@ -269,6 +269,37 @@
                     </div>
 
                     <div class="col-12">
+                        <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, rgba(220,53,69,0.06), rgba(255,193,7,0.06));">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <i class="bi bi-receipt text-danger"></i>
+                                    <h2 class="h5 mb-0">{% trans "Surcharge" %}</h2>
+                                </div>
+                                <div class="row g-3">
+                                    {% for field in form %}
+                                    {% if field.name == 'surcharge_amount' or field.name == 'surcharge_description' %}
+                                    <div class="col-12 {% if field.name == 'surcharge_amount' %}col-lg-6{% else %}col-lg-12{% endif %}">
+                                        {% if field.name == 'surcharge_amount' %}
+                                            {% include "components/numeric_input/main.html" with field=field show_spinner_controls=True step_value=1000 %}
+                                        {% else %}
+                                            <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                            {{ field }}
+                                            {% if field.help_text %}
+                                            <div class="form-text">{{ field.help_text }}</div>
+                                            {% endif %}
+                                            {% if field.errors %}
+                                            <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
                         <div
                             class="card border-0 shadow-sm usage-total-card"
                             id="usageTotalCard"
@@ -373,6 +404,14 @@
                                                 <td id="laundryUnitPriceValue">0 VND</td>
                                                 <td id="laundryCostAmount">0 VND</td>
                                                 <td id="laundryNoteValue">{% trans "Flat rate" %}</td>
+                                            </tr>
+                                            <tr data-usage-summary-row data-usage-summary-table-row>
+                                                <td data-usage-row-number>9</td>
+                                                <td class="fw-semibold">{% trans "Surcharge" %}</td>
+                                                <td id="surchargeQuantityValue">1</td>
+                                                <td id="surchargeUnitPriceValue">0 VND</td>
+                                                <td id="surchargeAmountValue">0 VND</td>
+                                                <td id="surchargeNoteValue">-</td>
                                             </tr>
                                         </tbody>
                                         <tfoot>
@@ -481,6 +520,18 @@
                                                 <div><strong>{% trans "Unit price" %}:</strong> <span id="laundryUnitPriceValueMobile">0 VND</span></div>
                                                 <div><strong>{% trans "Amount" %}:</strong> <span id="laundryCostAmountMobile">0 VND</span></div>
                                                 <div><strong>{% trans "Note" %}:</strong> <span id="laundryNoteValueMobile">{% trans "Flat rate" %}</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="usage-mobile-item" data-usage-summary-row data-usage-summary-mobile-row>
+                                            <div class="usage-mobile-item-header">
+                                                <span class="usage-mobile-item-number" data-usage-row-number>9</span>
+                                                <span class="fw-semibold">{% trans "Surcharge" %}</span>
+                                            </div>
+                                            <div class="usage-mobile-item-body">
+                                                <div><strong>{% trans "Quantity" %}:</strong> <span id="surchargeQuantityValueMobile">1</span></div>
+                                                <div><strong>{% trans "Unit price" %}:</strong> <span id="surchargeUnitPriceValueMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Amount" %}:</strong> <span id="surchargeAmountValueMobile">0 VND</span></div>
+                                                <div><strong>{% trans "Note" %}:</strong> <span id="surchargeNoteValueMobile">-</span></div>
                                             </div>
                                         </div>
                                     </div>
@@ -855,6 +906,8 @@
                 internetPrice: document.getElementById('{{ form.internet_price.id_for_label }}'),
                 cleaningPrice: document.getElementById('{{ form.cleaning_price.id_for_label }}'),
                 laundryPrice: document.getElementById('{{ form.laundry_price.id_for_label }}'),
+                surchargeAmount: document.getElementById('{{ form.surcharge_amount.id_for_label }}'),
+                surchargeDescription: document.getElementById('{{ form.surcharge_description.id_for_label }}'),
                 currentElectricity: document.getElementById('{{ form.latest_electricity_reading.id_for_label }}'),
                 currentWater: document.getElementById('{{ form.latest_water_reading.id_for_label }}'),
             };
@@ -1227,6 +1280,8 @@
                 const internetPrice = restRoomSubscription ? 0 : readNumber(fields.internetPrice);
                 const cleaningPrice = restRoomSubscription ? 0 : readNumber(fields.cleaningPrice);
                 const laundryPrice = restRoomSubscription ? 0 : readNumber(fields.laundryPrice);
+                const surchargeAmount = readNumber(fields.surchargeAmount);
+                const surchargeDescription = (fields.surchargeDescription?.value || '').trim();
 
                 const electricityCost = (currentElectricity - previousElectricity > 0)
                     ? (currentElectricity - previousElectricity) * electricityPrice
@@ -1245,7 +1300,7 @@
                         linkedRestroomWaterCost = ((linkedRestroomUsageContext.water_amount || 0) / totalLinkedTenants) * tenantCount;
                     }
                 }
-                const total = roomPrice + electricityCost + waterCost + internetPrice + cleaningCost + laundryCost + linkedRestroomElectricityCost + linkedRestroomWaterCost;
+                const total = roomPrice + electricityCost + waterCost + internetPrice + cleaningCost + laundryCost + surchargeAmount + linkedRestroomElectricityCost + linkedRestroomWaterCost;
 
                 setText(['roomQuantityValue', 'roomQuantityValueMobile'], `1 {% trans "room" %}`);
                 setText(['electricityQuantityValue', 'electricityQuantityValueMobile'], `${formatPlainNumber(electricityConsumed)} {% trans "kWh" %}`);
@@ -1253,18 +1308,21 @@
                 setText(['internetQuantityValue', 'internetQuantityValueMobile'], `1 {% trans "room" %}`);
                 setText(['cleaningQuantityValue', 'cleaningQuantityValueMobile'], `${formatPlainNumber(tenantCount)} {% trans "person" %}`);
                 setText(['laundryQuantityValue', 'laundryQuantityValueMobile'], `${formatPlainNumber(tenantCount)} {% trans "person" %}`);
+                setText(['surchargeQuantityValue', 'surchargeQuantityValueMobile'], '1');
                 setText(['roomUnitPriceValue', 'roomUnitPriceValueMobile'], formatVnd(roomPrice));
                 setText(['electricityUnitPriceValue', 'electricityUnitPriceValueMobile'], formatVnd(electricityPrice));
                 setText(['waterUnitPriceValue', 'waterUnitPriceValueMobile'], formatVnd(waterPrice));
                 setText(['internetUnitPriceValue', 'internetUnitPriceValueMobile'], formatVnd(internetPrice));
                 setText(['cleaningUnitPriceValue', 'cleaningUnitPriceValueMobile'], formatVnd(cleaningPrice));
                 setText(['laundryUnitPriceValue', 'laundryUnitPriceValueMobile'], formatVnd(laundryPrice));
+                setText(['surchargeUnitPriceValue', 'surchargeUnitPriceValueMobile'], formatVnd(surchargeAmount));
                 setText(['roomPriceAmount', 'roomPriceAmountMobile'], formatVnd(roomPrice));
                 setText(['electricityCostAmount', 'electricityCostAmountMobile'], formatVnd(electricityCost));
                 setText(['waterCostAmount', 'waterCostAmountMobile'], formatVnd(waterCost));
                 setText(['internetCostAmount', 'internetCostAmountMobile'], formatVnd(internetPrice));
                 setText(['cleaningCostAmount', 'cleaningCostAmountMobile'], formatVnd(cleaningCost));
                 setText(['laundryCostAmount', 'laundryCostAmountMobile'], formatVnd(laundryCost));
+                setText(['surchargeAmountValue', 'surchargeAmountValueMobile'], formatVnd(surchargeAmount));
                 setText('usageTotalValue', formatVnd(total));
                 setText(['usageTotalFooterValue', 'usageTotalFooterValueMobile'], formatVnd(total));
                 setText(['usageTotalFormula', 'usageTotalFormulaMobile'], '');
@@ -1280,6 +1338,7 @@
                 setText(['internetNoteValue', 'internetNoteValueMobile'], `1 {% trans "room" %} x ${formatPlainNumber(internetPrice)}`);
                 setText(['cleaningNoteValue', 'cleaningNoteValueMobile'], `${formatPlainNumber(tenantCount)} {% trans "person" %} x ${formatPlainNumber(cleaningPrice)}`);
                 setText(['laundryNoteValue', 'laundryNoteValueMobile'], `${formatPlainNumber(tenantCount)} {% trans "person" %} x ${formatPlainNumber(laundryPrice)}`);
+                setText(['surchargeNoteValue', 'surchargeNoteValueMobile'], surchargeDescription || '-');
                 renderLinkedRestroomUsageSection(tenantCount);
 
                 const baselineHint = document.getElementById('usageBaselineHint');
@@ -1349,6 +1408,8 @@
                 fields.internetPrice,
                 fields.cleaningPrice,
                 fields.laundryPrice,
+                fields.surchargeAmount,
+                fields.surchargeDescription,
                 fields.currentElectricity,
                 fields.currentWater,
             ].forEach((input) => {

@@ -144,6 +144,15 @@ msgstr "Số điện thoại liên hệ"
 msgid "Contact email"
 msgstr "Email liên hệ"
 
+msgid "Surcharge amount (VND)"
+msgstr "Phụ thu (VND)"
+
+msgid "Surcharge description"
+msgstr "Mô tả phụ thu"
+
+msgid "Surcharge"
+msgstr "Phụ thu"
+
 #: apps/main/forms.py:336 apps/main/models.py:234
 msgid "A subscription can store at most 10 images."
 msgstr "Một hợp đồng có thể lưu tối đa 10 ảnh."

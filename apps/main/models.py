@@ -336,6 +336,8 @@ class Usage(models.Model):
     internet_price = models.DecimalField(max_digits=12, decimal_places=0, default=0, null=True, blank=True)
     cleaning_price = models.DecimalField(max_digits=12, decimal_places=0, default=0, null=True, blank=True)
     laundry_price = models.DecimalField(max_digits=12, decimal_places=0, default=0, null=True, blank=True)
+    surcharge_amount = models.DecimalField(max_digits=12, decimal_places=0, default=0, null=True, blank=True)
+    surcharge_description = models.TextField(blank=True)
     latest_electricity_reading = models.PositiveIntegerField(default=0)
     electricity_meter_image_path = models.CharField(max_length=500, blank=True)
     latest_water_reading = models.PositiveIntegerField(default=0)
@@ -359,6 +361,8 @@ class Usage(models.Model):
         'internet_price',
         'cleaning_price',
         'laundry_price',
+        'surcharge_amount',
+        'surcharge_description',
         'latest_electricity_reading',
         'electricity_meter_image_path',
         'latest_water_reading',

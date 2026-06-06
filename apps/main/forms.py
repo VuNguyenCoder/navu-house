@@ -480,6 +480,8 @@ class UsageForm(StyledModelForm):
             'period',
             'tenant_count',
             *PRICE_FIELD_NAMES,
+            'surcharge_amount',
+            'surcharge_description',
             'latest_electricity_reading',
             'latest_water_reading',
         ]
@@ -492,6 +494,8 @@ class UsageForm(StyledModelForm):
             'internet_price': _('Internet price (VND / room)'),
             'cleaning_price': _('Cleaning price (VND / person)'),
             'laundry_price': _('Laundry price (VND / person)'),
+            'surcharge_amount': _('Surcharge amount (VND)'),
+            'surcharge_description': _('Surcharge description'),
             'latest_electricity_reading': _('Latest electricity reading'),
             'latest_water_reading': _('Latest water reading'),
         }
@@ -504,6 +508,8 @@ class UsageForm(StyledModelForm):
             'internet_price': PRICE_WIDGET,
             'cleaning_price': PRICE_WIDGET,
             'laundry_price': PRICE_WIDGET,
+            'surcharge_amount': PRICE_WIDGET,
+            'surcharge_description': forms.Textarea(attrs={'rows': 3}),
             'latest_electricity_reading': forms.NumberInput(attrs={'min': '0', 'step': '1'}),
             'latest_water_reading': forms.NumberInput(attrs={'min': '0', 'step': '1'}),
         }
@@ -528,6 +534,8 @@ class UsageForm(StyledModelForm):
             'internet_price',
             'cleaning_price',
             'laundry_price',
+            'surcharge_amount',
+            'surcharge_description',
             'latest_electricity_reading',
             'electricity_meter_image',
             'remove_electricity_meter_image',

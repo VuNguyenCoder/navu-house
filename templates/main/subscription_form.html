@@ -74,8 +74,8 @@
                         <div class="collapse{% if not form.instance.pk %} show{% endif %} subscription-section-body" id="subscriptionBasicInfo">
                             <div class="row g-3">
                                 {% for field in form %}
-                                {% if field.name == 'room' or field.name == 'description' or field.name == 'start_date' or field.name == 'images' %}
-                                <div class="col-12 {% if field.name == 'room' or field.name == 'start_date' %}col-lg-6{% else %}col-lg-12{% endif %}">
+                                {% if field.name == 'room' or field.name == 'description' or field.name == 'start_date' or field.name == 'tenant_count' or field.name == 'images' %}
+                                <div class="col-12 {% if field.name == 'room' or field.name == 'start_date' or field.name == 'tenant_count' %}col-lg-6{% else %}col-lg-12{% endif %}">
                                     <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
                                     {{ field }}
                                     {% if field.help_text %}

@@ -231,6 +231,7 @@ class Subscription(models.Model):
     image_paths = models.JSONField(default=list, blank=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.ENABLED)
     start_date = models.DateField()
+    tenant_count = models.PositiveIntegerField(default=1)
     start_electricity_reading = models.PositiveIntegerField(default=0)
     start_water_reading = models.PositiveIntegerField(default=0)
     deposit_amount = models.DecimalField(max_digits=12, decimal_places=0, default=0)
@@ -386,11 +387,20 @@ class Usage(models.Model):
     def save(self, *args, **kwargs):
         if self.period:
             self.period = self.period.replace(day=1)
+        if self._state.adding and self.tenant_count in (None, ''):
+            latest_usage = self.subscription.usages.order_by('-period', '-updated_at', '-id').first()
+            if latest_usage and latest_usage.tenant_count is not None:
+                self.tenant_count = latest_usage.tenant_count
+            else:
+                self.tenant_count = self.subscription.tenant_count
         if self._state.adding and all(getattr(self, field) in (None, 0, Decimal('0')) for field in PRICE_FIELD_NAMES):
             for field in PRICE_FIELD_NAMES:
                 setattr(self, field, getattr(self.subscription, field))
         self.full_clean()
         super().save(*args, **kwargs)
+        if self.tenant_count is not None and self.subscription.tenant_count != self.tenant_count:
+            self.subscription.tenant_count = self.tenant_count
+            self.subscription.save(update_fields=['tenant_count', 'updated_at'])
         self._sync_room_readings_for_room(self.subscription.room)
 
     def delete(self, *args, **kwargs):

@@ -45,6 +45,7 @@ class RoomAdmin(admin.ModelAdmin):
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = (
         'room',
+        'tenant_count',
         'status',
         'image_count',
         'start_date',

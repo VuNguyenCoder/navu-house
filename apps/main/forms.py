@@ -272,6 +272,7 @@ class SubscriptionForm(StyledModelForm):
             'description',
             'room',
             'start_date',
+            'tenant_count',
             'start_electricity_reading',
             'start_water_reading',
             'deposit_amount',
@@ -283,6 +284,7 @@ class SubscriptionForm(StyledModelForm):
             'description': _('Description'),
             'room': _('Room'),
             'start_date': _('Rental start date'),
+            'tenant_count': _('Number of tenants'),
             'deposit_amount': _('Deposit amount (VND)'),
             'start_electricity_reading': _('Start electricity reading'),
             'start_water_reading': _('Start water reading'),
@@ -299,6 +301,7 @@ class SubscriptionForm(StyledModelForm):
             'description': forms.Textarea(attrs={'rows': 4}),
             'room': forms.Select(attrs={'class': 'form-select'}),
             'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'tenant_count': forms.NumberInput(attrs={'min': '1', 'step': '1'}),
             'start_electricity_reading': forms.NumberInput(attrs={'min': '0', 'step': '1'}),
             'start_water_reading': forms.NumberInput(attrs={'min': '0', 'step': '1'}),
             'deposit_amount': PRICE_WIDGET,
@@ -317,6 +320,7 @@ class SubscriptionForm(StyledModelForm):
         self.order_fields([
             'room',
             'start_date',
+            'tenant_count',
             'description',
             'remove_image_paths',
             'images',
@@ -535,7 +539,11 @@ class UsageForm(StyledModelForm):
             self.fields['billing_year'].initial = default_period.strftime('%Y')
         if not self.is_bound and subscription and not self.instance.pk:
             latest_usage = subscription.usages.order_by('-period', '-updated_at', '-id').first()
-            self.fields['tenant_count'].initial = latest_usage.tenant_count if latest_usage else 1
+            self.fields['tenant_count'].initial = (
+                latest_usage.tenant_count
+                if latest_usage and latest_usage.tenant_count is not None
+                else subscription.tenant_count
+            )
             for field in PRICE_FIELD_NAMES:
                 self.fields[field].initial = getattr(subscription, field)
             if latest_usage:

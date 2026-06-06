@@ -119,7 +119,7 @@ def get_subscription_tenant_count_for_period(subscription, period):
     if latest_usage and latest_usage.tenant_count is not None:
         return latest_usage.tenant_count
 
-    return 0
+    return subscription.tenant_count or 0
 
 
 def get_linked_restroom_usage_context(subscription, period):

@@ -96,6 +96,19 @@
             box-shadow:
                 0 2px 4px rgba(0,0,0,0.1);
         }
+        .form-control,
+        .form-select {
+            transition:
+                border-color 0.15s ease,
+                border-width 0.15s ease,
+                box-shadow 0.15s ease;
+        }
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #000;
+            border-width: 2px;
+            box-shadow: none;
+        }
         .notifications-dropdown {
             width: 380px;
             max-width: calc(100vw - 2rem);

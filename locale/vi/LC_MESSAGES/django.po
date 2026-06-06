@@ -516,6 +516,15 @@ msgstr "Tổng tiền tất cả"
 msgid "Shared restroom usage is excluded from revenue totals and usage status."
 msgstr "Usage của phòng vệ sinh chung được loại khỏi các tổng doanh thu và phần trạng thái usage."
 
+msgid "Please enter a non-negative whole number."
+msgstr "Vui lòng nhập số nguyên không âm."
+
+msgid "Decrease value"
+msgstr "Giảm giá trị"
+
+msgid "Increase value"
+msgstr "Tăng giá trị"
+
 #: config/views.py:180
 msgid "Total subscriptions"
 msgstr "Tổng số hợp đồng"

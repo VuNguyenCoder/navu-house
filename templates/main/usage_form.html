@@ -77,13 +77,17 @@
                                     {% for field in form %}
                                     {% if field.name == 'subscription' or field.name == 'billing_month' or field.name == 'billing_year' or field.name == 'tenant_count' %}
                                     <div class="col-12 col-lg-4{% if field.name == 'tenant_count' %} usage-restroom-optional-field{% endif %}"{% if field.name == 'tenant_count' %} data-restroom-optional-field{% endif %}>
-                                        <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                        {{ field }}
-                                        {% if field.help_text %}
-                                        <div class="form-text">{{ field.help_text }}</div>
-                                        {% endif %}
-                                        {% if field.errors %}
-                                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                        {% if field.name == 'tenant_count' %}
+                                            {% include "components/numeric_input.html" with field=field show_spinner_controls=True %}
+                                        {% else %}
+                                            <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                            {{ field }}
+                                            {% if field.help_text %}
+                                            <div class="form-text">{{ field.help_text }}</div>
+                                            {% endif %}
+                                            {% if field.errors %}
+                                            <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                            {% endif %}
                                         {% endif %}
                                     </div>
                                     {% endif %}
@@ -101,11 +105,7 @@
                                     {% for field in form %}
                                     {% if field.name == 'room_price' or field.name == 'electricity_price' or field.name == 'water_price' or field.name == 'internet_price' or field.name == 'cleaning_price' or field.name == 'laundry_price' %}
                                     <div class="col-12 col-lg-6{% if field.name == 'room_price' or field.name == 'internet_price' or field.name == 'cleaning_price' or field.name == 'laundry_price' %} usage-restroom-optional-field{% endif %}"{% if field.name == 'room_price' or field.name == 'internet_price' or field.name == 'cleaning_price' or field.name == 'laundry_price' %} data-restroom-optional-field{% endif %}>
-                                        <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                        {{ field }}
-                                        {% if field.errors %}
-                                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
-                                        {% endif %}
+                                        {% include "components/numeric_input.html" with field=field show_spinner_controls=True step_value=1000 %}
                                     </div>
                                     {% endif %}
                                     {% endfor %}
@@ -124,13 +124,17 @@
                                 {% for field in form %}
                                 {% if field.name == 'latest_electricity_reading' or field.name == 'electricity_meter_image' %}
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                    {{ field }}
-                                    {% if field.help_text %}
-                                    <div class="form-text">{{ field.help_text }}</div>
-                                    {% endif %}
-                                    {% if field.errors %}
-                                    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                    {% if field.name == 'latest_electricity_reading' %}
+                                        {% include "components/numeric_input.html" with field=field show_spinner_controls=True %}
+                                    {% else %}
+                                        <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                        {{ field }}
+                                        {% if field.help_text %}
+                                        <div class="form-text">{{ field.help_text }}</div>
+                                        {% endif %}
+                                        {% if field.errors %}
+                                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                                 {% endif %}
@@ -179,13 +183,17 @@
                                 {% for field in form %}
                                 {% if field.name == 'latest_water_reading' or field.name == 'water_meter_image' %}
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                    {{ field }}
-                                    {% if field.help_text %}
-                                    <div class="form-text">{{ field.help_text }}</div>
-                                    {% endif %}
-                                    {% if field.errors %}
-                                    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                    {% if field.name == 'latest_water_reading' %}
+                                        {% include "components/numeric_input.html" with field=field show_spinner_controls=True %}
+                                    {% else %}
+                                        <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                        {{ field }}
+                                        {% if field.help_text %}
+                                        <div class="form-text">{{ field.help_text }}</div>
+                                        {% endif %}
+                                        {% if field.errors %}
+                                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                                 {% endif %}

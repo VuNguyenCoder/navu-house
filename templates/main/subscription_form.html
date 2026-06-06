@@ -76,13 +76,17 @@
                                 {% for field in form %}
                                 {% if field.name == 'room' or field.name == 'description' or field.name == 'start_date' or field.name == 'tenant_count' or field.name == 'images' %}
                                 <div class="col-12 {% if field.name == 'room' or field.name == 'start_date' or field.name == 'tenant_count' %}col-lg-6{% else %}col-lg-12{% endif %}">
-                                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                    {{ field }}
-                                    {% if field.help_text %}
-                                    <div class="form-text">{{ field.help_text }}</div>
-                                    {% endif %}
-                                    {% if field.errors %}
-                                    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                    {% if field.name == 'tenant_count' %}
+                                        {% include "components/numeric_input.html" with field=field show_spinner_controls=True %}
+                                    {% else %}
+                                        <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                        {{ field }}
+                                        {% if field.help_text %}
+                                        <div class="form-text">{{ field.help_text }}</div>
+                                        {% endif %}
+                                        {% if field.errors %}
+                                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                                 {% endif %}
@@ -144,14 +148,7 @@
                                 {% for field in form %}
                                 {% if field.name == 'start_electricity_reading' or field.name == 'start_water_reading' %}
                                 <div class="col-12 col-lg-6">
-                                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                    {{ field }}
-                                    {% if field.help_text %}
-                                    <div class="form-text">{{ field.help_text }}</div>
-                                    {% endif %}
-                                    {% if field.errors %}
-                                    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
-                                    {% endif %}
+                                    {% include "components/numeric_input.html" with field=field show_spinner_controls=True %}
                                 </div>
                                 {% endif %}
                                 {% endfor %}
@@ -174,14 +171,7 @@
                                 {% for field in form %}
                                 {% if field.name == 'deposit_amount' or field.name == 'room_price' or field.name == 'electricity_price' or field.name == 'water_price' or field.name == 'internet_price' or field.name == 'cleaning_price' or field.name == 'laundry_price' %}
                                 <div class="col-12 col-lg-6">
-                                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                    {{ field }}
-                                    {% if field.help_text %}
-                                    <div class="form-text">{{ field.help_text }}</div>
-                                    {% endif %}
-                                    {% if field.errors %}
-                                    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
-                                    {% endif %}
+                                    {% include "components/numeric_input.html" with field=field show_spinner_controls=True step_value=1000 %}
                                 </div>
                                 {% endif %}
                                 {% endfor %}

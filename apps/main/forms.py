@@ -39,6 +39,8 @@ class MultipleFileField(forms.FileField):
 
 
 class StyledModelForm(forms.ModelForm):
+    enable_grouped_number_formatting = True
+
     @staticmethod
     def _format_grouped_number(value):
         if value in (None, ''):
@@ -101,7 +103,8 @@ class StyledModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._enable_grouped_number_formatting()
+        if self.enable_grouped_number_formatting:
+            self._enable_grouped_number_formatting()
         self.apply_bootstrap_classes()
 
 
@@ -118,6 +121,16 @@ class PriceTemplateForm(StyledModelForm):
             'laundry_price': _('Laundry price (VND / person)'),
         }
         widgets = {field: PRICE_WIDGET for field in PRICE_FIELD_NAMES}
+
+    def clean(self):
+        cleaned_data = super().clean()
+        for field_name in PRICE_FIELD_NAMES:
+            value = cleaned_data.get(field_name)
+            if value is None:
+                continue
+            if value < 0:
+                self.add_error(field_name, _('Please enter a non-negative whole number.'))
+        return cleaned_data
 
 
 class SettingsForm(StyledModelForm):

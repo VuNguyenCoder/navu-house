@@ -1,0 +1,260 @@
+{% load i18n %}
+
+<style>
+    .price-spinner-group {
+        display: flex;
+        align-items: stretch;
+    }
+
+    .price-spinner-group .form-control {
+        min-width: 0;
+        border-right: 0;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .price-spinner-group .form-control:focus {
+        border-right: 0;
+        box-shadow: none;
+        position: relative;
+        z-index: 3;
+    }
+
+    .price-spinner-actions {
+        display: flex;
+        flex-shrink: 0;
+        align-items: stretch;
+    }
+
+    .price-spinner-stepper {
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+    }
+
+    .price-spinner-btn {
+        min-width: 3.25rem;
+        padding: 0.35rem 0.5rem;
+        font-size: 0.8rem;
+        line-height: 1.1;
+        border-radius: 0;
+        margin-left: -1px;
+        position: relative;
+        background-color: var(--bs-body-bg);
+    }
+
+    .price-spinner-clear {
+        min-width: 2.75rem;
+        padding: 0.35rem 0.4rem;
+        border-top: 1px solid var(--bs-border-color);
+        border-bottom: 1px solid var(--bs-border-color);
+        border-left: 0;
+        border-right: 0;
+        background-color: var(--bs-body-bg);
+        color: #dc3545;
+        margin-left: 0;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    .price-spinner-clear:hover,
+    .price-spinner-clear:focus {
+        background: rgba(220, 53, 69, 0.08);
+        color: #b02a37;
+        border: 1px solid var(--bs-border-color);
+        transform: none;
+        box-shadow: none;
+    }
+
+    .price-spinner-stepper .price-spinner-btn {
+        min-height: 0;
+        flex: 1 1 50%;
+        padding-top: 0.2rem;
+        padding-bottom: 0.2rem;
+    }
+
+    .price-spinner-stepper .price-spinner-btn:first-child {
+        border-top-right-radius: 0.375rem;
+        border-bottom-right-radius: 0;
+    }
+
+    .price-spinner-stepper .price-spinner-btn:last-child {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0.375rem;
+        margin-top: -1px;
+    }
+
+    .price-spinner-group:focus-within .price-spinner-btn,
+    .price-spinner-group:focus-within .price-spinner-clear {
+        border-color: #000;
+        border-width: 2px;
+        z-index: 2;
+    }
+
+    .price-spinner-group:focus-within .price-spinner-stepper .price-spinner-btn {
+        opacity: 1;
+    }
+
+    .price-spinner-group:focus-within .form-control {
+        border-top-color: #000;
+        border-bottom-color: #000;
+        border-left-color: #000;
+        border-right: 0;
+        border-width: 2px;
+    }
+
+    .price-spinner-group:focus-within .price-spinner-clear {
+        border-left: 0;
+    }
+
+    .price-spinner-group:focus-within .price-spinner-stepper .price-spinner-btn {
+        margin-left: -2px;
+    }
+
+    .price-spinner-group:focus-within .price-spinner-stepper .price-spinner-btn:last-child {
+        margin-top: -2px;
+    }
+
+    @media (max-width: 575.98px) {
+        .price-spinner-group {
+            align-items: stretch;
+        }
+
+        .price-spinner-actions {
+            flex-shrink: 0;
+        }
+
+        .price-spinner-btn {
+            min-width: 2.5rem;
+            padding: 0.35rem 0.45rem;
+        }
+
+        .price-spinner-clear {
+            min-width: 2.5rem;
+        }
+    }
+</style>
+
+<div class="mb-3">
+    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+    <div class="price-spinner-group">
+        {{ field }}
+        {% if show_spinner_controls %}
+        <div class="price-spinner-actions">
+            <button
+                type="button"
+                class="btn btn-sm price-spinner-btn price-spinner-clear"
+                data-price-spin="clear"
+                data-step="{{ step_value|default:1 }}"
+                data-target-id="{{ field.id_for_label }}"
+                aria-label="{% trans 'Clear' %}"
+                title="{% trans 'Clear' %}"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+            <div class="price-spinner-stepper">
+                <button
+                    type="button"
+                    class="btn btn-outline-primary btn-sm price-spinner-btn"
+                    data-price-spin="increase"
+                    data-step="{{ step_value|default:1 }}"
+                    data-target-id="{{ field.id_for_label }}"
+                    aria-label="{% trans 'Increase value' %}"
+                    title="{% trans 'Increase value' %}"
+                >
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-outline-primary btn-sm price-spinner-btn"
+                    data-price-spin="decrease"
+                    data-step="{{ step_value|default:1 }}"
+                    data-target-id="{{ field.id_for_label }}"
+                    aria-label="{% trans 'Decrease value' %}"
+                    title="{% trans 'Decrease value' %}"
+                >
+                    <i class="bi bi-dash-lg"></i>
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% if field.help_text %}
+    <div class="form-text">{{ field.help_text }}</div>
+    {% endif %}
+    {% if field.errors %}
+    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+    {% endif %}
+</div>
+
+<script>
+    if (!window.__numericInputComponentInitialized) {
+        window.__numericInputComponentInitialized = true;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const parseValue = (value) => {
+                const normalized = String(value || '').replace(/,/g, '').replace(/[^\d]/g, '').trim();
+                if (!normalized) {
+                    return 0;
+                }
+                const parsed = Number.parseInt(normalized, 10);
+                return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+            };
+
+            const formatValue = (value) => new Intl.NumberFormat('en-US', {
+                maximumFractionDigits: 0,
+            }).format(Math.max(0, Math.trunc(value)));
+
+            document.querySelectorAll('input[data-grouped-number="true"]').forEach((input) => {
+                if (input.dataset.numericInputBound === 'true') {
+                    return;
+                }
+
+                input.dataset.numericInputBound = 'true';
+                input.addEventListener('input', () => {
+                    const cursorAtEnd = input.selectionStart === input.value.length;
+                    input.value = formatValue(parseValue(input.value));
+                    if (cursorAtEnd) {
+                        input.setSelectionRange(input.value.length, input.value.length);
+                    }
+                });
+
+                input.addEventListener('blur', () => {
+                    input.value = formatValue(parseValue(input.value));
+                });
+
+                input.value = formatValue(parseValue(input.value));
+            });
+
+            document.querySelectorAll('[data-price-spin]').forEach((button) => {
+                if (button.dataset.numericInputBound === 'true') {
+                    return;
+                }
+
+                button.dataset.numericInputBound = 'true';
+                button.addEventListener('click', () => {
+                    const input = document.getElementById(button.dataset.targetId);
+                    if (!input) {
+                        return;
+                    }
+
+                    const action = button.dataset.priceSpin;
+                    const step = Number.parseInt(button.dataset.step || '1', 10) || 1;
+                    const currentValue = parseValue(input.value);
+                    let nextValue = currentValue;
+
+                    if (action === 'increase') {
+                        nextValue = currentValue + step;
+                    } else if (action === 'decrease') {
+                        nextValue = Math.max(0, currentValue - step);
+                    } else if (action === 'clear') {
+                        nextValue = 0;
+                    }
+
+                    input.value = formatValue(nextValue);
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+            });
+        });
+    }
+</script>

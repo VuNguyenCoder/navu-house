@@ -45,9 +45,8 @@
                     {% for field in form %}
                     {% if field.name != 'remove_image_paths' %}
                     <div class="col-12 {% if field.name == 'description' or field.name == 'images' %}col-lg-12{% else %}col-lg-6{% endif %}">
-                        <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
                         {% if field.name == 'latest_electricity_reading' or field.name == 'latest_water_reading' %}
-                        {{ field }}
+                        {% include "components/numeric_input.html" with field=field show_spinner_controls=True %}
                         <div class="room-reading-meta mt-2">
                             <div class="room-reading-meta-row">
                                 <span class="room-reading-meta-label">{% trans "Last updated" %}:</span>
@@ -93,13 +92,14 @@
                             </div>
                         </div>
                         {% else %}
-                        {{ field }}
-                        {% endif %}
-                        {% if field.help_text %}
-                        <div class="form-text">{{ field.help_text }}</div>
-                        {% endif %}
-                        {% if field.errors %}
-                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                            <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <div class="form-text">{{ field.help_text }}</div>
+                            {% endif %}
+                            {% if field.errors %}
+                            <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                            {% endif %}
                         {% endif %}
                     </div>
                     {% endif %}

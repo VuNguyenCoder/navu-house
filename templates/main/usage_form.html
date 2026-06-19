@@ -31,7 +31,7 @@
             <h1 class="h3 mb-1">{{ page_title }}</h1>
             <p class="text-muted mb-0">{% trans "Fill in the information below and save your changes." %}</p>
         </div>
-        {% if form.instance.pk %}
+        {% if form.instance.pk and not selected_subscription_is_rest_room %}
         <div class="d-flex align-items-center gap-2 flex-wrap">
             {% if form.instance.status == 'paid' %}
             <span class="badge rounded-pill text-bg-success px-3 py-2">{{ form.instance.get_status_display }}</span>
@@ -178,7 +178,7 @@
                                     >
                                         <img src="{{ MEDIA_URL }}{{ form.instance.electricity_meter_image_path }}" alt="" class="img-fluid rounded border" style="max-height: 220px; object-fit: cover;">
                                     </button>
-                                    {% if form.instance.status != 'paid' %}
+                                    {% if form.instance.status != 'paid' and not restroom_linked_invoice_locked %}
                                     <div class="mt-2">
                                         {{ form.remove_electricity_meter_image }}
                                         <button type="button" class="usage-delete-link" data-delete-trigger="{{ form.remove_electricity_meter_image.id_for_label }}">
@@ -237,7 +237,7 @@
                                     >
                                         <img src="{{ MEDIA_URL }}{{ form.instance.water_meter_image_path }}" alt="" class="img-fluid rounded border" style="max-height: 220px; object-fit: cover;">
                                     </button>
-                                    {% if form.instance.status != 'paid' %}
+                                    {% if form.instance.status != 'paid' and not restroom_linked_invoice_locked %}
                                     <div class="mt-2">
                                         {{ form.remove_water_meter_image }}
                                         <button type="button" class="usage-delete-link" data-delete-trigger="{{ form.remove_water_meter_image.id_for_label }}">
@@ -349,6 +349,23 @@
                                             {% endif %}
                                         </div>
                                         <p class="text-muted mb-0" data-export-hidden>{% trans "This amount is updated in real time from your pricing and meter inputs." %}</p>
+                                        {% if selected_subscription_is_rest_room %}
+                                        <div class="alert alert-info py-2 px-3 mt-3 mb-0" data-export-hidden>
+                                            {% trans "This restroom usage is shared into invoices for linked rooms." %}
+                                        </div>
+                                        {% if restroom_linked_invoice_status.is_applicable %}
+                                        <div class="alert {% if restroom_linked_invoice_locked %}alert-warning{% else %}alert-secondary{% endif %} py-2 px-3 mt-2 mb-0" data-export-hidden>
+                                            <div class="fw-semibold">
+                                                {% blocktrans with paid_count=restroom_linked_invoice_status.paid_linked_usages total_count=restroom_linked_invoice_status.total_linked_subscriptions %}Paid linked invoices: {{ paid_count }} / {{ total_count }}{% endblocktrans %}
+                                            </div>
+                                            {% if restroom_linked_invoice_locked %}
+                                            <div class="small mt-1">
+                                                {% trans "Electricity and water fields are locked because at least one linked invoice is paid." %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                        {% endif %}
                                     </div>
                                     <div class="text-end">
                                         <div class="small text-muted" data-export-hidden>{% trans "Estimated total" %}</div>

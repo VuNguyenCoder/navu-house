@@ -44,7 +44,7 @@
                 <div class="row g-3">
                     {% for field in form %}
                     {% if field.name != 'remove_image_paths' %}
-                    <div class="col-12 {% if field.name == 'description' or field.name == 'images' %}col-lg-12{% else %}col-lg-6{% endif %}">
+                    <div class="col-12 {% if field.name == 'description' or field.name == 'images' %}col-lg-12{% else %}col-lg-6{% endif %}{% if field.name == 'linked_restroom' %} d-none{% endif %}"{% if field.name == 'linked_restroom' %} id="linkedRestroomFieldWrapper" data-original-required="{% if field.field.required %}true{% else %}false{% endif %}"{% endif %}>
                         {% if field.name == 'latest_electricity_reading' or field.name == 'latest_water_reading' %}
                         {% include "components/numeric_input/main.html" with field=field show_spinner_controls=True %}
                         <div class="room-reading-meta mt-2">
@@ -287,6 +287,9 @@
         const roomImagePreviewModal = roomImagePreviewModalElement && window.bootstrap
             ? new window.bootstrap.Modal(roomImagePreviewModalElement)
             : null;
+        const roomTypeField = document.getElementById('{{ form.type.id_for_label }}');
+        const linkedRestroomField = document.getElementById('{{ form.linked_restroom.id_for_label }}');
+        const linkedRestroomFieldWrapper = document.getElementById('linkedRestroomFieldWrapper');
 
         const stripGrouping = (value) => `${value ?? ''}`.replace(/,/g, '').trim();
         const formatGroupedDigits = (value) => {
@@ -309,6 +312,19 @@
             });
             input.value = formatGroupedDigits(input.value);
         });
+
+        const syncLinkedRestroomVisibility = () => {
+            if (!roomTypeField || !linkedRestroomField || !linkedRestroomFieldWrapper) {
+                return;
+            }
+            const shouldShow = roomTypeField.value === 'unenclosed';
+            linkedRestroomFieldWrapper.classList.toggle('d-none', !shouldShow);
+            linkedRestroomField.disabled = !shouldShow;
+            linkedRestroomField.required = shouldShow && linkedRestroomFieldWrapper.dataset.originalRequired === 'true';
+            if (!shouldShow) {
+                linkedRestroomField.value = '';
+            }
+        };
 
         const syncPreviewState = (wrapper, input) => {
             const pending = wrapper.querySelector('[data-delete-pending]');
@@ -370,6 +386,9 @@
                 roomImagePreviewImage.classList.add('d-none');
             });
         }
+
+        roomTypeField?.addEventListener('change', syncLinkedRestroomVisibility);
+        syncLinkedRestroomVisibility();
     });
 </script>
 {% endblock %}

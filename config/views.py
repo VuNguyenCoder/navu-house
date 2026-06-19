@@ -130,6 +130,7 @@ def home(request):
     total_revenue = Decimal('0')
 
     usage_status_cells = []
+    shared_restroom_status_cells = []
     for subscription in subscriptions:
         is_rest_room_subscription = subscription.room.type == subscription.room.RoomType.REST
         usage = usage_by_subscription_id.get(subscription.pk)
@@ -155,6 +156,25 @@ def home(request):
                     'usage_id': usage.pk,
                     'target_url': reverse('usage_details', kwargs={'pk': usage.pk}),
                 })
+            else:
+                linked_invoice_status = usage.get_restroom_linked_invoice_status()
+                shared_restroom_status_cells.append({
+                    'room_name': subscription.room.room_name,
+                    'description': subscription.description or '',
+                    'has_usage': True,
+                    'paid_count': linked_invoice_status['paid_linked_usages'],
+                    'total_count': linked_invoice_status['total_linked_subscriptions'],
+                    'status_class': (
+                        'text-bg-success'
+                        if linked_invoice_status['total_linked_subscriptions'] > 0
+                        and linked_invoice_status['paid_linked_usages'] == linked_invoice_status['total_linked_subscriptions']
+                        else 'text-bg-warning'
+                        if linked_invoice_status['paid_linked_usages'] > 0
+                        else 'text-bg-secondary'
+                    ),
+                    'usage_label': _('Usage created'),
+                    'target_url': reverse('usage_details', kwargs={'pk': usage.pk}),
+                })
         else:
             if not is_rest_room_subscription:
                 usage_status_cells.append({
@@ -165,6 +185,31 @@ def home(request):
                     'status_class': 'dashboard-cell-missing',
                     'total_amount_display': '',
                     'usage_id': None,
+                    'target_url': (
+                        f"{reverse('usage_create')}?subscription={subscription.pk}"
+                        f"&month={selected_month}&year={selected_year}"
+                    ),
+                })
+            else:
+                linked_invoice_status = Usage(
+                    subscription=subscription,
+                    period=period,
+                ).get_restroom_linked_invoice_status()
+                shared_restroom_status_cells.append({
+                    'room_name': subscription.room.room_name,
+                    'description': subscription.description or '',
+                    'has_usage': False,
+                    'paid_count': linked_invoice_status['paid_linked_usages'],
+                    'total_count': linked_invoice_status['total_linked_subscriptions'],
+                    'status_class': (
+                        'text-bg-success'
+                        if linked_invoice_status['total_linked_subscriptions'] > 0
+                        and linked_invoice_status['paid_linked_usages'] == linked_invoice_status['total_linked_subscriptions']
+                        else 'text-bg-warning'
+                        if linked_invoice_status['paid_linked_usages'] > 0
+                        else 'text-bg-secondary'
+                    ),
+                    'usage_label': _('Usage not created yet'),
                     'target_url': (
                         f"{reverse('usage_create')}?subscription={subscription.pk}"
                         f"&month={selected_month}&year={selected_year}"
@@ -239,6 +284,7 @@ def home(request):
             },
         ],
         'usage_status_cells': sorted(usage_status_cells, key=lambda cell: cell['room_name'].lower()),
+        'shared_restroom_status_cells': sorted(shared_restroom_status_cells, key=lambda cell: cell['room_name'].lower()),
     }
     return render(request, 'home.html', context)
 

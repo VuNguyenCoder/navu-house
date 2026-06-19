@@ -304,6 +304,7 @@ def build_subscription_usage_rows(subscription):
             'water_consumed': water_consumed,
             'total_amount': total_amount,
             'total_amount_display': f'{total_amount:,.0f}',
+            'restroom_linked_invoice_status': usage.get_restroom_linked_invoice_status(),
         })
 
     return usage_rows
@@ -667,6 +668,9 @@ class UsageCreateView(OperatorRequiredMixin, SuccessMessageMixin, CreateView):
             'cancel_url': get_subscription_edit_url(subscription.pk if subscription else None),
             'usage_previous_context': usage_context,
             'selected_subscription': subscription,
+            'selected_subscription_is_rest_room': bool(subscription and subscription.room.type == Room.RoomType.REST),
+            'restroom_linked_invoice_status': getattr(form, 'restroom_linked_invoice_status', None),
+            'restroom_linked_invoice_locked': False,
             'rest_room_subscription_ids': form.rest_room_subscription_ids if form else [],
             'subscription_room_names': form.subscription_room_names if form else {},
         })
@@ -700,6 +704,9 @@ class UsageUpdateView(OperatorRequiredMixin, SuccessMessageMixin, UpdateView):
             'cancel_url': get_subscription_edit_url(self.object.subscription_id),
             'usage_previous_context': usage_context,
             'selected_subscription': self.object.subscription,
+            'selected_subscription_is_rest_room': self.object.subscription.room.type == Room.RoomType.REST,
+            'restroom_linked_invoice_status': getattr(form, 'restroom_linked_invoice_status', None),
+            'restroom_linked_invoice_locked': getattr(form, 'is_restroom_linked_invoice_locked', False),
             'rest_room_subscription_ids': form.rest_room_subscription_ids if form else [],
             'subscription_room_names': form.subscription_room_names if form else {},
             'usage_is_paid': usage_is_locked(self.object),
@@ -915,6 +922,9 @@ def usage_mark_paid(request, pk):
         return redirect('usage_details', pk=pk)
 
     usage = get_object_or_404(Usage, pk=pk)
+    if usage.subscription.room.type == Room.RoomType.REST:
+        messages.error(request, _('Restroom usage records are shared into linked room invoices and cannot be marked as Paid directly.'))
+        return redirect('usage_details', pk=usage.pk)
     if usage.status != Usage.Status.PAID:
         usage.status = Usage.Status.PAID
         usage.save(update_fields=['status', 'updated_at'])

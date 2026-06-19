@@ -75,7 +75,7 @@
                             <div class="row g-3">
                                 {% for field in form %}
                                 {% if field.name == 'room' or field.name == 'description' or field.name == 'start_date' or field.name == 'tenant_count' or field.name == 'images' %}
-                                <div class="col-12 {% if field.name == 'room' or field.name == 'start_date' or field.name == 'tenant_count' %}col-lg-6{% else %}col-lg-12{% endif %}">
+                                <div class="col-12 {% if field.name == 'room' or field.name == 'start_date' or field.name == 'tenant_count' %}col-lg-6{% else %}col-lg-12{% endif %}"{% if field.name == 'tenant_count' %} data-restroom-template-field{% endif %}>
                                     {% if field.name == 'tenant_count' %}
                                         {% include "components/numeric_input/main.html" with field=field show_spinner_controls=True %}
                                     {% else %}
@@ -170,14 +170,14 @@
                             <div class="row g-3">
                                 {% for field in form %}
                                 {% if field.name == 'deposit_amount' or field.name == 'room_price' or field.name == 'electricity_price' or field.name == 'water_price' or field.name == 'cleaning_price' %}
-                                <div class="col-12 col-lg-6">
+                                <div class="col-12 col-lg-6"{% if field.name == 'deposit_amount' or field.name == 'room_price' or field.name == 'cleaning_price' %} data-restroom-template-field{% endif %}>
                                     {% include "components/numeric_input/main.html" with field=field show_spinner_controls=True step_value=1000 %}
                                 </div>
                                 {% endif %}
                                 {% endfor %}
                                 {% for field in form %}
                                 {% if field.name == 'internet_price' %}
-                                <div class="col-12 col-lg-6">
+                                <div class="col-12 col-lg-6" data-restroom-template-field>
                                     <div class="d-flex align-items-center gap-2 mb-2">
                                         {{ form.use_internet }}
                                         <label class="form-label fw-semibold mb-0 subscription-optional-label" for="{{ field.id_for_label }}" id="subscriptionUseInternetLabel">{{ field.label }}</label>
@@ -191,7 +191,7 @@
                                 {% endfor %}
                                 {% for field in form %}
                                 {% if field.name == 'laundry_price' %}
-                                <div class="col-12 col-lg-6">
+                                <div class="col-12 col-lg-6" data-restroom-template-field>
                                     <div class="d-flex align-items-center gap-2 mb-2">
                                         {{ form.use_laundry }}
                                         <label class="form-label fw-semibold mb-0 subscription-optional-label" for="{{ field.id_for_label }}" id="subscriptionUseLaundryLabel">{{ field.label }}</label>
@@ -345,10 +345,16 @@
                                 <td class="d-none d-md-table-cell">{{ row.water_consumed }}</td>
                                 <td>{{ row.total_amount_display }} VND</td>
                                 <td>
-                                    {% if row.usage.status == 'paid' %}
-                                    <span class="badge text-bg-success">{{ row.usage.get_status_display }}</span>
+                                    {% if row.restroom_linked_invoice_status.is_applicable %}
+                                    <span class="badge {% if row.restroom_linked_invoice_status.paid_linked_usages == row.restroom_linked_invoice_status.total_linked_subscriptions and row.restroom_linked_invoice_status.total_linked_subscriptions > 0 %}text-bg-success{% elif row.restroom_linked_invoice_status.paid_linked_usages > 0 %}text-bg-warning{% else %}text-bg-secondary{% endif %}">
+                                        {% blocktrans with paid_count=row.restroom_linked_invoice_status.paid_linked_usages total_count=row.restroom_linked_invoice_status.total_linked_subscriptions %}Paid linked invoices: {{ paid_count }} / {{ total_count }}{% endblocktrans %}
+                                    </span>
                                     {% else %}
-                                    <span class="badge text-bg-danger">{% trans "Unpaid" %}</span>
+                                        {% if row.usage.status == 'paid' %}
+                                        <span class="badge text-bg-success">{{ row.usage.get_status_display }}</span>
+                                        {% else %}
+                                        <span class="badge text-bg-danger">{% trans "Unpaid" %}</span>
+                                        {% endif %}
                                     {% endif %}
                                 </td>
                                 <td class="text-end">
@@ -606,6 +612,8 @@
 
 {% block extra_js %}
 {{ block.super }}
+{{ form.room_type_by_id|json_script:"subscription-room-type-map" }}
+{{ form.restroom_tenant_count_by_id|json_script:"restroom-tenant-count-map" }}
 <script>
     window.addEventListener('DOMContentLoaded', () => {
         const subscriptionImagePreviewModalElement = document.getElementById('subscriptionImagePreviewModal');
@@ -614,6 +622,11 @@
         const subscriptionImagePreviewModal = subscriptionImagePreviewModalElement && window.bootstrap
             ? new window.bootstrap.Modal(subscriptionImagePreviewModalElement)
             : null;
+        const roomTypeMap = JSON.parse(document.getElementById('subscription-room-type-map')?.textContent || '{}');
+        const restroomTenantCountMap = JSON.parse(document.getElementById('restroom-tenant-count-map')?.textContent || '{}');
+        const roomField = document.getElementById('{{ form.room.id_for_label }}');
+        const tenantCountField = document.getElementById('{{ form.tenant_count.id_for_label }}');
+        const restroomTemplateFieldWrappers = document.querySelectorAll('[data-restroom-template-field]');
 
         const stripGrouping = (value) => `${value ?? ''}`.replace(/,/g, '').trim();
         const formatGroupedDigits = (value) => {
@@ -656,6 +669,23 @@
             }
             if (useLaundryLabel) {
                 useLaundryLabel.classList.toggle('is-disabled', !useLaundry?.checked);
+            }
+        };
+
+        const syncRestroomSubscriptionFields = () => {
+            const isRestRoom = roomTypeMap[String(roomField?.value || '')] === 'rest';
+            restroomTemplateFieldWrappers.forEach((wrapper) => {
+                wrapper.classList.toggle('d-none', isRestRoom);
+                wrapper.querySelectorAll('input, select, textarea').forEach((input) => {
+                    input.disabled = isRestRoom;
+                    if (isRestRoom) {
+                        input.required = false;
+                    }
+                });
+            });
+            if (isRestRoom && tenantCountField) {
+                tenantCountField.value = restroomTenantCountMap[String(roomField?.value || '')] ?? '0';
+                tenantCountField.dispatchEvent(new Event('input', { bubbles: true }));
             }
         };
 
@@ -714,6 +744,11 @@
 
         document.getElementById('{{ form.use_internet.id_for_label }}')?.addEventListener('change', syncOptionalServiceLabels);
         document.getElementById('{{ form.use_laundry.id_for_label }}')?.addEventListener('change', syncOptionalServiceLabels);
+        roomField?.addEventListener('change', () => {
+            syncRestroomSubscriptionFields();
+            syncOptionalServiceLabels();
+        });
+        syncRestroomSubscriptionFields();
         syncOptionalServiceLabels();
     });
 </script>

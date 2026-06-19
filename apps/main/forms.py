@@ -190,6 +190,7 @@ class RoomForm(StyledModelForm):
             'latest_water_reading': forms.NumberInput(attrs={'min': '0', 'step': '1'}),
         }
         help_texts = {
+            'type': _('Only unenclosed rooms can link to a restroom.'),
             'linked_restroom': _('For unenclosed rooms, optionally choose a restroom room to use as the shared toilet.'),
             'latest_electricity_reading': _(
                 'When you create a new subscription, this value is used as the baseline for calculating electricity charges in the following months. It is also updated automatically after each monthly usage record.'
@@ -267,6 +268,17 @@ class RoomForm(StyledModelForm):
 
 
 class SubscriptionForm(StyledModelForm):
+    RESTROOM_TEMPLATE_FIELDS = (
+        'tenant_count',
+        'deposit_amount',
+        'room_price',
+        'use_internet',
+        'internet_price',
+        'cleaning_price',
+        'use_laundry',
+        'laundry_price',
+    )
+
     images = MultipleFileField(
         required=False,
         label=_('Subscription images'),
@@ -368,8 +380,21 @@ class SubscriptionForm(StyledModelForm):
             pk=self.instance.pk,
         ).values_list('room_id', flat=True)
         self.fields['room'].queryset = Room.objects.exclude(pk__in=enabled_room_ids).order_by('room_name')
+        room_queryset = list(self.fields['room'].queryset)
+        self.room_type_by_id = {str(room.pk): room.type for room in room_queryset}
+        self.restroom_tenant_count_by_id = {
+            str(room.pk): Subscription.get_restroom_linked_tenant_count(room)
+            for room in room_queryset
+            if room.type == Room.RoomType.REST
+        }
         existing_paths = self.instance.image_paths or []
         self.fields['remove_image_paths'].choices = [(path, Path(path).name) for path in existing_paths]
+        selected_room = self._get_selected_room()
+        if selected_room and selected_room.type == Room.RoomType.REST:
+            for field_name in self.RESTROOM_TEMPLATE_FIELDS:
+                self.fields[field_name].required = False
+            if not self.is_bound:
+                self.fields['tenant_count'].initial = Subscription.get_restroom_linked_tenant_count(selected_room)
         if not self.is_bound and not self.instance.pk:
             template = PriceTemplate.get_solo()
             for field in PRICE_FIELD_NAMES:
@@ -379,6 +404,18 @@ class SubscriptionForm(StyledModelForm):
         if not self.is_bound and self.instance.pk and self.instance.room_id:
             self.fields['start_electricity_reading'].initial = self.instance.start_electricity_reading
             self.fields['start_water_reading'].initial = self.instance.start_water_reading
+
+    def _get_selected_room(self):
+        if self.is_bound:
+            room_id = self.data.get('room')
+        elif self.instance.pk:
+            return self.instance.room
+        else:
+            room_id = self.initial.get('room')
+
+        if room_id:
+            return Room.objects.filter(pk=room_id).first()
+        return None
 
     def clean(self):
         cleaned_data = super().clean()
@@ -391,6 +428,17 @@ class SubscriptionForm(StyledModelForm):
 
         cleaned_data['uploaded_images'] = uploaded_files
         cleaned_data['remaining_image_paths'] = existing_paths
+
+        room = cleaned_data.get('room') or self._get_selected_room()
+        if room and room.type == Room.RoomType.REST:
+            cleaned_data['tenant_count'] = Subscription.get_restroom_linked_tenant_count(room)
+            cleaned_data['deposit_amount'] = Decimal('0')
+            cleaned_data['room_price'] = Decimal('0')
+            cleaned_data['use_internet'] = False
+            cleaned_data['internet_price'] = Decimal('0')
+            cleaned_data['cleaning_price'] = Decimal('0')
+            cleaned_data['use_laundry'] = False
+            cleaned_data['laundry_price'] = Decimal('0')
         return cleaned_data
 
     def save(self, commit=True):
@@ -491,6 +539,16 @@ class UsageForm(StyledModelForm):
         'internet_price',
         'cleaning_price',
         'laundry_price',
+    )
+    RESTROOM_LINKED_INVOICE_LOCKED_FIELDS = (
+        'electricity_price',
+        'water_price',
+        'latest_electricity_reading',
+        'electricity_meter_image',
+        'remove_electricity_meter_image',
+        'latest_water_reading',
+        'water_meter_image',
+        'remove_water_meter_image',
     )
 
     class Meta:
@@ -604,6 +662,22 @@ class UsageForm(StyledModelForm):
                 self.fields['latest_electricity_reading'].initial = subscription.start_electricity_reading
                 self.fields['latest_water_reading'].initial = subscription.start_water_reading
         self._apply_rest_room_rules(subscription)
+        self.restroom_linked_invoice_status = (
+            self.instance.get_restroom_linked_invoice_status()
+            if self.instance.pk
+            else {
+                'is_applicable': False,
+                'is_locked': False,
+                'paid_linked_usages': 0,
+                'total_linked_subscriptions': 0,
+                'linked_items': [],
+            }
+        )
+        self.is_restroom_linked_invoice_locked = self.restroom_linked_invoice_status['is_locked']
+        if self.is_restroom_linked_invoice_locked:
+            for field_name in self.RESTROOM_LINKED_INVOICE_LOCKED_FIELDS:
+                self.fields[field_name].disabled = True
+                self.fields[field_name].required = False
         self.is_paid_locked = bool(self.instance.pk and self.instance.status == Usage.Status.PAID)
         if self.is_paid_locked:
             for field in self.fields.values():

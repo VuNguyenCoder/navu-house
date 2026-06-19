@@ -6,7 +6,8 @@ from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Sum
+from django.db.models.functions import Now
 from django.utils.translation import gettext_lazy as _
 
 
@@ -291,12 +292,107 @@ class Subscription(models.Model):
                 'room': _('This room already has an active subscription. Disable the current one first.'),
             })
 
+    @classmethod
+    def get_room_subscription_for_period(cls, room, period):
+        usage_subscription_id = (
+            Usage.objects.filter(subscription__room=room, period=period)
+            .order_by('-updated_at', '-id')
+            .values_list('subscription_id', flat=True)
+            .first()
+        )
+        if usage_subscription_id:
+            return cls.objects.select_related('room').filter(pk=usage_subscription_id).first()
+
+        started_queryset = room.subscriptions.filter(start_date__lte=period).order_by('-start_date', '-updated_at', '-id')
+        enabled_started = started_queryset.filter(status=cls.Status.ENABLED).first()
+        if enabled_started:
+            return enabled_started
+
+        fallback_enabled = room.subscriptions.filter(status=cls.Status.ENABLED).order_by('-start_date', '-updated_at', '-id').first()
+        if fallback_enabled:
+            return fallback_enabled
+
+        return room.subscriptions.order_by('-start_date', '-updated_at', '-id').first()
+
+    @classmethod
+    def get_restroom_linked_tenant_count(cls, restroom):
+        if not restroom or not restroom.pk:
+            return 0
+        return (
+            cls.objects.filter(
+                status=cls.Status.ENABLED,
+                room__type=Room.RoomType.UNENCLOSED,
+                room__linked_restroom=restroom,
+            )
+            .aggregate(total=Sum('tenant_count'))
+            .get('total')
+            or 0
+        )
+
+    @classmethod
+    def sync_restroom_subscription_tenant_count(cls, restroom):
+        if not restroom or not restroom.pk or restroom.type != Room.RoomType.REST:
+            return
+        cls.objects.filter(
+            room=restroom,
+            status=cls.Status.ENABLED,
+        ).update(
+            tenant_count=cls.get_restroom_linked_tenant_count(restroom),
+            updated_at=Now(),
+        )
+
+    def _normalize_restroom_subscription_fields(self):
+        if not self.room_id or self.room.type != Room.RoomType.REST:
+            return []
+
+        normalized_values = {
+            'tenant_count': self.get_restroom_linked_tenant_count(self.room),
+            'deposit_amount': Decimal('0'),
+            'room_price': Decimal('0'),
+            'use_internet': False,
+            'internet_price': Decimal('0'),
+            'cleaning_price': Decimal('0'),
+            'use_laundry': False,
+            'laundry_price': Decimal('0'),
+        }
+        changed_fields = []
+        for field_name, value in normalized_values.items():
+            if getattr(self, field_name) != value:
+                setattr(self, field_name, value)
+                changed_fields.append(field_name)
+        return changed_fields
+
     def save(self, *args, **kwargs):
+        previous_linked_restroom_id = None
+        if self.pk:
+            previous_subscription = (
+                Subscription.objects
+                .select_related('room__linked_restroom')
+                .filter(pk=self.pk)
+                .first()
+            )
+            if previous_subscription and previous_subscription.room.type == Room.RoomType.UNENCLOSED:
+                previous_linked_restroom_id = previous_subscription.room.linked_restroom_id
+
         if self._state.adding and all(getattr(self, field) in (None, 0, Decimal('0')) for field in PRICE_FIELD_NAMES):
             template = PriceTemplate.get_solo()
             for field in PRICE_FIELD_NAMES:
                 setattr(self, field, getattr(template, field))
+
+        normalized_fields = self._normalize_restroom_subscription_fields()
+        update_fields = kwargs.get('update_fields')
+        if update_fields is not None and normalized_fields:
+            kwargs['update_fields'] = set(update_fields) | set(normalized_fields) | {'updated_at'}
+
         super().save(*args, **kwargs)
+
+        restroom_ids_to_sync = set()
+        if previous_linked_restroom_id:
+            restroom_ids_to_sync.add(previous_linked_restroom_id)
+        if self.room.type == Room.RoomType.UNENCLOSED and self.room.linked_restroom_id:
+            restroom_ids_to_sync.add(self.room.linked_restroom_id)
+        for restroom in Room.objects.filter(pk__in=restroom_ids_to_sync, type=Room.RoomType.REST):
+            self.sync_restroom_subscription_tenant_count(restroom)
 
     @property
     def image_count(self):
@@ -375,8 +471,62 @@ class Usage(models.Model):
         'water_meter_image_path',
     )
 
+    RESTROOM_LINKED_INVOICE_LOCKED_FIELDS = (
+        'electricity_price',
+        'water_price',
+        'latest_electricity_reading',
+        'electricity_meter_image_path',
+        'latest_water_reading',
+        'water_meter_image_path',
+    )
+
     def __str__(self):
         return f"{self.subscription.room.room_name} - {self.period:%m/%Y}"
+
+    def get_restroom_linked_invoice_status(self):
+        if (
+            not self.subscription_id
+            or not self.period
+            or self.subscription.room.type != Room.RoomType.REST
+        ):
+            return {
+                'is_applicable': False,
+                'is_locked': False,
+                'paid_linked_usages': 0,
+                'total_linked_subscriptions': 0,
+                'linked_items': [],
+            }
+
+        linked_items = []
+        linked_rooms = Room.objects.filter(
+            type=Room.RoomType.UNENCLOSED,
+            linked_restroom=self.subscription.room,
+        ).order_by('room_name')
+        for linked_room in linked_rooms:
+            linked_subscription = Subscription.get_room_subscription_for_period(linked_room, self.period)
+            if not linked_subscription:
+                continue
+            linked_usage = (
+                Usage.objects.filter(subscription=linked_subscription, period=self.period)
+                .order_by('-updated_at', '-id')
+                .first()
+            )
+            linked_items.append({
+                'room_name': linked_room.room_name,
+                'subscription_id': linked_subscription.pk,
+                'subscription_description': linked_subscription.description or '',
+                'has_usage': bool(linked_usage),
+                'is_paid': bool(linked_usage and linked_usage.status == self.Status.PAID),
+            })
+
+        paid_linked_usages = sum(1 for item in linked_items if item['is_paid'])
+        return {
+            'is_applicable': True,
+            'is_locked': paid_linked_usages > 0,
+            'paid_linked_usages': paid_linked_usages,
+            'total_linked_subscriptions': len(linked_items),
+            'linked_items': linked_items,
+        }
 
     def clean(self):
         super().clean()
@@ -393,6 +543,13 @@ class Usage(models.Model):
                 ]
                 if changed_fields:
                     raise ValidationError(_('A paid usage record cannot be edited.'))
+            if previous and previous.get_restroom_linked_invoice_status()['is_locked']:
+                changed_fields = [
+                    field_name for field_name in self.RESTROOM_LINKED_INVOICE_LOCKED_FIELDS
+                    if getattr(previous, field_name) != getattr(self, field_name)
+                ]
+                if changed_fields:
+                    raise ValidationError(_('A restroom usage record cannot be edited after linked invoices are paid.'))
 
     def save(self, *args, **kwargs):
         if self.period:

@@ -103,9 +103,37 @@
                                 <h2 class="h5 mb-3">{% trans "Pricing snapshot" %}</h2>
                                 <div class="row g-3">
                                     {% for field in form %}
-                                    {% if field.name == 'room_price' or field.name == 'electricity_price' or field.name == 'water_price' or field.name == 'internet_price' or field.name == 'cleaning_price' or field.name == 'laundry_price' %}
+                                    {% if field.name == 'room_price' or field.name == 'electricity_price' or field.name == 'water_price' or field.name == 'cleaning_price' %}
                                     <div class="col-12 col-lg-6{% if field.name == 'room_price' or field.name == 'internet_price' or field.name == 'cleaning_price' or field.name == 'laundry_price' %} usage-restroom-optional-field{% endif %}"{% if field.name == 'room_price' or field.name == 'internet_price' or field.name == 'cleaning_price' or field.name == 'laundry_price' %} data-restroom-optional-field{% endif %}>
                                         {% include "components/numeric_input/main.html" with field=field show_spinner_controls=True step_value=1000 %}
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% for field in form %}
+                                    {% if field.name == 'internet_price' %}
+                                    <div class="col-12 col-lg-6 usage-restroom-optional-field" data-restroom-optional-field>
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            {{ form.use_internet }}
+                                            <label class="form-label fw-semibold mb-0 usage-optional-label" for="{{ field.id_for_label }}" id="useInternetLabel">{{ field.label }}</label>
+                                        </div>
+                                        {% include "components/numeric_input/main.html" with field=field show_spinner_controls=True step_value=1000 hide_label=True %}
+                                        {% if form.use_internet.errors %}
+                                        <div class="text-danger small mt-1">{{ form.use_internet.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% for field in form %}
+                                    {% if field.name == 'laundry_price' %}
+                                    <div class="col-12 col-lg-6 usage-restroom-optional-field" data-restroom-optional-field>
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            {{ form.use_laundry }}
+                                            <label class="form-label fw-semibold mb-0 usage-optional-label" for="{{ field.id_for_label }}" id="useLaundryLabel">{{ field.label }}</label>
+                                        </div>
+                                        {% include "components/numeric_input/main.html" with field=field show_spinner_controls=True step_value=1000 hide_label=True %}
+                                        {% if form.use_laundry.errors %}
+                                        <div class="text-danger small mt-1">{{ form.use_laundry.errors|striptags }}</div>
+                                        {% endif %}
                                     </div>
                                     {% endif %}
                                     {% endfor %}
@@ -387,7 +415,7 @@
                                                 <td id="internetQuantityValue">1</td>
                                                 <td id="internetUnitPriceValue">0 VND</td>
                                                 <td id="internetCostAmount">0 VND</td>
-                                                <td id="internetNoteValue">{% trans "Flat rate" %}</td>
+                                                <td id="internetNoteValue">1 {% trans "room" %} x 0</td>
                                             </tr>
                                             <tr data-usage-summary-row data-usage-summary-table-row data-restroom-optional-row>
                                                 <td data-usage-row-number>7</td>
@@ -403,7 +431,7 @@
                                                 <td id="laundryQuantityValue">1</td>
                                                 <td id="laundryUnitPriceValue">0 VND</td>
                                                 <td id="laundryCostAmount">0 VND</td>
-                                                <td id="laundryNoteValue">{% trans "Flat rate" %}</td>
+                                                <td id="laundryNoteValue">0 {% trans "person" %} x 0</td>
                                             </tr>
                                             <tr data-usage-summary-row data-usage-summary-table-row>
                                                 <td data-usage-row-number>9</td>
@@ -495,7 +523,7 @@
                                                 <div><strong>{% trans "Quantity" %}:</strong> <span id="internetQuantityValueMobile">1</span></div>
                                                 <div><strong>{% trans "Unit price" %}:</strong> <span id="internetUnitPriceValueMobile">0 VND</span></div>
                                                 <div><strong>{% trans "Amount" %}:</strong> <span id="internetCostAmountMobile">0 VND</span></div>
-                                                <div><strong>{% trans "Note" %}:</strong> <span id="internetNoteValueMobile">{% trans "Flat rate" %}</span></div>
+                                                <div><strong>{% trans "Note" %}:</strong> <span id="internetNoteValueMobile">1 {% trans "room" %} x 0</span></div>
                                             </div>
                                         </div>
                                         <div class="usage-mobile-item" data-usage-summary-row data-usage-summary-mobile-row data-restroom-optional-row>
@@ -519,7 +547,7 @@
                                                 <div><strong>{% trans "Quantity" %}:</strong> <span id="laundryQuantityValueMobile">1</span></div>
                                                 <div><strong>{% trans "Unit price" %}:</strong> <span id="laundryUnitPriceValueMobile">0 VND</span></div>
                                                 <div><strong>{% trans "Amount" %}:</strong> <span id="laundryCostAmountMobile">0 VND</span></div>
-                                                <div><strong>{% trans "Note" %}:</strong> <span id="laundryNoteValueMobile">{% trans "Flat rate" %}</span></div>
+                                                <div><strong>{% trans "Note" %}:</strong> <span id="laundryNoteValueMobile">0 {% trans "person" %} x 0</span></div>
                                             </div>
                                         </div>
                                         <div class="usage-mobile-item" data-usage-summary-row data-usage-summary-mobile-row>
@@ -822,6 +850,11 @@
 .usage-image-preview.is-marked-for-delete .usage-delete-link {
     display: none !important;
 }
+
+.usage-optional-label.is-disabled {
+    text-decoration: line-through;
+    opacity: 0.65;
+}
 {% endblock %}
 
 {% block extra_js %}
@@ -903,8 +936,10 @@
                 roomPrice: document.getElementById('{{ form.room_price.id_for_label }}'),
                 electricityPrice: document.getElementById('{{ form.electricity_price.id_for_label }}'),
                 waterPrice: document.getElementById('{{ form.water_price.id_for_label }}'),
+                useInternet: document.getElementById('{{ form.use_internet.id_for_label }}'),
                 internetPrice: document.getElementById('{{ form.internet_price.id_for_label }}'),
                 cleaningPrice: document.getElementById('{{ form.cleaning_price.id_for_label }}'),
+                useLaundry: document.getElementById('{{ form.use_laundry.id_for_label }}'),
                 laundryPrice: document.getElementById('{{ form.laundry_price.id_for_label }}'),
                 surchargeAmount: document.getElementById('{{ form.surcharge_amount.id_for_label }}'),
                 surchargeDescription: document.getElementById('{{ form.surcharge_description.id_for_label }}'),
@@ -1263,6 +1298,19 @@
                 renumberUsageSummaryRows();
             };
 
+            const syncOptionalServiceLabels = () => {
+                const useInternetLabel = document.getElementById('useInternetLabel');
+                const useLaundryLabel = document.getElementById('useLaundryLabel');
+                const restRoomSubscription = isRestRoomSubscription();
+
+                if (useInternetLabel) {
+                    useInternetLabel.classList.toggle('is-disabled', restRoomSubscription || !fields.useInternet?.checked);
+                }
+                if (useLaundryLabel) {
+                    useLaundryLabel.classList.toggle('is-disabled', restRoomSubscription || !fields.useLaundry?.checked);
+                }
+            };
+
             const renderUsageSummary = () => {
                 const restRoomSubscription = isRestRoomSubscription();
                 const previousElectricity = parseFloat(usageTotalCard.dataset.previousElectricity || '0') || 0;
@@ -1277,8 +1325,10 @@
                 const roomPrice = restRoomSubscription ? 0 : readNumber(fields.roomPrice);
                 const electricityPrice = readNumber(fields.electricityPrice);
                 const waterPrice = readNumber(fields.waterPrice);
+                const useInternet = !restRoomSubscription && !!fields.useInternet?.checked;
                 const internetPrice = restRoomSubscription ? 0 : readNumber(fields.internetPrice);
                 const cleaningPrice = restRoomSubscription ? 0 : readNumber(fields.cleaningPrice);
+                const useLaundry = !restRoomSubscription && !!fields.useLaundry?.checked;
                 const laundryPrice = restRoomSubscription ? 0 : readNumber(fields.laundryPrice);
                 const surchargeAmount = readNumber(fields.surchargeAmount);
                 const surchargeDescription = (fields.surchargeDescription?.value || '').trim();
@@ -1289,8 +1339,9 @@
                 const waterCost = (currentWater - previousWater > 0)
                     ? (currentWater - previousWater) * waterPrice
                     : 0;
+                const internetCost = useInternet ? internetPrice : 0;
                 const cleaningCost = tenantCount * cleaningPrice;
-                const laundryCost = tenantCount * laundryPrice;
+                const laundryCost = useLaundry ? tenantCount * laundryPrice : 0;
                 let linkedRestroomElectricityCost = 0;
                 let linkedRestroomWaterCost = 0;
                 if (!restRoomSubscription && linkedRestroomUsageContext?.has_usage) {
@@ -1300,14 +1351,14 @@
                         linkedRestroomWaterCost = ((linkedRestroomUsageContext.water_amount || 0) / totalLinkedTenants) * tenantCount;
                     }
                 }
-                const total = roomPrice + electricityCost + waterCost + internetPrice + cleaningCost + laundryCost + surchargeAmount + linkedRestroomElectricityCost + linkedRestroomWaterCost;
+                const total = roomPrice + electricityCost + waterCost + internetCost + cleaningCost + laundryCost + surchargeAmount + linkedRestroomElectricityCost + linkedRestroomWaterCost;
 
                 setText(['roomQuantityValue', 'roomQuantityValueMobile'], `1 {% trans "room" %}`);
                 setText(['electricityQuantityValue', 'electricityQuantityValueMobile'], `${formatPlainNumber(electricityConsumed)} {% trans "kWh" %}`);
                 setText(['waterQuantityValue', 'waterQuantityValueMobile'], `${formatPlainNumber(waterConsumed)} {% trans "m3" %}`);
-                setText(['internetQuantityValue', 'internetQuantityValueMobile'], `1 {% trans "room" %}`);
+                setText(['internetQuantityValue', 'internetQuantityValueMobile'], `${useInternet ? 1 : 0} {% trans "room" %}`);
                 setText(['cleaningQuantityValue', 'cleaningQuantityValueMobile'], `${formatPlainNumber(tenantCount)} {% trans "person" %}`);
-                setText(['laundryQuantityValue', 'laundryQuantityValueMobile'], `${formatPlainNumber(tenantCount)} {% trans "person" %}`);
+                setText(['laundryQuantityValue', 'laundryQuantityValueMobile'], `${formatPlainNumber(useLaundry ? tenantCount : 0)} {% trans "person" %}`);
                 setText(['surchargeQuantityValue', 'surchargeQuantityValueMobile'], '1');
                 setText(['roomUnitPriceValue', 'roomUnitPriceValueMobile'], formatVnd(roomPrice));
                 setText(['electricityUnitPriceValue', 'electricityUnitPriceValueMobile'], formatVnd(electricityPrice));
@@ -1319,7 +1370,7 @@
                 setText(['roomPriceAmount', 'roomPriceAmountMobile'], formatVnd(roomPrice));
                 setText(['electricityCostAmount', 'electricityCostAmountMobile'], formatVnd(electricityCost));
                 setText(['waterCostAmount', 'waterCostAmountMobile'], formatVnd(waterCost));
-                setText(['internetCostAmount', 'internetCostAmountMobile'], formatVnd(internetPrice));
+                setText(['internetCostAmount', 'internetCostAmountMobile'], formatVnd(internetCost));
                 setText(['cleaningCostAmount', 'cleaningCostAmountMobile'], formatVnd(cleaningCost));
                 setText(['laundryCostAmount', 'laundryCostAmountMobile'], formatVnd(laundryCost));
                 setText(['surchargeAmountValue', 'surchargeAmountValueMobile'], formatVnd(surchargeAmount));
@@ -1335,11 +1386,12 @@
                     ['waterNoteValue', 'waterNoteValueMobile'],
                     `<div class="usage-note-lines"><ul class="usage-note-list"><li>{% trans "Previous water reading" %}: ${formatPlainNumber(previousWater)}</li><li>{% trans "Water reading" %}: ${formatPlainNumber(currentWater)}</li></ul><div class="usage-note-result">→ {% trans "Water consumed" %}: ${formatPlainNumber(currentWater)} - ${formatPlainNumber(previousWater)} = ${formatPlainNumber(waterConsumed)}</div></div>`
                 );
-                setText(['internetNoteValue', 'internetNoteValueMobile'], `1 {% trans "room" %} x ${formatPlainNumber(internetPrice)}`);
+                setText(['internetNoteValue', 'internetNoteValueMobile'], `${useInternet ? 1 : 0} {% trans "room" %} x ${formatPlainNumber(internetPrice)}`);
                 setText(['cleaningNoteValue', 'cleaningNoteValueMobile'], `${formatPlainNumber(tenantCount)} {% trans "person" %} x ${formatPlainNumber(cleaningPrice)}`);
-                setText(['laundryNoteValue', 'laundryNoteValueMobile'], `${formatPlainNumber(tenantCount)} {% trans "person" %} x ${formatPlainNumber(laundryPrice)}`);
+                setText(['laundryNoteValue', 'laundryNoteValueMobile'], `${formatPlainNumber(useLaundry ? tenantCount : 0)} {% trans "person" %} x ${formatPlainNumber(laundryPrice)}`);
                 setText(['surchargeNoteValue', 'surchargeNoteValueMobile'], surchargeDescription || '-');
                 renderLinkedRestroomUsageSection(tenantCount);
+                syncOptionalServiceLabels();
 
                 const baselineHint = document.getElementById('usageBaselineHint');
                 if (baselineHint) {
@@ -1405,8 +1457,10 @@
                 fields.roomPrice,
                 fields.electricityPrice,
                 fields.waterPrice,
+                fields.useInternet,
                 fields.internetPrice,
                 fields.cleaningPrice,
+                fields.useLaundry,
                 fields.laundryPrice,
                 fields.surchargeAmount,
                 fields.surchargeDescription,

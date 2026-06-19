@@ -289,7 +289,14 @@ class SubscriptionForm(StyledModelForm):
             'start_electricity_reading',
             'start_water_reading',
             'deposit_amount',
-            *PRICE_FIELD_NAMES,
+            'room_price',
+            'electricity_price',
+            'water_price',
+            'use_internet',
+            'internet_price',
+            'cleaning_price',
+            'use_laundry',
+            'laundry_price',
             'contact_phonenumber',
             'contact_email',
         ]
@@ -304,8 +311,10 @@ class SubscriptionForm(StyledModelForm):
             'room_price': _('Room price (VND / room)'),
             'electricity_price': _('Electricity price (VND / number)'),
             'water_price': _('Water price (VND / cubic meter)'),
+            'use_internet': _('Use internet this month'),
             'internet_price': _('Internet price (VND / room)'),
             'cleaning_price': _('Cleaning price (VND / person)'),
+            'use_laundry': _('Use laundry this month'),
             'laundry_price': _('Laundry price (VND / person)'),
             'contact_phonenumber': _('Contact phone number'),
             'contact_email': _('Contact email'),
@@ -321,8 +330,10 @@ class SubscriptionForm(StyledModelForm):
             'room_price': PRICE_WIDGET,
             'electricity_price': PRICE_WIDGET,
             'water_price': PRICE_WIDGET,
+            'use_internet': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'internet_price': PRICE_WIDGET,
             'cleaning_price': PRICE_WIDGET,
+            'use_laundry': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'laundry_price': PRICE_WIDGET,
             'contact_phonenumber': forms.TextInput(attrs={'placeholder': '0901234567'}),
             'contact_email': forms.EmailInput(attrs={'placeholder': 'tenant@example.com'}),
@@ -340,7 +351,14 @@ class SubscriptionForm(StyledModelForm):
             'start_electricity_reading',
             'start_water_reading',
             'deposit_amount',
-            *PRICE_FIELD_NAMES,
+            'room_price',
+            'electricity_price',
+            'water_price',
+            'use_internet',
+            'internet_price',
+            'cleaning_price',
+            'use_laundry',
+            'laundry_price',
             'contact_phonenumber',
             'contact_email',
         ])
@@ -356,6 +374,8 @@ class SubscriptionForm(StyledModelForm):
             template = PriceTemplate.get_solo()
             for field in PRICE_FIELD_NAMES:
                 self.fields[field].initial = getattr(template, field)
+            self.fields['use_internet'].initial = True
+            self.fields['use_laundry'].initial = True
         if not self.is_bound and self.instance.pk and self.instance.room_id:
             self.fields['start_electricity_reading'].initial = self.instance.start_electricity_reading
             self.fields['start_water_reading'].initial = self.instance.start_water_reading
@@ -480,6 +500,8 @@ class UsageForm(StyledModelForm):
             'period',
             'tenant_count',
             *PRICE_FIELD_NAMES,
+            'use_internet',
+            'use_laundry',
             'surcharge_amount',
             'surcharge_description',
             'latest_electricity_reading',
@@ -491,8 +513,10 @@ class UsageForm(StyledModelForm):
             'room_price': _('Room price (VND / room)'),
             'electricity_price': _('Electricity price (VND / number)'),
             'water_price': _('Water price (VND / cubic meter)'),
+            'use_internet': _('Use internet this month'),
             'internet_price': _('Internet price (VND / room)'),
             'cleaning_price': _('Cleaning price (VND / person)'),
+            'use_laundry': _('Use laundry this month'),
             'laundry_price': _('Laundry price (VND / person)'),
             'surcharge_amount': _('Surcharge amount (VND)'),
             'surcharge_description': _('Surcharge description'),
@@ -505,8 +529,10 @@ class UsageForm(StyledModelForm):
             'room_price': PRICE_WIDGET,
             'electricity_price': PRICE_WIDGET,
             'water_price': PRICE_WIDGET,
+            'use_internet': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'internet_price': PRICE_WIDGET,
             'cleaning_price': PRICE_WIDGET,
+            'use_laundry': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'laundry_price': PRICE_WIDGET,
             'surcharge_amount': PRICE_WIDGET,
             'surcharge_description': forms.Textarea(attrs={'rows': 3}),
@@ -531,8 +557,10 @@ class UsageForm(StyledModelForm):
             'room_price',
             'electricity_price',
             'water_price',
+            'use_internet',
             'internet_price',
             'cleaning_price',
+            'use_laundry',
             'laundry_price',
             'surcharge_amount',
             'surcharge_description',
@@ -567,6 +595,8 @@ class UsageForm(StyledModelForm):
             )
             for field in PRICE_FIELD_NAMES:
                 self.fields[field].initial = getattr(subscription, field)
+            self.fields['use_internet'].initial = subscription.use_internet
+            self.fields['use_laundry'].initial = subscription.use_laundry
             if latest_usage:
                 self.fields['latest_electricity_reading'].initial = subscription.room.latest_electricity_reading
                 self.fields['latest_water_reading'].initial = subscription.room.latest_water_reading
@@ -619,6 +649,8 @@ class UsageForm(StyledModelForm):
         if is_rest_room:
             for field_name in self.RESTROOM_OPTIONAL_FIELDS:
                 cleaned_data[field_name] = None
+            cleaned_data['use_internet'] = False
+            cleaned_data['use_laundry'] = False
         return cleaned_data
 
     def save(self, commit=True):
@@ -627,6 +659,8 @@ class UsageForm(StyledModelForm):
         if subscription and subscription.room.type == Room.RoomType.REST:
             for field_name in self.RESTROOM_OPTIONAL_FIELDS:
                 setattr(instance, field_name, None)
+            instance.use_internet = False
+            instance.use_laundry = False
         period = self.cleaned_data.get('period') or instance.period
         period_slug = period.strftime('%Y-%m') if period else 'unknown-period'
         subscription_slug = str(subscription.pk) if subscription and subscription.pk else 'subscription'

@@ -54,9 +54,9 @@ def _build_usage_dashboard_totals(usage):
     room_amount = Decimal(usage.room_price or 0)
     electricity_amount = Decimal(electricity_consumed) * Decimal(usage.electricity_price or 0)
     water_amount = Decimal(water_consumed) * Decimal(usage.water_price or 0)
-    internet_amount = Decimal(usage.internet_price or 0)
+    internet_amount = Decimal(usage.internet_price or 0) if usage.use_internet else Decimal('0')
     cleaning_amount = Decimal(tenant_count) * Decimal(usage.cleaning_price or 0)
-    laundry_amount = Decimal(tenant_count) * Decimal(usage.laundry_price or 0)
+    laundry_amount = Decimal(tenant_count) * Decimal(usage.laundry_price or 0) if usage.use_laundry else Decimal('0')
 
     return {
         'electricity_consumed': electricity_consumed,

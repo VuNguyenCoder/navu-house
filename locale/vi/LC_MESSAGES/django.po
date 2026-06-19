@@ -36,6 +36,12 @@ msgstr "Giá vệ sinh (VND / người)"
 msgid "Laundry price (VND / person)"
 msgstr "Giá giặt (VND / người)"
 
+msgid "Use internet this month"
+msgstr "Dùng internet trong tháng này"
+
+msgid "Use laundry this month"
+msgstr "Dùng giặt trong tháng này"
+
 #: apps/main/forms.py:126
 msgid "Room images"
 msgstr "Ảnh phòng"

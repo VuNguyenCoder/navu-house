@@ -169,9 +169,37 @@
                         <div class="collapse{% if not form.instance.pk %} show{% endif %} subscription-section-body" id="subscriptionPricingSnapshot">
                             <div class="row g-3">
                                 {% for field in form %}
-                                {% if field.name == 'deposit_amount' or field.name == 'room_price' or field.name == 'electricity_price' or field.name == 'water_price' or field.name == 'internet_price' or field.name == 'cleaning_price' or field.name == 'laundry_price' %}
+                                {% if field.name == 'deposit_amount' or field.name == 'room_price' or field.name == 'electricity_price' or field.name == 'water_price' or field.name == 'cleaning_price' %}
                                 <div class="col-12 col-lg-6">
                                     {% include "components/numeric_input/main.html" with field=field show_spinner_controls=True step_value=1000 %}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                                {% for field in form %}
+                                {% if field.name == 'internet_price' %}
+                                <div class="col-12 col-lg-6">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        {{ form.use_internet }}
+                                        <label class="form-label fw-semibold mb-0 subscription-optional-label" for="{{ field.id_for_label }}" id="subscriptionUseInternetLabel">{{ field.label }}</label>
+                                    </div>
+                                    {% include "components/numeric_input/main.html" with field=field show_spinner_controls=True step_value=1000 hide_label=True %}
+                                    {% if form.use_internet.errors %}
+                                    <div class="text-danger small mt-1">{{ form.use_internet.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                                {% for field in form %}
+                                {% if field.name == 'laundry_price' %}
+                                <div class="col-12 col-lg-6">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        {{ form.use_laundry }}
+                                        <label class="form-label fw-semibold mb-0 subscription-optional-label" for="{{ field.id_for_label }}" id="subscriptionUseLaundryLabel">{{ field.label }}</label>
+                                    </div>
+                                    {% include "components/numeric_input/main.html" with field=field show_spinner_controls=True step_value=1000 hide_label=True %}
+                                    {% if form.use_laundry.errors %}
+                                    <div class="text-danger small mt-1">{{ form.use_laundry.errors|striptags }}</div>
+                                    {% endif %}
                                 </div>
                                 {% endif %}
                                 {% endfor %}
@@ -560,6 +588,11 @@
     display: none !important;
 }
 
+.subscription-optional-label.is-disabled {
+    text-decoration: line-through;
+    opacity: 0.65;
+}
+
 @media (max-width: 767.98px) {
     .subscription-section-toggle {
         padding: 1rem 0;
@@ -609,6 +642,20 @@
             wrapper.classList.toggle('is-marked-for-delete', input.checked);
             if (pending) {
                 pending.classList.toggle('d-none', !input.checked);
+            }
+        };
+
+        const syncOptionalServiceLabels = () => {
+            const useInternet = document.getElementById('{{ form.use_internet.id_for_label }}');
+            const useLaundry = document.getElementById('{{ form.use_laundry.id_for_label }}');
+            const useInternetLabel = document.getElementById('subscriptionUseInternetLabel');
+            const useLaundryLabel = document.getElementById('subscriptionUseLaundryLabel');
+
+            if (useInternetLabel) {
+                useInternetLabel.classList.toggle('is-disabled', !useInternet?.checked);
+            }
+            if (useLaundryLabel) {
+                useLaundryLabel.classList.toggle('is-disabled', !useLaundry?.checked);
             }
         };
 
@@ -664,6 +711,10 @@
                 subscriptionImagePreviewImage.classList.add('d-none');
             });
         }
+
+        document.getElementById('{{ form.use_internet.id_for_label }}')?.addEventListener('change', syncOptionalServiceLabels);
+        document.getElementById('{{ form.use_laundry.id_for_label }}')?.addEventListener('change', syncOptionalServiceLabels);
+        syncOptionalServiceLabels();
     });
 </script>
 {% endblock %}

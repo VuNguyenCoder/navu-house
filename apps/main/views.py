@@ -290,9 +290,9 @@ def build_subscription_usage_rows(subscription):
             Decimal(usage.room_price or 0)
             + Decimal(electricity_consumed) * Decimal(usage.electricity_price)
             + Decimal(water_consumed) * Decimal(usage.water_price)
-            + Decimal(usage.internet_price or 0)
+            + (Decimal(usage.internet_price or 0) if usage.use_internet else Decimal('0'))
             + Decimal(tenant_count) * Decimal(usage.cleaning_price or 0)
-            + Decimal(tenant_count) * Decimal(usage.laundry_price or 0)
+            + (Decimal(tenant_count) * Decimal(usage.laundry_price or 0) if usage.use_laundry else Decimal('0'))
             + Decimal(usage.surcharge_amount or 0)
             + linked_restroom_electricity_amount
             + linked_restroom_water_amount

@@ -238,8 +238,10 @@ class Subscription(models.Model):
     room_price = models.DecimalField(max_digits=12, decimal_places=0, default=0)
     electricity_price = models.DecimalField(max_digits=12, decimal_places=0, default=0)
     water_price = models.DecimalField(max_digits=12, decimal_places=0, default=0)
+    use_internet = models.BooleanField(default=True)
     internet_price = models.DecimalField(max_digits=12, decimal_places=0, default=0)
     cleaning_price = models.DecimalField(max_digits=12, decimal_places=0, default=0)
+    use_laundry = models.BooleanField(default=True)
     laundry_price = models.DecimalField(max_digits=12, decimal_places=0, default=0)
     contact_phonenumber = models.CharField(max_length=30, blank=True)
     contact_email = models.EmailField(blank=True)
@@ -333,8 +335,10 @@ class Usage(models.Model):
     room_price = models.DecimalField(max_digits=12, decimal_places=0, default=0, null=True, blank=True)
     electricity_price = models.DecimalField(max_digits=12, decimal_places=0, default=0)
     water_price = models.DecimalField(max_digits=12, decimal_places=0, default=0)
+    use_internet = models.BooleanField(default=True)
     internet_price = models.DecimalField(max_digits=12, decimal_places=0, default=0, null=True, blank=True)
     cleaning_price = models.DecimalField(max_digits=12, decimal_places=0, default=0, null=True, blank=True)
+    use_laundry = models.BooleanField(default=True)
     laundry_price = models.DecimalField(max_digits=12, decimal_places=0, default=0, null=True, blank=True)
     surcharge_amount = models.DecimalField(max_digits=12, decimal_places=0, default=0, null=True, blank=True)
     surcharge_description = models.TextField(blank=True)
@@ -358,8 +362,10 @@ class Usage(models.Model):
         'room_price',
         'electricity_price',
         'water_price',
+        'use_internet',
         'internet_price',
         'cleaning_price',
+        'use_laundry',
         'laundry_price',
         'surcharge_amount',
         'surcharge_description',

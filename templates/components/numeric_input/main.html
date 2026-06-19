@@ -146,7 +146,9 @@
 </style>
 
 <div class="mb-3">
+    {% if not hide_label %}
     <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {% endif %}
     <div class="price-spinner-group{% if not show_spinner_controls or field.field.disabled %} price-spinner-group--standalone{% endif %}">
         {{ field }}
         {% if show_spinner_controls and not field.field.disabled %}

@@ -532,6 +532,12 @@ class UsageForm(StyledModelForm):
         label=_('Delete current water meter image'),
         widget=forms.CheckboxInput(attrs={'class': 'usage-delete-input'}),
     )
+    update_subscription_pricing = forms.BooleanField(
+        required=False,
+        label=_('Also update subscription pricing for future usage records'),
+        help_text=_('These values will become the default pricing snapshot for future usage records of this subscription. Existing usage records will not be changed.'),
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+    )
 
     RESTROOM_OPTIONAL_FIELDS = (
         'tenant_count',
@@ -607,6 +613,20 @@ class UsageForm(StyledModelForm):
             str(subscription.pk): subscription.room.room_name
             for subscription in subscription_queryset
         }
+        self.subscription_pricing_by_id = {
+            str(subscription.pk): {
+                'room_type': subscription.room.type,
+                'room_price': int(subscription.room_price or 0),
+                'electricity_price': int(subscription.electricity_price or 0),
+                'water_price': int(subscription.water_price or 0),
+                'use_internet': subscription.use_internet,
+                'internet_price': int(subscription.internet_price or 0),
+                'cleaning_price': int(subscription.cleaning_price or 0),
+                'use_laundry': subscription.use_laundry,
+                'laundry_price': int(subscription.laundry_price or 0),
+            }
+            for subscription in subscription_queryset
+        }
         self.order_fields([
             'subscription',
             'billing_month',
@@ -620,6 +640,7 @@ class UsageForm(StyledModelForm):
             'cleaning_price',
             'use_laundry',
             'laundry_price',
+            'update_subscription_pricing',
             'surcharge_amount',
             'surcharge_description',
             'latest_electricity_reading',
@@ -683,6 +704,8 @@ class UsageForm(StyledModelForm):
             for field in self.fields.values():
                 field.disabled = True
                 field.required = False
+        if self.is_restroom_linked_invoice_locked:
+            self.fields['update_subscription_pricing'].disabled = True
 
     def _get_selected_subscription(self):
         if self.instance.pk:
@@ -771,5 +794,21 @@ class UsageForm(StyledModelForm):
 
         if commit:
             instance.save()
+            if self.cleaned_data.get('update_subscription_pricing') and subscription:
+                pricing_update_fields = ['electricity_price', 'water_price']
+                if subscription.room.type != Room.RoomType.REST:
+                    pricing_update_fields = [
+                        'room_price',
+                        'electricity_price',
+                        'water_price',
+                        'use_internet',
+                        'internet_price',
+                        'cleaning_price',
+                        'use_laundry',
+                        'laundry_price',
+                    ]
+                for field_name in pricing_update_fields:
+                    setattr(subscription, field_name, getattr(instance, field_name))
+                subscription.save(update_fields=[*pricing_update_fields, 'updated_at'])
             self.save_m2m()
         return instance

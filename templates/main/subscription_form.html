@@ -10,7 +10,11 @@
         <li class="breadcrumb-item"><a href="{% url 'subscription_list' %}">{% trans "Subscriptions" %}</a></li>
         <li class="breadcrumb-item active" aria-current="page">
             {% if form.instance.pk %}
-                {{ form.instance.room.room_name|default:page_title }}
+                {% if form.instance.description %}
+                    {{ form.instance.description }} ({{ form.instance.room.room_name }})
+                {% else %}
+                    {{ form.instance.room.room_name|default:page_title }}
+                {% endif %}
             {% else %}
                 {{ page_title }}
             {% endif %}
@@ -73,8 +77,20 @@
                         </button>
                         <div class="collapse{% if not form.instance.pk %} show{% endif %} subscription-section-body" id="subscriptionBasicInfo">
                             <div class="row g-3">
+                                {% with field=form.description %}
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                    <div class="form-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endwith %}
                                 {% for field in form %}
-                                {% if field.name == 'room' or field.name == 'description' or field.name == 'start_date' or field.name == 'tenant_count' or field.name == 'images' %}
+                                {% if field.name == 'room' or field.name == 'start_date' or field.name == 'tenant_count' or field.name == 'images' %}
                                 <div class="col-12 {% if field.name == 'room' or field.name == 'start_date' or field.name == 'tenant_count' %}col-lg-6{% else %}col-lg-12{% endif %}"{% if field.name == 'tenant_count' %} data-restroom-template-field{% endif %}>
                                     {% if field.name == 'tenant_count' %}
                                         {% include "components/numeric_input/main.html" with field=field show_spinner_controls=True %}

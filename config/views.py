@@ -130,9 +130,11 @@ def home(request):
     total_revenue = Decimal('0')
 
     usage_status_cells = []
+    ended_subscription_cells = []
     shared_restroom_status_cells = []
     for subscription in subscriptions:
         is_rest_room_subscription = subscription.room.type == subscription.room.RoomType.REST
+        is_enabled_subscription = subscription.status == Subscription.Status.ENABLED
         usage = usage_by_subscription_id.get(subscription.pk)
         if usage:
             usage_totals = _build_usage_dashboard_totals(usage)
@@ -146,7 +148,7 @@ def home(request):
                 total_revenue += usage_totals['total_amount']
             is_paid = usage.status == Usage.Status.PAID
             if not is_rest_room_subscription:
-                usage_status_cells.append({
+                usage_cell = {
                     'room_name': subscription.room.room_name,
                     'description': subscription.description or '',
                     'status': usage.status,
@@ -155,7 +157,11 @@ def home(request):
                     'total_amount_display': f"{_format_number(usage_totals['total_amount'])} VND",
                     'usage_id': usage.pk,
                     'target_url': reverse('usage_details', kwargs={'pk': usage.pk}),
-                })
+                }
+                if is_enabled_subscription:
+                    usage_status_cells.append(usage_cell)
+                else:
+                    ended_subscription_cells.append(usage_cell)
             else:
                 linked_invoice_status = usage.get_restroom_linked_invoice_status()
                 shared_restroom_status_cells.append({
@@ -176,7 +182,7 @@ def home(request):
                     'target_url': reverse('usage_details', kwargs={'pk': usage.pk}),
                 })
         else:
-            if not is_rest_room_subscription:
+            if not is_rest_room_subscription and is_enabled_subscription:
                 usage_status_cells.append({
                     'room_name': subscription.room.room_name,
                     'description': subscription.description or '',
@@ -284,6 +290,7 @@ def home(request):
             },
         ],
         'usage_status_cells': sorted(usage_status_cells, key=lambda cell: cell['room_name'].lower()),
+        'ended_subscription_cells': sorted(ended_subscription_cells, key=lambda cell: cell['room_name'].lower()),
         'shared_restroom_status_cells': sorted(shared_restroom_status_cells, key=lambda cell: cell['room_name'].lower()),
     }
     return render(request, 'home.html', context)

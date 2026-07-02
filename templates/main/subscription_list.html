@@ -83,10 +83,10 @@
                 <thead class="table-light">
                     <tr>
                         <th>{% trans "Description" %}</th>
-                        <th>{% trans "Room" %}</th>
                         <th>{% trans "Status" %}</th>
                         <th class="d-none d-md-table-cell">{% trans "Start date" %}</th>
                         <th class="text-end">{% trans "Actions" %}</th>
+                        <th>{% trans "Linked room" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -95,11 +95,6 @@
                         <td>
                             <span class="d-inline d-md-none">{{ subscription.description|default:"—"|truncatechars:28 }}</span>
                             <span class="d-none d-md-inline">{{ subscription.description|default:"—"|truncatechars:80 }}</span>
-                        </td>
-                        <td class="fw-semibold">
-                            <a href="{% url 'room_details' subscription.room.pk %}" class="text-decoration-none">
-                                {{ subscription.room.room_name }}
-                            </a>
                         </td>
                         <td>
                             {% if subscription.status == 'enabled' %}
@@ -132,6 +127,12 @@
                                 <i class="bi bi-trash"></i>
                                 <span class="d-none d-md-inline ms-md-1">{% trans "Delete" %}</span>
                             </button>
+                        </td>
+                        <td class="fw-semibold">
+                            <a href="{% url 'room_details' subscription.room.pk %}" class="text-decoration-none d-inline-flex align-items-center gap-1">
+                                <i class="bi bi-link-45deg text-primary" aria-hidden="true"></i>
+                                {{ subscription.room.room_name }}
+                            </a>
                         </td>
                     </tr>
                     {% empty %}

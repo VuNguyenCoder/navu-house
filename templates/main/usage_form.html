@@ -137,6 +137,22 @@
                                     </div>
                                     {% endif %}
                                     {% endfor %}
+                                    <div class="col-12 d-none" id="updateSubscriptionPricingWrapper">
+                                        <div class="alert alert-warning mb-0">
+                                            <div class="form-check">
+                                                {{ form.update_subscription_pricing }}
+                                                <label class="form-check-label fw-semibold" for="{{ form.update_subscription_pricing.id_for_label }}">
+                                                    {{ form.update_subscription_pricing.label }}
+                                                </label>
+                                            </div>
+                                            {% if form.update_subscription_pricing.help_text %}
+                                            <div class="small mt-1">{{ form.update_subscription_pricing.help_text }}</div>
+                                            {% endif %}
+                                            {% if form.update_subscription_pricing.errors %}
+                                            <div class="text-danger small mt-1">{{ form.update_subscription_pricing.errors|striptags }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -879,6 +895,7 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 {{ rest_room_subscription_ids|json_script:"rest-room-subscription-ids" }}
 {{ subscription_room_names|json_script:"subscription-room-name-map" }}
+{{ form.subscription_pricing_by_id|json_script:"subscription-pricing-map" }}
 <script>
     window.addEventListener('DOMContentLoaded', () => {
         const meterImagePreviewModalElement = document.getElementById('meterImagePreviewModal');
@@ -923,6 +940,9 @@
         const subscriptionRoomNameMap = JSON.parse(
             document.getElementById('subscription-room-name-map')?.textContent || '{}'
         );
+        const subscriptionPricingMap = JSON.parse(
+            document.getElementById('subscription-pricing-map')?.textContent || '{}'
+        );
         const usageIsPaidLocked = {% if usage_is_paid %}true{% else %}false{% endif %};
         const usageTotalCard = document.getElementById('usageTotalCard');
         if (usageTotalCard) {
@@ -958,11 +978,13 @@
                 cleaningPrice: document.getElementById('{{ form.cleaning_price.id_for_label }}'),
                 useLaundry: document.getElementById('{{ form.use_laundry.id_for_label }}'),
                 laundryPrice: document.getElementById('{{ form.laundry_price.id_for_label }}'),
+                updateSubscriptionPricing: document.getElementById('{{ form.update_subscription_pricing.id_for_label }}'),
                 surchargeAmount: document.getElementById('{{ form.surcharge_amount.id_for_label }}'),
                 surchargeDescription: document.getElementById('{{ form.surcharge_description.id_for_label }}'),
                 currentElectricity: document.getElementById('{{ form.latest_electricity_reading.id_for_label }}'),
                 currentWater: document.getElementById('{{ form.latest_water_reading.id_for_label }}'),
             };
+            const updateSubscriptionPricingWrapper = document.getElementById('updateSubscriptionPricingWrapper');
             const restroomOptionalFieldWrappers = document.querySelectorAll('[data-restroom-optional-field]');
             const restroomOptionalRows = document.querySelectorAll('[data-restroom-optional-row]');
             const usageSummaryTableRows = document.querySelectorAll('[data-usage-summary-table-row]');
@@ -1312,6 +1334,7 @@
                     linkedRestroomRows.forEach((row) => row.classList.add('d-none'));
                     linkedRestroomUsageSection?.classList.add('d-none');
                 }
+                syncSubscriptionPricingOverwriteOption();
                 renumberUsageSummaryRows();
             };
 
@@ -1325,6 +1348,41 @@
                 }
                 if (useLaundryLabel) {
                     useLaundryLabel.classList.toggle('is-disabled', restRoomSubscription || !fields.useLaundry?.checked);
+                }
+            };
+
+            const hasPricingSnapshotChanged = () => {
+                const pricing = subscriptionPricingMap[String(fields.subscription?.value || '')];
+                if (!pricing) {
+                    return false;
+                }
+                const restRoomSubscription = isRestRoomSubscription();
+                const comparableFields = restRoomSubscription
+                    ? [
+                        ['electricity_price', readNumber(fields.electricityPrice)],
+                        ['water_price', readNumber(fields.waterPrice)],
+                    ]
+                    : [
+                        ['room_price', readNumber(fields.roomPrice)],
+                        ['electricity_price', readNumber(fields.electricityPrice)],
+                        ['water_price', readNumber(fields.waterPrice)],
+                        ['use_internet', !!fields.useInternet?.checked],
+                        ['internet_price', readNumber(fields.internetPrice)],
+                        ['cleaning_price', readNumber(fields.cleaningPrice)],
+                        ['use_laundry', !!fields.useLaundry?.checked],
+                        ['laundry_price', readNumber(fields.laundryPrice)],
+                    ];
+                return comparableFields.some(([fieldName, currentValue]) => pricing[fieldName] !== currentValue);
+            };
+
+            const syncSubscriptionPricingOverwriteOption = () => {
+                if (!updateSubscriptionPricingWrapper || !fields.updateSubscriptionPricing) {
+                    return;
+                }
+                const shouldShow = !usageIsPaidLocked && !fields.updateSubscriptionPricing.disabled && hasPricingSnapshotChanged();
+                updateSubscriptionPricingWrapper.classList.toggle('d-none', !shouldShow);
+                if (!shouldShow) {
+                    fields.updateSubscriptionPricing.checked = false;
                 }
             };
 
@@ -1409,6 +1467,7 @@
                 setText(['surchargeNoteValue', 'surchargeNoteValueMobile'], surchargeDescription || '-');
                 renderLinkedRestroomUsageSection(tenantCount);
                 syncOptionalServiceLabels();
+                syncSubscriptionPricingOverwriteOption();
 
                 const baselineHint = document.getElementById('usageBaselineHint');
                 if (baselineHint) {
@@ -1486,6 +1545,7 @@
             ].forEach((input) => {
                 if (input) {
                     input.addEventListener('input', renderUsageSummary);
+                    input.addEventListener('change', syncSubscriptionPricingOverwriteOption);
                 }
             });
 

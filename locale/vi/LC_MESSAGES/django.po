@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: navu-house\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-19 15:20+0000\n"
+"POT-Creation-Date: 2026-07-02 15:59+0000\n"
 "PO-Revision-Date: 2026-05-29 00:00+0700\n"
 "Last-Translator: Codex\n"
 "Language-Team: Vietnamese\n"
@@ -12,27 +12,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: apps/main/forms.py:116 apps/main/forms.py:323 apps/main/forms.py:571
+#: apps/main/forms.py:116 apps/main/forms.py:323 apps/main/forms.py:577
 msgid "Room price (VND / room)"
 msgstr "Giá phòng (VND / phòng)"
 
-#: apps/main/forms.py:117 apps/main/forms.py:324 apps/main/forms.py:572
+#: apps/main/forms.py:117 apps/main/forms.py:324 apps/main/forms.py:578
 msgid "Electricity price (VND / number)"
 msgstr "Giá điện (VND / số)"
 
-#: apps/main/forms.py:118 apps/main/forms.py:325 apps/main/forms.py:573
+#: apps/main/forms.py:118 apps/main/forms.py:325 apps/main/forms.py:579
 msgid "Water price (VND / cubic meter)"
 msgstr "Giá nước (VND / khối)"
 
-#: apps/main/forms.py:119 apps/main/forms.py:327 apps/main/forms.py:575
+#: apps/main/forms.py:119 apps/main/forms.py:327 apps/main/forms.py:581
 msgid "Internet price (VND / room)"
 msgstr "Giá internet (VND / phòng)"
 
-#: apps/main/forms.py:120 apps/main/forms.py:328 apps/main/forms.py:576
+#: apps/main/forms.py:120 apps/main/forms.py:328 apps/main/forms.py:582
 msgid "Cleaning price (VND / person)"
 msgstr "Giá vệ sinh (VND / người)"
 
-#: apps/main/forms.py:121 apps/main/forms.py:330 apps/main/forms.py:578
+#: apps/main/forms.py:121 apps/main/forms.py:330 apps/main/forms.py:584
 msgid "Laundry price (VND / person)"
 msgstr "Giá giặt (VND / người)"
 
@@ -86,11 +86,11 @@ msgstr "Nhà vệ sinh liên kết"
 msgid "Description"
 msgstr "Mô tả"
 
-#: apps/main/forms.py:181 apps/main/forms.py:581
+#: apps/main/forms.py:181 apps/main/forms.py:587
 msgid "Latest electricity reading"
 msgstr "Chỉ số điện mới nhất"
 
-#: apps/main/forms.py:182 apps/main/forms.py:582
+#: apps/main/forms.py:182 apps/main/forms.py:588
 msgid "Latest water reading"
 msgstr "Chỉ số nước mới nhất"
 
@@ -134,10 +134,9 @@ msgstr "Mỗi phòng chỉ được lưu tối đa 10 ảnh."
 msgid "Subscription images"
 msgstr "Ảnh hợp đồng"
 
-#: apps/main/forms.py:317 config/views.py:266
-#: templates/main/subscription_list.html:44
-#: templates/main/subscription_list.html:86 templates/main/usage_form.html:391
-#: templates/main/usage_form.html:477 templates/main/usage_list.html:23
+#: apps/main/forms.py:317 config/views.py:272
+#: templates/main/subscription_list.html:44 templates/main/usage_form.html:407
+#: templates/main/usage_form.html:493 templates/main/usage_list.html:23
 #: templates/main/vehicle_list.html:55
 msgid "Room"
 msgstr "Phòng"
@@ -146,7 +145,7 @@ msgstr "Phòng"
 msgid "Rental start date"
 msgstr "Ngày bắt đầu thuê"
 
-#: apps/main/forms.py:319 apps/main/forms.py:570
+#: apps/main/forms.py:319 apps/main/forms.py:576
 msgid "Number of tenants"
 msgstr "Số người thuê"
 
@@ -162,11 +161,11 @@ msgstr "Chỉ số điện đầu kỳ"
 msgid "Start water reading"
 msgstr "Chỉ số nước đầu kỳ"
 
-#: apps/main/forms.py:326 apps/main/forms.py:574
+#: apps/main/forms.py:326 apps/main/forms.py:580
 msgid "Use internet this month"
 msgstr "Dùng internet trong tháng này"
 
-#: apps/main/forms.py:329 apps/main/forms.py:577
+#: apps/main/forms.py:329 apps/main/forms.py:583
 msgid "Use laundry this month"
 msgstr "Dùng giặt trong tháng này"
 
@@ -187,11 +186,11 @@ msgstr "Một hợp đồng có thể lưu tối đa 10 ảnh."
 msgid "License plate"
 msgstr "Biển số"
 
-#: apps/main/forms.py:480 apps/main/forms.py:569
+#: apps/main/forms.py:480 apps/main/forms.py:575
 msgid "Subscription"
 msgstr "Hợp đồng thuê"
 
-#: apps/main/forms.py:504 templates/home.html:360
+#: apps/main/forms.py:504 templates/home.html:409
 msgid "Month"
 msgstr "Tháng"
 
@@ -221,19 +220,31 @@ msgstr "Xóa ảnh đồng hồ điện hiện tại"
 msgid "Delete current water meter image"
 msgstr "Xóa ảnh đồng hồ nước hiện tại"
 
-#: apps/main/forms.py:579
+#: apps/main/forms.py:537
+msgid "Also update subscription pricing for future usage records"
+msgstr "Đồng thời cập nhật giá mặc định của hợp đồng cho các usage sau"
+
+#: apps/main/forms.py:538
+msgid ""
+"These values will become the default pricing snapshot for future usage "
+"records of this subscription. Existing usage records will not be changed."
+msgstr ""
+"Các giá trị này sẽ trở thành pricing snapshot mặc định cho các usage sau của "
+"hợp đồng này. Các usage đã tồn tại sẽ không bị thay đổi."
+
+#: apps/main/forms.py:585
 msgid "Surcharge amount (VND)"
 msgstr "Phụ thu (VND)"
 
-#: apps/main/forms.py:580
+#: apps/main/forms.py:586
 msgid "Surcharge description"
 msgstr "Mô tả phụ thu"
 
-#: apps/main/forms.py:711
+#: apps/main/forms.py:734
 msgid "Billing month is required."
 msgstr "Tháng tính tiền là bắt buộc."
 
-#: apps/main/forms.py:718
+#: apps/main/forms.py:741
 msgid "Invalid billing month selection."
 msgstr "Lựa chọn tháng tính tiền không hợp lệ."
 
@@ -310,13 +321,13 @@ msgstr "Chưa được cập nhật"
 
 #: apps/main/models.py:227 templates/main/subscription_form.html:32
 #: templates/main/subscription_list.html:56
-#: templates/main/subscription_list.html:106
+#: templates/main/subscription_list.html:101
 msgid "Enabled"
 msgstr "Đang dùng"
 
 #: apps/main/models.py:228 templates/main/subscription_form.html:44
 #: templates/main/subscription_list.html:57
-#: templates/main/subscription_list.html:108
+#: templates/main/subscription_list.html:103
 msgid "Disabled"
 msgstr "Ngưng dùng"
 
@@ -331,12 +342,12 @@ msgstr ""
 "Phòng này đã có một hợp đồng thuê đang hoạt động. Hãy ngưng hợp đồng hiện "
 "tại trước."
 
-#: apps/main/models.py:424 config/views.py:153
+#: apps/main/models.py:424 config/views.py:155
 #: templates/main/subscription_form.html:356
 msgid "Unpaid"
 msgstr "Chưa thanh toán"
 
-#: apps/main/models.py:425 config/views.py:153
+#: apps/main/models.py:425 config/views.py:155
 msgid "Paid"
 msgstr "Đã thanh toán"
 
@@ -474,7 +485,7 @@ msgstr "Xóa hợp đồng thuê thành công."
 msgid "Delete subscription"
 msgstr "Xóa hợp đồng thuê"
 
-#: apps/main/views.py:615 config/views.py:228 templates/base.html:327
+#: apps/main/views.py:615 config/views.py:234 templates/base.html:327
 #: templates/main/subscription_form.html:10
 #: templates/main/subscription_list.html:4
 #: templates/main/subscription_list.html:10 templates/main/usage_form.html:10
@@ -593,59 +604,59 @@ msgstr "English"
 msgid "Vietnamese"
 msgstr "Tiếng Việt"
 
-#: config/views.py:175
+#: config/views.py:181
 msgid "Usage created"
 msgstr "Đã tạo usage"
 
-#: config/views.py:184
+#: config/views.py:190
 msgid "Not created"
 msgstr "Chưa tạo"
 
-#: config/views.py:212
+#: config/views.py:218
 msgid "Usage not created yet"
 msgstr "Chưa tạo usage"
 
-#: config/views.py:232
+#: config/views.py:238
 msgid "Total subscriptions"
 msgstr "Tổng số hợp đồng"
 
-#: config/views.py:238 templates/main/model_form.html:80
-#: templates/main/usage_form.html:150 templates/main/usage_form.html:399
-#: templates/main/usage_form.html:489
+#: config/views.py:244 templates/main/model_form.html:80
+#: templates/main/usage_form.html:166 templates/main/usage_form.html:415
+#: templates/main/usage_form.html:505
 msgid "Electricity"
 msgstr "Điện"
 
-#: config/views.py:242
+#: config/views.py:248
 msgid "Total electricity consumed"
 msgstr "Tổng số điện tiêu thụ"
 
-#: config/views.py:246
+#: config/views.py:252
 msgid "Total electricity revenue"
 msgstr "Tổng tiền điện thu về"
 
-#: config/views.py:252 templates/main/model_form.html:128
-#: templates/main/usage_form.html:209 templates/main/usage_form.html:415
-#: templates/main/usage_form.html:513
+#: config/views.py:258 templates/main/model_form.html:128
+#: templates/main/usage_form.html:225 templates/main/usage_form.html:431
+#: templates/main/usage_form.html:529
 msgid "Water"
 msgstr "Nước"
 
-#: config/views.py:256
+#: config/views.py:262
 msgid "Total water consumed"
 msgstr "Tổng số nước tiêu thụ"
 
-#: config/views.py:260
+#: config/views.py:266
 msgid "Total water revenue"
 msgstr "Tổng tiền nước thu về"
 
-#: config/views.py:270
+#: config/views.py:276
 msgid "Total room revenue"
 msgstr "Tổng tiền phòng"
 
-#: config/views.py:276
+#: config/views.py:282
 msgid "Total"
 msgstr ""
 
-#: config/views.py:280
+#: config/views.py:286
 msgid "Grand total amount"
 msgstr "Tổng tiền tất cả"
 
@@ -749,7 +760,7 @@ msgstr "Cập nhật lúc"
 #: templates/backup_history.html:59 templates/main/model_form.html:323
 #: templates/main/room_list.html:34 templates/main/subscription_form.html:271
 #: templates/main/subscription_form.html:337
-#: templates/main/subscription_list.html:89 templates/main/usage_list.html:29
+#: templates/main/subscription_list.html:88 templates/main/usage_list.html:29
 #: templates/main/vehicle_list.html:56
 msgid "Actions"
 msgstr "Thao tác"
@@ -774,9 +785,9 @@ msgstr "Bạn có chắc muốn xóa bản sao lưu %(file_name)s không?"
 #: templates/main/subscription_form.html:389
 #: templates/main/subscription_form.html:390
 #: templates/main/subscription_form.html:393
-#: templates/main/subscription_list.html:129
-#: templates/main/subscription_list.html:130
-#: templates/main/subscription_list.html:133 templates/main/usage_list.html:60
+#: templates/main/subscription_list.html:124
+#: templates/main/subscription_list.html:125
+#: templates/main/subscription_list.html:128 templates/main/usage_list.html:60
 #: templates/main/vehicle_list.html:81 templates/main/vehicle_list.html:82
 #: templates/main/vehicle_list.html:85
 msgid "Delete"
@@ -854,7 +865,7 @@ msgstr "Menu"
 
 #: templates/base.html:313 templates/base.html:431
 #: templates/main/room_form.html:162 templates/main/subscription_form.html:425
-#: templates/main/usage_form.html:633 templates/main/usage_form.html:649
+#: templates/main/usage_form.html:649 templates/main/usage_form.html:665
 msgid "Close"
 msgstr "Đóng"
 
@@ -913,7 +924,7 @@ msgstr "Hành động này không thể hoàn tác."
 
 #: templates/base.html:442 templates/main/confirm_delete.html:34
 #: templates/main/model_form.html:406 templates/main/room_form.html:150
-#: templates/main/subscription_form.html:243 templates/main/usage_form.html:618
+#: templates/main/subscription_form.html:243 templates/main/usage_form.html:634
 #: templates/main/vehicle_form.html:68
 msgid "Cancel"
 msgstr "Hủy"
@@ -934,16 +945,16 @@ msgstr "Tăng giá trị"
 msgid "Decrease value"
 msgstr "Giảm giá trị"
 
-#: templates/home.html:354
+#: templates/home.html:403
 msgid "Overview"
 msgstr "Tổng quan"
 
-#: templates/home.html:355
+#: templates/home.html:404
 #, python-format
 msgid "Monthly summary for %(period)s"
 msgstr "Tổng hợp tháng %(period)s"
 
-#: templates/home.html:356
+#: templates/home.html:405
 msgid ""
 "A quick snapshot of subscriptions, utility usage, and revenue for the "
 "selected month."
@@ -951,7 +962,7 @@ msgstr ""
 "Tổng quan nhanh về hợp đồng, mức tiêu thụ tiện ích và doanh thu của tháng đã "
 "chọn."
 
-#: templates/home.html:386
+#: templates/home.html:435
 msgid ""
 "Shared restroom usage is excluded from revenue totals and the main usage "
 "status grid."
@@ -959,47 +970,59 @@ msgstr ""
 "Usage của phòng vệ sinh chung được loại khỏi các tổng doanh thu và grid "
 "trạng thái usage chính."
 
-#: templates/home.html:393
+#: templates/home.html:442
 msgid "Usage status"
 msgstr "Tình trạng sử dụng"
 
-#: templates/home.html:394
+#: templates/home.html:443
 #, python-format
 msgid "Usage record status for %(period)s"
 msgstr "Tình trạng các hợp đồng tháng %(period)s"
 
-#: templates/home.html:395
+#: templates/home.html:444
 msgid "Annotation"
 msgstr "Chú thích"
 
-#: templates/home.html:402
+#: templates/home.html:451
 msgid "Usage record has not been created yet."
 msgstr "Chưa tạo bản ghi sử dụng."
 
-#: templates/home.html:406
+#: templates/home.html:455
 msgid "Usage record exists but is not paid yet."
 msgstr "Chưa thanh toán."
 
-#: templates/home.html:410
+#: templates/home.html:459
 msgid "Usage record is already paid."
 msgstr "Đã được thanh toán."
 
-#: templates/home.html:435
-msgid "No subscriptions are available for this month yet."
-msgstr "Chưa có hợp đồng nào cho tháng này."
+#: templates/home.html:484
+msgid "No active subscriptions are available for this month yet."
+msgstr "Chưa có hợp đồng đang hoạt động nào cho tháng này."
 
-#: templates/home.html:441
+#: templates/home.html:490
+msgid "Ended subscriptions"
+msgstr "Hợp đồng đã kết thúc"
+
+#: templates/home.html:491
+msgid "Subscriptions that ended but still have usage records in this month."
+msgstr "Các hợp đồng đã kết thúc nhưng vẫn có bản ghi sử dụng trong tháng này."
+
+#: templates/home.html:504
+msgid "Ended"
+msgstr "Đã kết thúc"
+
+#: templates/home.html:514
 msgid "Shared restroom status"
 msgstr "Trạng thái phòng vệ sinh chung"
 
-#: templates/home.html:442
+#: templates/home.html:515
 msgid "Track shared restroom usage and linked invoice payment progress."
 msgstr ""
 "Theo dõi usage của phòng vệ sinh chung và tiến độ thanh toán của các hóa đơn "
 "liên quan."
 
-#: templates/home.html:454 templates/main/subscription_form.html:350
-#: templates/main/usage_form.html:359
+#: templates/home.html:527 templates/main/subscription_form.html:350
+#: templates/main/usage_form.html:375
 #, python-format
 msgid "Paid linked invoices: %(paid_count)s / %(total_count)s"
 msgstr "Hóa đơn liên quan đã thanh toán: %(paid_count)s / %(total_count)s"
@@ -1020,75 +1043,75 @@ msgid "Billing setup"
 msgstr "Thiết lập kỳ tính tiền"
 
 #: templates/main/model_form.html:57 templates/main/subscription_form.html:165
-#: templates/main/usage_form.html:103
+#: templates/main/usage_form.html:119
 msgid "Pricing snapshot"
 msgstr "Đơn giá đang áp dụng"
 
-#: templates/main/model_form.html:98 templates/main/usage_form.html:172
-#: templates/main/usage_form.html:177
+#: templates/main/model_form.html:98 templates/main/usage_form.html:188
+#: templates/main/usage_form.html:193
 msgid "Current electricity meter image"
 msgstr "Ảnh đồng hồ điện hiện tại"
 
 #: templates/main/model_form.html:105 templates/main/model_form.html:153
 #: templates/main/model_form.html:385 templates/main/room_form.html:129
-#: templates/main/subscription_form.html:115 templates/main/usage_form.html:185
-#: templates/main/usage_form.html:244
+#: templates/main/subscription_form.html:115 templates/main/usage_form.html:201
+#: templates/main/usage_form.html:260
 msgid "Delete this image"
 msgstr "Xóa ảnh này"
 
 #: templates/main/model_form.html:108 templates/main/model_form.html:156
 #: templates/main/model_form.html:388 templates/main/room_form.html:132
-#: templates/main/subscription_form.html:118 templates/main/usage_form.html:188
-#: templates/main/usage_form.html:247
+#: templates/main/subscription_form.html:118 templates/main/usage_form.html:204
+#: templates/main/usage_form.html:263
 msgid "Image will be deleted after you save changes."
 msgstr "Ảnh sẽ bị xóa sau khi bạn lưu thay đổi."
 
 #: templates/main/model_form.html:110 templates/main/model_form.html:158
 #: templates/main/model_form.html:390 templates/main/room_form.html:134
-#: templates/main/subscription_form.html:120 templates/main/usage_form.html:190
-#: templates/main/usage_form.html:249
+#: templates/main/subscription_form.html:120 templates/main/usage_form.html:206
+#: templates/main/usage_form.html:265
 msgid "Undo"
 msgstr "Hoàn tác"
 
-#: templates/main/model_form.html:146 templates/main/usage_form.html:231
-#: templates/main/usage_form.html:236
+#: templates/main/model_form.html:146 templates/main/usage_form.html:247
+#: templates/main/usage_form.html:252
 msgid "Current water meter image"
 msgstr "Ảnh đồng hồ nước hiện tại"
 
-#: templates/main/model_form.html:183 templates/main/usage_form.html:343
-#: templates/main/usage_form.html:464 templates/main/usage_form.html:584
-#: templates/main/usage_form.html:1154
+#: templates/main/model_form.html:183 templates/main/usage_form.html:359
+#: templates/main/usage_form.html:480 templates/main/usage_form.html:600
+#: templates/main/usage_form.html:1176
 msgid "Total amount"
 msgstr "Tổng tiền"
 
-#: templates/main/model_form.html:184 templates/main/usage_form.html:351
+#: templates/main/model_form.html:184 templates/main/usage_form.html:367
 msgid "This amount is updated in real time from your pricing and meter inputs."
 msgstr ""
 "Giá trị này được cập nhật theo thời gian thực từ đơn giá và chỉ số bạn nhập."
 
-#: templates/main/model_form.html:187 templates/main/usage_form.html:371
+#: templates/main/model_form.html:187 templates/main/usage_form.html:387
 msgid "Estimated total"
 msgstr "Tổng dự kiến"
 
-#: templates/main/model_form.html:196 templates/main/usage_form.html:1269
-#: templates/main/usage_form.html:1400
+#: templates/main/model_form.html:196 templates/main/usage_form.html:1291
+#: templates/main/usage_form.html:1458
 msgid "Previous electricity reading"
 msgstr "Chỉ số điện tháng trước"
 
 #: templates/main/model_form.html:202 templates/main/model_form.html:320
 #: templates/main/subscription_form.html:333
-#: templates/main/usage_form.html:1269 templates/main/usage_form.html:1400
+#: templates/main/usage_form.html:1291 templates/main/usage_form.html:1458
 msgid "Electricity consumed"
 msgstr "Số điện tiêu thụ"
 
-#: templates/main/model_form.html:208 templates/main/usage_form.html:1273
-#: templates/main/usage_form.html:1404
+#: templates/main/model_form.html:208 templates/main/usage_form.html:1295
+#: templates/main/usage_form.html:1462
 msgid "Previous water reading"
 msgstr "Chỉ số nước tháng trước"
 
 #: templates/main/model_form.html:214 templates/main/model_form.html:321
 #: templates/main/subscription_form.html:334
-#: templates/main/usage_form.html:1273 templates/main/usage_form.html:1404
+#: templates/main/usage_form.html:1295 templates/main/usage_form.html:1462
 msgid "Water consumed"
 msgstr "Số nước tiêu thụ"
 
@@ -1098,7 +1121,7 @@ msgstr "Giá phòng"
 
 #: templates/main/model_form.html:225 templates/main/model_form.html:252
 #: templates/main/model_form.html:661 templates/main/model_form.html:670
-#: templates/main/usage_form.html:395 templates/main/usage_form.html:483
+#: templates/main/usage_form.html:411 templates/main/usage_form.html:499
 msgid "Flat rate"
 msgstr "Mức cố định"
 
@@ -1118,7 +1141,7 @@ msgstr "Tiền internet"
 msgid "Cleaning cost"
 msgstr "Tiền vệ sinh"
 
-#: templates/main/model_form.html:269 templates/main/usage_form.html:591
+#: templates/main/model_form.html:269 templates/main/usage_form.html:607
 msgid "Please review the meter readings."
 msgstr "Vui lòng kiểm tra lại chỉ số đồng hồ."
 
@@ -1142,12 +1165,12 @@ msgstr "Bản ghi sử dụng"
 msgid "Manage usage records for this subscription from here."
 msgstr "Quản lý các bản ghi sử dụng của hợp đồng thuê này ngay tại đây."
 
-#: templates/main/model_form.html:318 templates/main/usage_form.html:380
+#: templates/main/model_form.html:318 templates/main/usage_form.html:396
 msgid "No."
 msgstr "STT"
 
 #: templates/main/model_form.html:319 templates/main/subscription_form.html:332
-#: templates/main/usage_form.html:1199 templates/main/usage_form.html:1201
+#: templates/main/usage_form.html:1221 templates/main/usage_form.html:1223
 msgid "Time"
 msgstr "Thời gian"
 
@@ -1161,9 +1184,9 @@ msgstr "Số tiền thanh toán"
 #: templates/main/subscription_form.html:364
 #: templates/main/subscription_form.html:365
 #: templates/main/subscription_form.html:368
-#: templates/main/subscription_list.html:116
-#: templates/main/subscription_list.html:117
-#: templates/main/subscription_list.html:120 templates/main/usage_list.html:52
+#: templates/main/subscription_list.html:111
+#: templates/main/subscription_list.html:112
+#: templates/main/subscription_list.html:115 templates/main/usage_list.html:52
 #: templates/main/vehicle_list.html:68 templates/main/vehicle_list.html:69
 #: templates/main/vehicle_list.html:72
 msgid "Details"
@@ -1191,13 +1214,13 @@ msgstr "Bấm vào dòng chữ đỏ dưới ảnh để đánh dấu xóa, rồ
 msgid "No images uploaded yet."
 msgstr "Chưa có ảnh nào được tải lên."
 
-#: templates/main/model_form.html:690 templates/main/usage_form.html:1423
+#: templates/main/model_form.html:690 templates/main/usage_form.html:1482
 msgid ""
 "Current electricity reading cannot be lower than the previous month's "
 "reading."
 msgstr "Chỉ số điện hiện tại không được nhỏ hơn chỉ số của tháng trước."
 
-#: templates/main/model_form.html:693 templates/main/usage_form.html:1426
+#: templates/main/model_form.html:693 templates/main/usage_form.html:1485
 msgid ""
 "Current water reading cannot be lower than the previous month's reading."
 msgstr "Chỉ số nước hiện tại không được nhỏ hơn chỉ số của tháng trước."
@@ -1228,9 +1251,9 @@ msgstr "Ảnh phòng"
 #: templates/main/subscription_form.html:424
 #: templates/main/subscription_form.html:429
 #: templates/main/subscription_form.html:729
-#: templates/main/subscription_form.html:732 templates/main/usage_form.html:648
-#: templates/main/usage_form.html:653 templates/main/usage_form.html:1605
-#: templates/main/usage_form.html:1608
+#: templates/main/subscription_form.html:732 templates/main/usage_form.html:664
+#: templates/main/usage_form.html:669 templates/main/usage_form.html:1665
+#: templates/main/usage_form.html:1668
 msgid "Image preview"
 msgstr "Xem trước ảnh"
 
@@ -1294,7 +1317,7 @@ msgstr "Hãy lưu hợp đồng thuê này trước, sau đó bạn có thể th
 
 #: templates/main/subscription_form.html:336
 #: templates/main/subscription_list.html:53
-#: templates/main/subscription_list.html:87
+#: templates/main/subscription_list.html:86
 msgid "Status"
 msgstr "Trạng thái"
 
@@ -1345,11 +1368,15 @@ msgstr "Khoảng tùy chọn"
 msgid "All the time"
 msgstr "Toàn thời gian"
 
-#: templates/main/subscription_list.html:88
+#: templates/main/subscription_list.html:87
 msgid "Start date"
 msgstr "Ngày bắt đầu"
 
-#: templates/main/subscription_list.html:139
+#: templates/main/subscription_list.html:89
+msgid "Linked room"
+msgstr "Phòng liên kết"
+
+#: templates/main/subscription_list.html:140
 msgid "No subscriptions yet."
 msgstr "Chưa có hợp đồng thuê nào."
 
@@ -1370,43 +1397,43 @@ msgstr ""
 msgid "Mark as Paid"
 msgstr "Đánh dấu Đã thanh toán"
 
-#: templates/main/usage_form.html:268
+#: templates/main/usage_form.html:284
 msgid "Linked restroom usage"
 msgstr "Khai báo sử dụng của nhà vệ sinh liên kết"
 
-#: templates/main/usage_form.html:275
+#: templates/main/usage_form.html:291
 msgid "Other linked subscription"
 msgstr "Các hợp đồng liên kết khác"
 
-#: templates/main/usage_form.html:281
+#: templates/main/usage_form.html:297
 msgid "Restroom electricity"
 msgstr "Điện của nhà vệ sinh"
 
-#: templates/main/usage_form.html:288
+#: templates/main/usage_form.html:304
 msgid "Restroom water"
 msgstr "Nước của nhà vệ sinh"
 
-#: templates/main/usage_form.html:304 templates/main/usage_form.html:455
-#: templates/main/usage_form.html:573
+#: templates/main/usage_form.html:320 templates/main/usage_form.html:471
+#: templates/main/usage_form.html:589
 msgid "Surcharge"
 msgstr "Phụ thu"
 
-#: templates/main/usage_form.html:346
+#: templates/main/usage_form.html:362
 #, python-format
 msgid "Invoice for %(room_name)s %(period)s"
 msgstr "Hóa đơn của %(room_name)s %(period)s"
 
-#: templates/main/usage_form.html:348 templates/main/usage_form.html:1007
+#: templates/main/usage_form.html:364 templates/main/usage_form.html:1029
 msgid "Invoice summary"
 msgstr "Tóm tắt hóa đơn"
 
-#: templates/main/usage_form.html:354
+#: templates/main/usage_form.html:370
 msgid "This restroom usage is shared into invoices for linked rooms."
 msgstr ""
 "Chi phí sử dụng của phòng vệ sinh này sẽ được chia vào hóa đơn của các phòng "
 "liên quan."
 
-#: templates/main/usage_form.html:363
+#: templates/main/usage_form.html:379
 msgid ""
 "Electricity and water fields are locked because at least one linked invoice "
 "is paid."
@@ -1414,85 +1441,85 @@ msgstr ""
 "Các trường điện và nước đã bị khóa vì ít nhất một hóa đơn liên quan đã thanh "
 "toán."
 
-#: templates/main/usage_form.html:381
+#: templates/main/usage_form.html:397
 msgid "Content"
 msgstr "Nội dung"
 
-#: templates/main/usage_form.html:382 templates/main/usage_form.html:480
-#: templates/main/usage_form.html:492 templates/main/usage_form.html:504
-#: templates/main/usage_form.html:516 templates/main/usage_form.html:528
-#: templates/main/usage_form.html:540 templates/main/usage_form.html:552
-#: templates/main/usage_form.html:564 templates/main/usage_form.html:576
+#: templates/main/usage_form.html:398 templates/main/usage_form.html:496
+#: templates/main/usage_form.html:508 templates/main/usage_form.html:520
+#: templates/main/usage_form.html:532 templates/main/usage_form.html:544
+#: templates/main/usage_form.html:556 templates/main/usage_form.html:568
+#: templates/main/usage_form.html:580 templates/main/usage_form.html:592
 msgid "Quantity"
 msgstr "Số lượng"
 
-#: templates/main/usage_form.html:383 templates/main/usage_form.html:481
-#: templates/main/usage_form.html:493 templates/main/usage_form.html:505
-#: templates/main/usage_form.html:517 templates/main/usage_form.html:529
-#: templates/main/usage_form.html:541 templates/main/usage_form.html:553
-#: templates/main/usage_form.html:565 templates/main/usage_form.html:577
+#: templates/main/usage_form.html:399 templates/main/usage_form.html:497
+#: templates/main/usage_form.html:509 templates/main/usage_form.html:521
+#: templates/main/usage_form.html:533 templates/main/usage_form.html:545
+#: templates/main/usage_form.html:557 templates/main/usage_form.html:569
+#: templates/main/usage_form.html:581 templates/main/usage_form.html:593
 msgid "Unit price"
 msgstr "Đơn giá"
 
-#: templates/main/usage_form.html:384 templates/main/usage_form.html:482
-#: templates/main/usage_form.html:494 templates/main/usage_form.html:506
-#: templates/main/usage_form.html:518 templates/main/usage_form.html:530
-#: templates/main/usage_form.html:542 templates/main/usage_form.html:554
-#: templates/main/usage_form.html:566 templates/main/usage_form.html:578
-#: templates/main/usage_form.html:1269 templates/main/usage_form.html:1273
+#: templates/main/usage_form.html:400 templates/main/usage_form.html:498
+#: templates/main/usage_form.html:510 templates/main/usage_form.html:522
+#: templates/main/usage_form.html:534 templates/main/usage_form.html:546
+#: templates/main/usage_form.html:558 templates/main/usage_form.html:570
+#: templates/main/usage_form.html:582 templates/main/usage_form.html:594
+#: templates/main/usage_form.html:1291 templates/main/usage_form.html:1295
 msgid "Amount"
 msgstr "Thành tiền"
 
-#: templates/main/usage_form.html:385
+#: templates/main/usage_form.html:401
 msgid "Notes"
 msgstr "Chú thích"
 
-#: templates/main/usage_form.html:407 templates/main/usage_form.html:501
+#: templates/main/usage_form.html:423 templates/main/usage_form.html:517
 msgid "Linked restroom electricity"
 msgstr "Điện (WC chung)"
 
-#: templates/main/usage_form.html:423 templates/main/usage_form.html:525
+#: templates/main/usage_form.html:439 templates/main/usage_form.html:541
 msgid "Linked restroom water"
 msgstr "Nước (WC chung)"
 
-#: templates/main/usage_form.html:431 templates/main/usage_form.html:537
+#: templates/main/usage_form.html:447 templates/main/usage_form.html:553
 msgid "Internet price"
 msgstr "Giá internet"
 
-#: templates/main/usage_form.html:435 templates/main/usage_form.html:543
-#: templates/main/usage_form.html:1373 templates/main/usage_form.html:1376
-#: templates/main/usage_form.html:1397 templates/main/usage_form.html:1406
+#: templates/main/usage_form.html:451 templates/main/usage_form.html:559
+#: templates/main/usage_form.html:1431 templates/main/usage_form.html:1434
+#: templates/main/usage_form.html:1455 templates/main/usage_form.html:1464
 msgid "room"
 msgstr "phòng"
 
-#: templates/main/usage_form.html:439 templates/main/usage_form.html:549
+#: templates/main/usage_form.html:455 templates/main/usage_form.html:565
 msgid "Cleaning price"
 msgstr "Giá vệ sinh"
 
-#: templates/main/usage_form.html:447 templates/main/usage_form.html:561
+#: templates/main/usage_form.html:463 templates/main/usage_form.html:577
 msgid "Laundry price"
 msgstr "Giá giặt"
 
-#: templates/main/usage_form.html:451 templates/main/usage_form.html:567
-#: templates/main/usage_form.html:1251 templates/main/usage_form.html:1285
-#: templates/main/usage_form.html:1286 templates/main/usage_form.html:1291
-#: templates/main/usage_form.html:1292 templates/main/usage_form.html:1377
-#: templates/main/usage_form.html:1378 templates/main/usage_form.html:1407
-#: templates/main/usage_form.html:1408
+#: templates/main/usage_form.html:467 templates/main/usage_form.html:583
+#: templates/main/usage_form.html:1273 templates/main/usage_form.html:1307
+#: templates/main/usage_form.html:1308 templates/main/usage_form.html:1313
+#: templates/main/usage_form.html:1314 templates/main/usage_form.html:1435
+#: templates/main/usage_form.html:1436 templates/main/usage_form.html:1465
+#: templates/main/usage_form.html:1466
 msgid "person"
 msgstr "người"
 
-#: templates/main/usage_form.html:483 templates/main/usage_form.html:495
-#: templates/main/usage_form.html:507 templates/main/usage_form.html:519
-#: templates/main/usage_form.html:531 templates/main/usage_form.html:543
-#: templates/main/usage_form.html:555 templates/main/usage_form.html:567
-#: templates/main/usage_form.html:579
+#: templates/main/usage_form.html:499 templates/main/usage_form.html:511
+#: templates/main/usage_form.html:523 templates/main/usage_form.html:535
+#: templates/main/usage_form.html:547 templates/main/usage_form.html:559
+#: templates/main/usage_form.html:571 templates/main/usage_form.html:583
+#: templates/main/usage_form.html:595
 #, fuzzy
 #| msgid "Notes"
 msgid "Note"
 msgstr "Chú thích"
 
-#: templates/main/usage_form.html:596
+#: templates/main/usage_form.html:612
 msgid ""
 "For the first month of a subscription, previous readings are taken from the "
 "subscription's start readings."
@@ -1500,51 +1527,51 @@ msgstr ""
 "Nếu đây là tháng đầu tiên của hợp đồng thuê, chỉ số tháng trước sẽ lấy từ "
 "chỉ số đầu kỳ của hợp đồng thuê."
 
-#: templates/main/usage_form.html:602
+#: templates/main/usage_form.html:618
 msgid "Copy as image"
 msgstr "Sao chép thành ảnh"
 
-#: templates/main/usage_form.html:606
+#: templates/main/usage_form.html:622
 msgid "Generate image"
 msgstr "Tạo ảnh"
 
-#: templates/main/usage_form.html:630
+#: templates/main/usage_form.html:646
 msgid "Generated image"
 msgstr "Ảnh đã tạo"
 
-#: templates/main/usage_form.html:631
+#: templates/main/usage_form.html:647
 msgid "Long-press the image to copy, save, or share it."
 msgstr "Nhấn giữ ảnh để sao chép, lưu hoặc chia sẻ."
 
-#: templates/main/usage_form.html:637
+#: templates/main/usage_form.html:653
 msgid "Generated image preview"
 msgstr "Xem trước ảnh đã tạo"
 
-#: templates/main/usage_form.html:1010
+#: templates/main/usage_form.html:1032
 msgid "Invoice for"
 msgstr "Hóa đơn của"
 
-#: templates/main/usage_form.html:1132
+#: templates/main/usage_form.html:1154
 msgid "Preview is not available here. The image was downloaded instead."
 msgstr "Không thể xem trước ảnh tại đây. Ảnh đã được tải xuống thay thế."
 
-#: templates/main/usage_form.html:1199 templates/main/usage_form.html:1201
+#: templates/main/usage_form.html:1221 templates/main/usage_form.html:1223
 msgid "Linked restroom room"
 msgstr "Phòng vệ sinh liên kết"
 
-#: templates/main/usage_form.html:1199
+#: templates/main/usage_form.html:1221
 msgid "Restroom subscription"
 msgstr "Hợp đồng của phòng vệ sinh"
 
-#: templates/main/usage_form.html:1209
+#: templates/main/usage_form.html:1231
 msgid "No linked restroom subscription found yet."
 msgstr "Chưa tìm thấy hợp đồng tương ứng cho phòng vệ sinh liên kết."
 
-#: templates/main/usage_form.html:1221
+#: templates/main/usage_form.html:1243
 msgid "No usage record found for the linked restroom in this billing month."
 msgstr "Chưa có bản ghi sử dụng của phòng vệ sinh liên kết trong tháng này."
 
-#: templates/main/usage_form.html:1233
+#: templates/main/usage_form.html:1255
 msgid ""
 "Some other linked subscriptions do not have a usage record for this billing "
 "month yet, so these allocated numbers are not final."
@@ -1552,73 +1579,73 @@ msgstr ""
 "Một số hợp đồng liên kết khác vẫn chưa có bản ghi sử dụng trong tháng này, "
 "nên các số liệu phân bổ hiện tại vẫn chưa phải kết quả cuối cùng."
 
-#: templates/main/usage_form.html:1243
+#: templates/main/usage_form.html:1265
 msgid "No other linked subscriptions."
 msgstr "Không có hợp đồng liên kết nào khác."
 
-#: templates/main/usage_form.html:1253
+#: templates/main/usage_form.html:1275
 msgid "Usage recorded"
 msgstr "Đã có usage"
 
-#: templates/main/usage_form.html:1253
+#: templates/main/usage_form.html:1275
 msgid "Usage not recorded yet"
 msgstr "Chưa có usage"
 
-#: templates/main/usage_form.html:1269 templates/main/usage_form.html:1400
+#: templates/main/usage_form.html:1291 templates/main/usage_form.html:1458
 #: templates/main/usage_list.html:26
 msgid "Electricity reading"
 msgstr "Chỉ số điện"
 
-#: templates/main/usage_form.html:1269 templates/main/usage_form.html:1374
+#: templates/main/usage_form.html:1291 templates/main/usage_form.html:1432
 msgid "kWh"
 msgstr "số"
 
-#: templates/main/usage_form.html:1269
+#: templates/main/usage_form.html:1291
 msgid "Electricity price"
 msgstr "Giá điện"
 
-#: templates/main/usage_form.html:1273 templates/main/usage_form.html:1404
+#: templates/main/usage_form.html:1295 templates/main/usage_form.html:1462
 #: templates/main/usage_list.html:27
 msgid "Water reading"
 msgstr "Chỉ số nước"
 
-#: templates/main/usage_form.html:1273 templates/main/usage_form.html:1375
+#: templates/main/usage_form.html:1295 templates/main/usage_form.html:1433
 msgid "m3"
 msgstr "khối"
 
-#: templates/main/usage_form.html:1273
+#: templates/main/usage_form.html:1295
 msgid "Water price"
 msgstr "Giá nước"
 
-#: templates/main/usage_form.html:1277 templates/main/usage_form.html:1281
+#: templates/main/usage_form.html:1299 templates/main/usage_form.html:1303
 msgid "Other linked tenants"
 msgstr "Số người của các phòng liên kết khác"
 
-#: templates/main/usage_form.html:1277 templates/main/usage_form.html:1281
+#: templates/main/usage_form.html:1299 templates/main/usage_form.html:1303
 msgid "Current subscription tenants"
 msgstr "Số người của hợp đồng hiện tại"
 
-#: templates/main/usage_form.html:1277 templates/main/usage_form.html:1281
+#: templates/main/usage_form.html:1299 templates/main/usage_form.html:1303
 msgid "Total linked tenants"
 msgstr "Tổng số người của các phòng liên kết"
 
-#: templates/main/usage_form.html:1277 templates/main/usage_form.html:1281
+#: templates/main/usage_form.html:1299 templates/main/usage_form.html:1303
 msgid "Shared per tenant"
 msgstr "Chi phí chia theo mỗi người"
 
-#: templates/main/usage_form.html:1277 templates/main/usage_form.html:1281
+#: templates/main/usage_form.html:1299 templates/main/usage_form.html:1303
 msgid "Allocated to this subscription"
 msgstr "Phần phân bổ cho hợp đồng này"
 
-#: templates/main/usage_form.html:1501 templates/main/usage_form.html:1540
+#: templates/main/usage_form.html:1561 templates/main/usage_form.html:1600
 msgid "Preparing image..."
 msgstr "Đang chuẩn bị ảnh..."
 
-#: templates/main/usage_form.html:1518
+#: templates/main/usage_form.html:1578
 msgid "Copied image to clipboard."
 msgstr "Đã sao chép ảnh vào clipboard."
 
-#: templates/main/usage_form.html:1522
+#: templates/main/usage_form.html:1582
 #, fuzzy
 #| msgid ""
 #| "Clipboard image copy is not available here. The image was downloaded "
@@ -1629,18 +1656,18 @@ msgstr ""
 "Môi trường hiện tại không hỗ trợ sao chép ảnh vào clipboard. Ảnh đã được tải "
 "xuống thay thế."
 
-#: templates/main/usage_form.html:1525
+#: templates/main/usage_form.html:1585
 msgid ""
 "Clipboard image copy is not available here. The image was downloaded instead."
 msgstr ""
 "Môi trường hiện tại không hỗ trợ sao chép ảnh vào clipboard. Ảnh đã được tải "
 "xuống thay thế."
 
-#: templates/main/usage_form.html:1530 templates/main/usage_form.html:1548
+#: templates/main/usage_form.html:1590 templates/main/usage_form.html:1608
 msgid "Could not create the image. Please try again."
 msgstr "Không thể tạo ảnh. Vui lòng thử lại."
 
-#: templates/main/usage_form.html:1545
+#: templates/main/usage_form.html:1605
 msgid "Image generated. Long-press it to copy or save."
 msgstr "Ảnh đã được tạo. Nhấn giữ để sao chép hoặc lưu."
 

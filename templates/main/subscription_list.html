@@ -3,6 +3,62 @@
 
 {% block title %}{% trans "Subscriptions" %}{% endblock %}
 
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .subscription-table {
+        table-layout: fixed;
+    }
+
+    .subscription-col-description {
+        width: auto;
+    }
+
+    .subscription-col-linked-room {
+        width: 180px;
+    }
+
+    .subscription-col-status {
+        width: 120px;
+    }
+
+    .subscription-col-start-date {
+        width: 150px;
+    }
+
+    .subscription-col-actions {
+        width: 190px;
+    }
+
+    .subscription-table th,
+    .subscription-table td {
+        vertical-align: middle;
+    }
+
+    .subscription-nowrap {
+        white-space: nowrap;
+    }
+
+    @media (max-width: 767.98px) {
+        .subscription-table {
+            table-layout: auto;
+        }
+
+        .subscription-col-linked-room {
+            width: 136px;
+        }
+
+        .subscription-col-status {
+            width: 96px;
+        }
+
+        .subscription-col-actions {
+            width: 56px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block breadcrumbs %}
 <nav aria-label="{% trans 'Breadcrumb' %}" class="page-breadcrumb">
     <ol class="breadcrumb">
@@ -79,35 +135,50 @@
 
     <div class="card shadow-sm border-0">
         <div class="table-responsive">
-            <table class="table align-middle mb-0">
+            <table class="table align-middle mb-0 subscription-table">
+                <colgroup>
+                    <col class="subscription-col-description">
+                    <col class="subscription-col-status">
+                    <col class="subscription-col-start-date">
+                    <col class="subscription-col-linked-room">
+                    <col class="subscription-col-actions">
+                </colgroup>
                 <thead class="table-light">
                     <tr>
                         <th>{% trans "Description" %}</th>
-                        <th>{% trans "Status" %}</th>
+                        <th class="text-center">{% trans "Status" %}</th>
                         <th class="d-none d-md-table-cell">{% trans "Start date" %}</th>
-                        <th class="text-end">{% trans "Actions" %}</th>
                         <th>{% trans "Linked room" %}</th>
+                        <th class="text-center">{% trans "Actions" %}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for subscription in subscriptions %}
                     <tr>
                         <td>
-                            <span class="d-inline d-md-none">{{ subscription.description|default:"—"|truncatechars:28 }}</span>
-                            <span class="d-none d-md-inline">{{ subscription.description|default:"—"|truncatechars:80 }}</span>
+                            <a href="{% url 'subscription_details' subscription.pk %}" class="text-decoration-none fw-semibold d-inline-flex align-items-center gap-1">
+                                <span class="d-inline d-md-none">{{ subscription.description|default:"—"|truncatechars:28 }}</span>
+                                <span class="d-none d-md-inline">{{ subscription.description|default:"—"|truncatechars:80 }}</span>
+                            </a>
                         </td>
-                        <td>
+                        <td class="text-center subscription-nowrap">
                             {% if subscription.status == 'enabled' %}
                             <span class="badge bg-success">{% trans "Enabled" %}</span>
                             {% else %}
                             <span class="badge bg-secondary">{% trans "Disabled" %}</span>
                             {% endif %}
                         </td>
-                        <td class="d-none d-md-table-cell">{{ subscription.start_date|date:"d/m/Y" }}</td>
-                        <td class="text-end">
+                        <td class="d-none d-md-table-cell subscription-nowrap">{{ subscription.start_date|date:"d/m/Y" }}</td>
+                        <td class="fw-semibold subscription-nowrap">
+                            <a href="{% url 'room_details' subscription.room.pk %}" class="text-decoration-none d-inline-flex align-items-center gap-1">
+                                <i class="bi bi-link-45deg text-primary" aria-hidden="true"></i>
+                                {{ subscription.room.room_name }}
+                            </a>
+                        </td>
+                        <td class="text-center subscription-nowrap">
                             <a
                                 href="{% url 'subscription_details' subscription.pk %}"
-                                class="btn btn-sm btn-outline-primary"
+                                class="btn btn-sm btn-outline-primary d-none d-md-inline-flex"
                                 aria-label="{% trans 'Details' %}"
                                 title="{% trans 'Details' %}"
                             >
@@ -127,12 +198,6 @@
                                 <i class="bi bi-trash"></i>
                                 <span class="d-none d-md-inline ms-md-1">{% trans "Delete" %}</span>
                             </button>
-                        </td>
-                        <td class="fw-semibold">
-                            <a href="{% url 'room_details' subscription.room.pk %}" class="text-decoration-none d-inline-flex align-items-center gap-1">
-                                <i class="bi bi-link-45deg text-primary" aria-hidden="true"></i>
-                                {{ subscription.room.room_name }}
-                            </a>
                         </td>
                     </tr>
                     {% empty %}

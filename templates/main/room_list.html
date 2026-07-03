@@ -31,15 +31,19 @@
                     <tr>
                         <th>{% trans "Room name" %}</th>
                         <th>{% trans "Type" %}</th>
-                        <th class="text-end">{% trans "Actions" %}</th>
+                        <th class="text-center">{% trans "Actions" %}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for room in rooms %}
                     <tr>
-                        <td class="fw-semibold">{{ room.room_name }}</td>
+                        <td class="fw-semibold">
+                            <a href="{% url 'room_details' room.pk %}" class="text-decoration-none">
+                                {{ room.room_name }}
+                            </a>
+                        </td>
                         <td>{{ room.get_type_display }}</td>
-                        <td class="text-end">
+                        <td class="text-center">
                             <a
                                 href="{% url 'room_details' room.pk %}"
                                 class="btn btn-sm btn-outline-primary"

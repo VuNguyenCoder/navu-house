@@ -160,7 +160,7 @@ class Room(models.Model):
         if not isinstance(self.image_paths, list):
             raise ValidationError({'image_paths': _('Image paths must be stored as a list.')})
         if len(self.image_paths) > 10:
-            raise ValidationError({'image_paths': _('A room can store at most 10 images.')})
+            raise ValidationError({'image_paths': _('A room can store at most 10 media files.')})
         if any(not isinstance(path, str) or not path.strip() for path in self.image_paths):
             raise ValidationError({'image_paths': _('Each image path must be a non-empty string.')})
         if self.type != self.RoomType.UNENCLOSED and self.linked_restroom_id:
@@ -267,7 +267,7 @@ class Subscription(models.Model):
         if not isinstance(self.image_paths, list):
             raise ValidationError({'image_paths': _('Image paths must be stored as a list.')})
         if len(self.image_paths) > 10:
-            raise ValidationError({'image_paths': _('A subscription can store at most 10 images.')})
+            raise ValidationError({'image_paths': _('A subscription can store at most 10 media files.')})
         if any(not isinstance(path, str) or not path.strip() for path in self.image_paths):
             raise ValidationError({'image_paths': _('Each image path must be a non-empty string.')})
         if self.pk:

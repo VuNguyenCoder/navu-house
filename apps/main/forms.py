@@ -153,13 +153,13 @@ class SettingsForm(StyledModelForm):
 class RoomForm(StyledModelForm):
     images = MultipleFileField(
         required=False,
-        label=_('Room images'),
-        help_text=_('Upload up to 10 images in total. On supported devices, you can also capture from the camera.'),
-        widget=MultipleFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+        label=_('Room media'),
+        help_text=_('Upload up to 10 images or videos in total. On supported devices, you can also capture from the camera.'),
+        widget=MultipleFileInput(attrs={'accept': 'image/*,video/*'}),
     )
     remove_image_paths = forms.MultipleChoiceField(
         required=False,
-        label=_('Remove existing images'),
+        label=_('Remove existing media'),
         widget=forms.CheckboxSelectMultiple,
     )
 
@@ -229,7 +229,7 @@ class RoomForm(StyledModelForm):
         uploaded_files = cleaned_data.get('images') or []
 
         if len(existing_paths) + len(uploaded_files) > 10:
-            raise forms.ValidationError(_('A room can store at most 10 images.'))
+            raise forms.ValidationError(_('A room can store at most 10 media files.'))
 
         cleaned_data['uploaded_images'] = uploaded_files
         cleaned_data['remaining_image_paths'] = existing_paths
@@ -281,13 +281,13 @@ class SubscriptionForm(StyledModelForm):
 
     images = MultipleFileField(
         required=False,
-        label=_('Subscription images'),
-        help_text=_('Upload up to 10 images in total. On supported devices, you can also capture from the camera.'),
-        widget=MultipleFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+        label=_('Subscription media'),
+        help_text=_('Upload up to 10 images or videos in total. On supported devices, you can also capture from the camera.'),
+        widget=MultipleFileInput(attrs={'accept': 'image/*,video/*'}),
     )
     remove_image_paths = forms.MultipleChoiceField(
         required=False,
-        label=_('Remove existing images'),
+        label=_('Remove existing media'),
         widget=forms.CheckboxSelectMultiple,
     )
 
@@ -424,7 +424,7 @@ class SubscriptionForm(StyledModelForm):
         uploaded_files = cleaned_data.get('images') or []
 
         if len(existing_paths) + len(uploaded_files) > 10:
-            raise forms.ValidationError(_('A subscription can store at most 10 images.'))
+            raise forms.ValidationError(_('A subscription can store at most 10 media files.'))
 
         cleaned_data['uploaded_images'] = uploaded_files
         cleaned_data['remaining_image_paths'] = existing_paths
@@ -512,24 +512,24 @@ class UsageForm(StyledModelForm):
     )
     electricity_meter_image = forms.FileField(
         required=False,
-        label=_('Electricity meter image'),
-        help_text=_('Choose an existing image or capture one from the camera on supported devices.'),
-        widget=forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+        label=_('Electricity meter media'),
+        help_text=_('Choose an existing image or video, or capture one from the camera on supported devices.'),
+        widget=forms.ClearableFileInput(attrs={'accept': 'image/*,video/*'}),
     )
     water_meter_image = forms.FileField(
         required=False,
-        label=_('Water meter image'),
-        help_text=_('Choose an existing image or capture one from the camera on supported devices.'),
-        widget=forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+        label=_('Water meter media'),
+        help_text=_('Choose an existing image or video, or capture one from the camera on supported devices.'),
+        widget=forms.ClearableFileInput(attrs={'accept': 'image/*,video/*'}),
     )
     remove_electricity_meter_image = forms.BooleanField(
         required=False,
-        label=_('Delete current electricity meter image'),
+        label=_('Delete current electricity meter media'),
         widget=forms.CheckboxInput(attrs={'class': 'usage-delete-input'}),
     )
     remove_water_meter_image = forms.BooleanField(
         required=False,
-        label=_('Delete current water meter image'),
+        label=_('Delete current water meter media'),
         widget=forms.CheckboxInput(attrs={'class': 'usage-delete-input'}),
     )
     update_subscription_pricing = forms.BooleanField(

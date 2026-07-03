@@ -185,23 +185,24 @@
                                 {% endfor %}
                                 {% if form.instance.pk and form.instance.electricity_meter_image_path %}
                                 <div class="pt-2 usage-image-preview image-preview-card" data-delete-preview>
-                                    <div class="small text-muted mb-2">{% trans "Current electricity meter image" %}</div>
+                                    <div class="small text-muted mb-2">{% trans "Current electricity meter media" %}</div>
                                     <button
                                         type="button"
                                         class="usage-image-preview-trigger"
                                         data-preview-image-url="{{ MEDIA_URL }}{{ form.instance.electricity_meter_image_path }}"
-                                        data-preview-image-title="{% trans 'Current electricity meter image' %}"
+                                        data-preview-image-title="{% trans 'Current electricity meter media' %}"
                                     >
-                                        <img src="{{ MEDIA_URL }}{{ form.instance.electricity_meter_image_path }}" alt="" class="img-fluid rounded border" style="max-height: 220px; object-fit: cover;">
+                                        <img data-media-thumbnail-image data-media-src="{{ MEDIA_URL }}{{ form.instance.electricity_meter_image_path }}" alt="" class="img-fluid rounded border d-none" style="max-height: 220px; object-fit: cover;">
+                                        <video data-media-thumbnail-video data-media-src="{{ MEDIA_URL }}{{ form.instance.electricity_meter_image_path }}" muted playsinline class="img-fluid rounded border d-none" style="max-height: 220px; object-fit: cover;"></video>
                                     </button>
                                     {% if form.instance.status != 'paid' and not restroom_linked_invoice_locked %}
                                     <div class="mt-2">
                                         {{ form.remove_electricity_meter_image }}
                                         <button type="button" class="usage-delete-link" data-delete-trigger="{{ form.remove_electricity_meter_image.id_for_label }}">
-                                            {% trans "Delete this image" %}
+                                            {% trans "Delete this media" %}
                                         </button>
                                         <div class="usage-delete-pending d-none" data-delete-pending>
-                                            <span>{% trans "Image will be deleted after you save changes." %}</span>
+                                            <span>{% trans "Media will be deleted after you save changes." %}</span>
                                             <button type="button" class="usage-undo-link" data-delete-undo="{{ form.remove_electricity_meter_image.id_for_label }}">
                                                 {% trans "Undo" %}
                                             </button>
@@ -244,23 +245,24 @@
                                 {% endfor %}
                                 {% if form.instance.pk and form.instance.water_meter_image_path %}
                                 <div class="pt-2 usage-image-preview image-preview-card" data-delete-preview>
-                                    <div class="small text-muted mb-2">{% trans "Current water meter image" %}</div>
+                                    <div class="small text-muted mb-2">{% trans "Current water meter media" %}</div>
                                     <button
                                         type="button"
                                         class="usage-image-preview-trigger"
                                         data-preview-image-url="{{ MEDIA_URL }}{{ form.instance.water_meter_image_path }}"
-                                        data-preview-image-title="{% trans 'Current water meter image' %}"
+                                        data-preview-image-title="{% trans 'Current water meter media' %}"
                                     >
-                                        <img src="{{ MEDIA_URL }}{{ form.instance.water_meter_image_path }}" alt="" class="img-fluid rounded border" style="max-height: 220px; object-fit: cover;">
+                                        <img data-media-thumbnail-image data-media-src="{{ MEDIA_URL }}{{ form.instance.water_meter_image_path }}" alt="" class="img-fluid rounded border d-none" style="max-height: 220px; object-fit: cover;">
+                                        <video data-media-thumbnail-video data-media-src="{{ MEDIA_URL }}{{ form.instance.water_meter_image_path }}" muted playsinline class="img-fluid rounded border d-none" style="max-height: 220px; object-fit: cover;"></video>
                                     </button>
                                     {% if form.instance.status != 'paid' and not restroom_linked_invoice_locked %}
                                     <div class="mt-2">
                                         {{ form.remove_water_meter_image }}
                                         <button type="button" class="usage-delete-link" data-delete-trigger="{{ form.remove_water_meter_image.id_for_label }}">
-                                            {% trans "Delete this image" %}
+                                            {% trans "Delete this media" %}
                                         </button>
                                         <div class="usage-delete-pending d-none" data-delete-pending>
-                                            <span>{% trans "Image will be deleted after you save changes." %}</span>
+                                            <span>{% trans "Media will be deleted after you save changes." %}</span>
                                             <button type="button" class="usage-undo-link" data-delete-undo="{{ form.remove_water_meter_image.id_for_label }}">
                                                 {% trans "Undo" %}
                                             </button>
@@ -661,12 +663,13 @@
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title h5 mb-0" id="meterImagePreviewTitle">{% trans "Image preview" %}</h2>
+                <h2 class="modal-title h5 mb-0" id="meterImagePreviewTitle">{% trans "Media preview" %}</h2>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
             </div>
             <div class="modal-body">
                 <div class="usage-summary-preview-frame">
-                    <img id="meterImagePreviewImage" src="" alt="{% trans 'Image preview' %}" class="img-fluid rounded shadow-sm d-none">
+                    <img id="meterImagePreviewImage" src="" alt="{% trans 'Media preview' %}" class="img-fluid rounded shadow-sm d-none">
+                    <video id="meterImagePreviewVideo" controls playsinline class="img-fluid rounded shadow-sm d-none"></video>
                 </div>
             </div>
         </div>
@@ -812,7 +815,8 @@
     padding: 0.85rem;
 }
 
-.usage-summary-preview-frame img {
+.usage-summary-preview-frame img,
+.usage-summary-preview-frame video {
     width: 100%;
     height: auto;
     user-select: none;
@@ -828,7 +832,8 @@
     cursor: zoom-in;
 }
 
-.usage-image-preview-trigger img {
+.usage-image-preview-trigger img,
+.usage-image-preview-trigger video {
     display: block;
 }
 
@@ -879,6 +884,7 @@
 
 .usage-image-preview.is-marked-for-delete .usage-image-preview-trigger,
 .usage-image-preview.is-marked-for-delete img,
+.usage-image-preview.is-marked-for-delete video,
 .usage-image-preview.is-marked-for-delete .small.text-muted.mb-2,
 .usage-image-preview.is-marked-for-delete .usage-delete-link {
     display: none !important;
@@ -901,9 +907,21 @@
         const meterImagePreviewModalElement = document.getElementById('meterImagePreviewModal');
         const meterImagePreviewTitle = document.getElementById('meterImagePreviewTitle');
         const meterImagePreviewImage = document.getElementById('meterImagePreviewImage');
+        const meterImagePreviewVideo = document.getElementById('meterImagePreviewVideo');
         const meterImagePreviewModal = meterImagePreviewModalElement && window.bootstrap
             ? new window.bootstrap.Modal(meterImagePreviewModalElement)
             : null;
+        const isVideoMedia = (url) => /\.(mp4|mov|m4v|webm|avi|mkv)(\?.*)?$/i.test(url || '');
+
+        document.querySelectorAll('[data-media-thumbnail-image][data-media-src], [data-media-thumbnail-video][data-media-src]').forEach((element) => {
+            const source = element.dataset.mediaSrc;
+            const shouldShowVideo = isVideoMedia(source);
+            const isVideoElement = element.matches('[data-media-thumbnail-video]');
+            if (shouldShowVideo === isVideoElement) {
+                element.src = source;
+                element.classList.remove('d-none');
+            }
+        });
 
         const stripGrouping = (value) => `${value ?? ''}`.replace(/,/g, '').trim();
         const formatGroupedDigits = (value) => {
@@ -1658,23 +1676,37 @@
 
         document.querySelectorAll('[data-preview-image-url]').forEach((button) => {
             button.addEventListener('click', () => {
-                if (!meterImagePreviewModal || !meterImagePreviewImage) {
+                if (!meterImagePreviewModal || !meterImagePreviewImage || !meterImagePreviewVideo) {
                     return;
                 }
-                meterImagePreviewImage.src = button.dataset.previewImageUrl;
-                meterImagePreviewImage.alt = button.dataset.previewImageTitle || '{% trans "Image preview" %}';
-                meterImagePreviewImage.classList.remove('d-none');
+                const source = button.dataset.previewImageUrl;
+                const title = button.dataset.previewImageTitle || '{% trans "Media preview" %}';
+                meterImagePreviewImage.classList.add('d-none');
+                meterImagePreviewVideo.classList.add('d-none');
+                meterImagePreviewImage.src = '';
+                meterImagePreviewVideo.src = '';
+                if (isVideoMedia(source)) {
+                    meterImagePreviewVideo.src = source;
+                    meterImagePreviewVideo.classList.remove('d-none');
+                } else {
+                    meterImagePreviewImage.src = source;
+                    meterImagePreviewImage.alt = title;
+                    meterImagePreviewImage.classList.remove('d-none');
+                }
                 if (meterImagePreviewTitle) {
-                    meterImagePreviewTitle.textContent = button.dataset.previewImageTitle || '{% trans "Image preview" %}';
+                    meterImagePreviewTitle.textContent = title;
                 }
                 meterImagePreviewModal.show();
             });
         });
 
-        if (meterImagePreviewModalElement && meterImagePreviewImage) {
+        if (meterImagePreviewModalElement && meterImagePreviewImage && meterImagePreviewVideo) {
             meterImagePreviewModalElement.addEventListener('hidden.bs.modal', () => {
                 meterImagePreviewImage.src = '';
+                meterImagePreviewVideo.pause();
+                meterImagePreviewVideo.src = '';
                 meterImagePreviewImage.classList.add('d-none');
+                meterImagePreviewVideo.classList.add('d-none');
             });
         }
     });

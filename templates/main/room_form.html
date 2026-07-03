@@ -119,17 +119,18 @@
                                 type="button"
                                 class="room-image-preview-trigger mb-2"
                                 data-preview-image-url="{{ MEDIA_URL }}{{ checkbox.data.value }}"
-                                data-preview-image-title="{% trans 'Room image' %}"
+                                data-preview-image-title="{% trans 'Room media' %}"
                             >
-                                <img src="{{ MEDIA_URL }}{{ checkbox.data.value }}" alt="" class="img-fluid rounded" style="height: 120px; width: 100%; object-fit: cover;">
+                                <img data-media-thumbnail-image data-media-src="{{ MEDIA_URL }}{{ checkbox.data.value }}" alt="" class="img-fluid rounded d-none" style="height: 120px; width: 100%; object-fit: cover;">
+                                <video data-media-thumbnail-video data-media-src="{{ MEDIA_URL }}{{ checkbox.data.value }}" muted playsinline class="img-fluid rounded d-none" style="height: 120px; width: 100%; object-fit: cover;"></video>
                             </button>
                             <div class="small text-muted text-break">{{ checkbox.choice_label }}</div>
                             <div class="mt-2">
                                 <button type="button" class="image-delete-link" data-delete-trigger="{{ checkbox.id_for_label }}">
-                                    {% trans "Delete this image" %}
+                                    {% trans "Delete this media" %}
                                 </button>
                                 <div class="image-delete-pending d-none" data-delete-pending>
-                                    <span>{% trans "Image will be deleted after you save changes." %}</span>
+                                    <span>{% trans "Media will be deleted after you save changes." %}</span>
                                     <button type="button" class="image-undo-link" data-delete-undo="{{ checkbox.id_for_label }}">
                                         {% trans "Undo" %}
                                     </button>
@@ -138,7 +139,7 @@
                         </div>
                         {% empty %}
                         <div class="text-muted small">
-                            {% trans "No images uploaded yet." %}
+                            {% trans "No media uploaded yet." %}
                         </div>
                         {% endfor %}
                     </div>
@@ -158,12 +159,13 @@
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title h5 mb-0" id="roomImagePreviewTitle">{% trans "Image preview" %}</h2>
+                <h2 class="modal-title h5 mb-0" id="roomImagePreviewTitle">{% trans "Media preview" %}</h2>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
             </div>
             <div class="modal-body">
                 <div class="room-image-preview-frame">
-                    <img id="roomImagePreviewImage" src="" alt="{% trans 'Image preview' %}" class="img-fluid rounded shadow-sm d-none">
+                    <img id="roomImagePreviewImage" src="" alt="{% trans 'Media preview' %}" class="img-fluid rounded shadow-sm d-none">
+                    <video id="roomImagePreviewVideo" controls playsinline class="img-fluid rounded shadow-sm d-none"></video>
                 </div>
             </div>
         </div>
@@ -215,7 +217,8 @@
     cursor: zoom-in;
 }
 
-.room-image-preview-trigger img {
+.room-image-preview-trigger img,
+.room-image-preview-trigger video {
     display: block;
     width: 100%;
 }
@@ -231,7 +234,8 @@
     padding: 0.85rem;
 }
 
-.room-image-preview-frame img {
+.room-image-preview-frame img,
+.room-image-preview-frame video {
     width: 100%;
     height: auto;
 }
@@ -271,6 +275,7 @@
 
 .room-image-preview.is-marked-for-delete .room-image-preview-trigger,
 .room-image-preview.is-marked-for-delete img,
+.room-image-preview.is-marked-for-delete video,
 .room-image-preview.is-marked-for-delete .small.text-muted.text-break,
 .room-image-preview.is-marked-for-delete .image-delete-link {
     display: none !important;
@@ -284,9 +289,21 @@
         const roomImagePreviewModalElement = document.getElementById('roomImagePreviewModal');
         const roomImagePreviewTitle = document.getElementById('roomImagePreviewTitle');
         const roomImagePreviewImage = document.getElementById('roomImagePreviewImage');
+        const roomImagePreviewVideo = document.getElementById('roomImagePreviewVideo');
         const roomImagePreviewModal = roomImagePreviewModalElement && window.bootstrap
             ? new window.bootstrap.Modal(roomImagePreviewModalElement)
             : null;
+        const isVideoMedia = (url) => /\.(mp4|mov|m4v|webm|avi|mkv)(\?.*)?$/i.test(url || '');
+
+        document.querySelectorAll('[data-media-thumbnail-image][data-media-src], [data-media-thumbnail-video][data-media-src]').forEach((element) => {
+            const source = element.dataset.mediaSrc;
+            const shouldShowVideo = isVideoMedia(source);
+            const isVideoElement = element.matches('[data-media-thumbnail-video]');
+            if (shouldShowVideo === isVideoElement) {
+                element.src = source;
+                element.classList.remove('d-none');
+            }
+        });
         const roomTypeField = document.getElementById('{{ form.type.id_for_label }}');
         const linkedRestroomField = document.getElementById('{{ form.linked_restroom.id_for_label }}');
         const linkedRestroomFieldWrapper = document.getElementById('linkedRestroomFieldWrapper');
@@ -367,23 +384,37 @@
 
         document.querySelectorAll('[data-preview-image-url]').forEach((button) => {
             button.addEventListener('click', () => {
-                if (!roomImagePreviewModal || !roomImagePreviewImage) {
+                if (!roomImagePreviewModal || !roomImagePreviewImage || !roomImagePreviewVideo) {
                     return;
                 }
-                roomImagePreviewImage.src = button.dataset.previewImageUrl;
-                roomImagePreviewImage.alt = button.dataset.previewImageTitle || '{% trans "Image preview" %}';
-                roomImagePreviewImage.classList.remove('d-none');
+                const source = button.dataset.previewImageUrl;
+                const title = button.dataset.previewImageTitle || '{% trans "Media preview" %}';
+                roomImagePreviewImage.classList.add('d-none');
+                roomImagePreviewVideo.classList.add('d-none');
+                roomImagePreviewImage.src = '';
+                roomImagePreviewVideo.src = '';
+                if (isVideoMedia(source)) {
+                    roomImagePreviewVideo.src = source;
+                    roomImagePreviewVideo.classList.remove('d-none');
+                } else {
+                    roomImagePreviewImage.src = source;
+                    roomImagePreviewImage.alt = title;
+                    roomImagePreviewImage.classList.remove('d-none');
+                }
                 if (roomImagePreviewTitle) {
-                    roomImagePreviewTitle.textContent = button.dataset.previewImageTitle || '{% trans "Image preview" %}';
+                    roomImagePreviewTitle.textContent = title;
                 }
                 roomImagePreviewModal.show();
             });
         });
 
-        if (roomImagePreviewModalElement && roomImagePreviewImage) {
+        if (roomImagePreviewModalElement && roomImagePreviewImage && roomImagePreviewVideo) {
             roomImagePreviewModalElement.addEventListener('hidden.bs.modal', () => {
                 roomImagePreviewImage.src = '';
+                roomImagePreviewVideo.pause();
+                roomImagePreviewVideo.src = '';
                 roomImagePreviewImage.classList.add('d-none');
+                roomImagePreviewVideo.classList.add('d-none');
             });
         }
 

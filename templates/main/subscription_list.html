@@ -11,7 +11,7 @@
     }
 
     .subscription-col-description {
-        width: auto;
+        width: 20%;
     }
 
     .subscription-col-linked-room {
@@ -138,17 +138,17 @@
             <table class="table align-middle mb-0 subscription-table">
                 <colgroup>
                     <col class="subscription-col-description">
+                    <col class="subscription-col-linked-room">
                     <col class="subscription-col-status">
                     <col class="subscription-col-start-date">
-                    <col class="subscription-col-linked-room">
                     <col class="subscription-col-actions">
                 </colgroup>
                 <thead class="table-light">
                     <tr>
                         <th>{% trans "Description" %}</th>
+                        <th>{% trans "Linked room" %}</th>
                         <th class="text-center">{% trans "Status" %}</th>
                         <th class="d-none d-md-table-cell">{% trans "Start date" %}</th>
-                        <th>{% trans "Linked room" %}</th>
                         <th class="text-center">{% trans "Actions" %}</th>
                     </tr>
                 </thead>
@@ -161,6 +161,12 @@
                                 <span class="d-none d-md-inline">{{ subscription.description|default:"—"|truncatechars:80 }}</span>
                             </a>
                         </td>
+                        <td class="fw-semibold subscription-nowrap">
+                            <a href="{% url 'room_details' subscription.room.pk %}" class="text-decoration-none d-inline-flex align-items-center gap-1">
+                                <i class="bi bi-link-45deg text-primary" aria-hidden="true"></i>
+                                {{ subscription.room.room_name }}
+                            </a>
+                        </td>
                         <td class="text-center subscription-nowrap">
                             {% if subscription.status == 'enabled' %}
                             <span class="badge bg-success">{% trans "Enabled" %}</span>
@@ -169,12 +175,6 @@
                             {% endif %}
                         </td>
                         <td class="d-none d-md-table-cell subscription-nowrap">{{ subscription.start_date|date:"d/m/Y" }}</td>
-                        <td class="fw-semibold subscription-nowrap">
-                            <a href="{% url 'room_details' subscription.room.pk %}" class="text-decoration-none d-inline-flex align-items-center gap-1">
-                                <i class="bi bi-link-45deg text-primary" aria-hidden="true"></i>
-                                {{ subscription.room.room_name }}
-                            </a>
-                        </td>
                         <td class="text-center subscription-nowrap">
                             <a
                                 href="{% url 'subscription_details' subscription.pk %}"

@@ -465,7 +465,12 @@
                 {% for cell in usage_status_cells %}
                 <a href="{{ cell.target_url }}" class="usage-status-cell {{ cell.status_class }}">
                     <div>
-                        <div class="usage-status-room">{{ cell.room_name }}</div>
+                        <div class="usage-status-room">
+                            {{ cell.room_name }}
+                            {% if cell.is_auto_created and cell.status_class == 'dashboard-cell-new' %}
+                            <span class="badge text-bg-light ms-1">{% trans "New" %}</span>
+                            {% endif %}
+                        </div>
                         {% if cell.description %}
                         <div class="usage-status-description">{{ cell.description }}</div>
                         {% endif %}

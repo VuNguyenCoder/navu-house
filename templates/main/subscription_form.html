@@ -384,12 +384,12 @@
                                         <i class="bi bi-eye"></i>
                                         <span class="ms-1">{% trans "Details" %}</span>
                                     </a>
-                                    {% if row.usage.status == 'paid' %}
+                                    {% if row.usage.status == 'paid' or row.usage.is_auto_created %}
                                     <button
                                         type="button"
                                         class="btn btn-sm btn-outline-danger ms-1"
                                         aria-label="{% trans 'Delete' %}"
-                                        title="{% trans 'Delete' %}"
+                                        title="{% if row.usage.is_auto_created %}{% trans 'An automatically created usage record cannot be deleted.' %}{% else %}{% trans 'Delete' %}{% endif %}"
                                         disabled
                                     >
                                         <i class="bi bi-trash"></i>
@@ -635,6 +635,7 @@
 {{ block.super }}
 {{ form.room_type_by_id|json_script:"subscription-room-type-map" }}
 {{ form.restroom_tenant_count_by_id|json_script:"restroom-tenant-count-map" }}
+{{ form.room_latest_readings_by_id|json_script:"subscription-room-latest-readings-map" }}
 <script>
     window.addEventListener('DOMContentLoaded', () => {
         const subscriptionImagePreviewModalElement = document.getElementById('subscriptionImagePreviewModal');
@@ -656,8 +657,27 @@
         });
         const roomTypeMap = JSON.parse(document.getElementById('subscription-room-type-map')?.textContent || '{}');
         const restroomTenantCountMap = JSON.parse(document.getElementById('restroom-tenant-count-map')?.textContent || '{}');
+        const roomLatestReadingsMap = JSON.parse(document.getElementById('subscription-room-latest-readings-map')?.textContent || '{}');
         const roomField = document.getElementById('{{ form.room.id_for_label }}');
         const tenantCountField = document.getElementById('{{ form.tenant_count.id_for_label }}');
+        const startElectricityReadingField = document.getElementById('{{ form.start_electricity_reading.id_for_label }}');
+        const startWaterReadingField = document.getElementById('{{ form.start_water_reading.id_for_label }}');
+        const startDateField = document.getElementById('{{ form.start_date.id_for_label }}');
+        const isCreatingSubscription = {% if form.instance.pk %}false{% else %}true{% endif %};
+
+        const formatDateInputDigits = (value) => {
+            const digits = `${value ?? ''}`.replace(/\D/g, '').slice(0, 8);
+            const day = digits.slice(0, 2);
+            const month = digits.slice(2, 4);
+            const year = digits.slice(4, 8);
+            return [day, month, year].filter(Boolean).join('/');
+        };
+
+        if (startDateField) {
+            startDateField.addEventListener('input', () => {
+                startDateField.value = formatDateInputDigits(startDateField.value);
+            });
+        }
         const restroomTemplateFieldWrappers = document.querySelectorAll('[data-restroom-template-field]');
 
         const stripGrouping = (value) => `${value ?? ''}`.replace(/,/g, '').trim();
@@ -718,6 +738,24 @@
             if (isRestRoom && tenantCountField) {
                 tenantCountField.value = restroomTenantCountMap[String(roomField?.value || '')] ?? '0';
                 tenantCountField.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        };
+
+        const syncRoomLatestReadings = () => {
+            if (!isCreatingSubscription) {
+                return;
+            }
+            const readings = roomLatestReadingsMap[String(roomField?.value || '')];
+            if (!readings) {
+                return;
+            }
+            if (startElectricityReadingField) {
+                startElectricityReadingField.value = readings.electricity ?? 0;
+                startElectricityReadingField.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            if (startWaterReadingField) {
+                startWaterReadingField.value = readings.water ?? 0;
+                startWaterReadingField.dispatchEvent(new Event('input', { bubbles: true }));
             }
         };
 
@@ -793,6 +831,7 @@
         roomField?.addEventListener('change', () => {
             syncRestroomSubscriptionFields();
             syncOptionalServiceLabels();
+            syncRoomLatestReadings();
         });
         syncRestroomSubscriptionFields();
         syncOptionalServiceLabels();

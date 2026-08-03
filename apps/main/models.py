@@ -379,6 +379,12 @@ class Subscription(models.Model):
             for field in PRICE_FIELD_NAMES:
                 setattr(self, field, getattr(template, field))
 
+        if self._state.adding and self.room_id:
+            if not self.start_electricity_reading:
+                self.start_electricity_reading = self.room.latest_electricity_reading
+            if not self.start_water_reading:
+                self.start_water_reading = self.room.latest_water_reading
+
         normalized_fields = self._normalize_restroom_subscription_fields()
         update_fields = kwargs.get('update_fields')
         if update_fields is not None and normalized_fields:
@@ -442,6 +448,7 @@ class Usage(models.Model):
     electricity_meter_image_path = models.CharField(max_length=500, blank=True)
     latest_water_reading = models.PositiveIntegerField(default=0)
     water_meter_image_path = models.CharField(max_length=500, blank=True)
+    is_auto_created = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -38,7 +38,11 @@ def _build_usage_dashboard_totals(usage):
     water_consumed = max(usage.latest_water_reading - previous_water, 0)
     tenant_count = usage.tenant_count or 0
 
-    linked_restroom_context = get_linked_restroom_usage_context(usage.subscription, usage.period)
+    linked_restroom_context = (
+        get_linked_restroom_usage_context(usage.subscription, usage.period)
+        if not usage.is_auto_created
+        else None
+    )
     linked_restroom_electricity_amount = Decimal('0')
     linked_restroom_water_amount = Decimal('0')
     if linked_restroom_context and linked_restroom_context.get('has_usage'):
@@ -157,6 +161,7 @@ def home(request):
                     'total_amount_display': f"{_format_number(usage_totals['total_amount'])} VND",
                     'usage_id': usage.pk,
                     'target_url': reverse('usage_details', kwargs={'pk': usage.pk}),
+                    'is_auto_created': usage.is_auto_created,
                 }
                 if is_enabled_subscription:
                     usage_status_cells.append(usage_cell)
@@ -191,6 +196,7 @@ def home(request):
                     'status_class': 'dashboard-cell-missing',
                     'total_amount_display': '',
                     'usage_id': None,
+                    'is_auto_created': False,
                     'target_url': (
                         f"{reverse('usage_create')}?subscription={subscription.pk}"
                         f"&month={selected_month}&year={selected_year}"

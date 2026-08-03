@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.db.models.deletion import ProtectedError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -26,6 +27,14 @@ def user_can_manage_pricing(user):
 
 def usage_is_locked(usage):
     return usage.status == Usage.Status.PAID
+
+
+def usage_delete_error_message(usage):
+    if usage.status == Usage.Status.PAID:
+        return _('A paid usage record cannot be deleted.')
+    if usage.is_auto_created:
+        return _('An automatically created usage record cannot be deleted.')
+    return None
 
 
 def get_previous_usage_context(subscription, period, exclude_usage_id=None):
@@ -274,7 +283,11 @@ def build_subscription_usage_rows(subscription):
         electricity_consumed = max(usage.latest_electricity_reading - previous_electricity, 0)
         water_consumed = max(usage.latest_water_reading - previous_water, 0)
         tenant_count = usage.tenant_count or 0
-        linked_restroom_context = get_linked_restroom_usage_context(subscription, usage.period)
+        linked_restroom_context = (
+            get_linked_restroom_usage_context(subscription, usage.period)
+            if not usage.is_auto_created
+            else None
+        )
         linked_restroom_electricity_amount = Decimal('0')
         linked_restroom_water_amount = Decimal('0')
         if linked_restroom_context and linked_restroom_context.get('has_usage'):
@@ -570,7 +583,29 @@ class SubscriptionCreateView(OperatorRequiredMixin, SuccessMessageMixin, CreateV
 
     def form_valid(self, form):
         form.instance.status = Subscription.Status.ENABLED
-        return super().form_valid(form)
+        with transaction.atomic():
+            response = super().form_valid(form)
+            self._create_initial_usage(self.object)
+        return response
+
+    @staticmethod
+    def _create_initial_usage(subscription):
+        start_date = subscription.start_date
+        if start_date.month == 1:
+            period = date(start_date.year - 1, 12, 1)
+        else:
+            period = date(start_date.year, start_date.month - 1, 1)
+
+        Usage.objects.create(
+            subscription=subscription,
+            period=period,
+            tenant_count=subscription.tenant_count,
+            use_internet=subscription.use_internet,
+            use_laundry=subscription.use_laundry,
+            latest_electricity_reading=subscription.start_electricity_reading,
+            latest_water_reading=subscription.start_water_reading,
+            is_auto_created=True,
+        )
 
 
 class SubscriptionUpdateView(OperatorRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -726,15 +761,17 @@ class UsageDeleteView(ManagementDeleteView):
 
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if usage_is_locked(self.object):
-            messages.error(request, _('A paid usage record cannot be deleted.'))
+        error_message = usage_delete_error_message(self.object)
+        if error_message:
+            messages.error(request, error_message)
             return redirect('usage_details', pk=self.object.pk)
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if usage_is_locked(self.object):
-            messages.error(request, _('A paid usage record cannot be deleted.'))
+        error_message = usage_delete_error_message(self.object)
+        if error_message:
+            messages.error(request, error_message)
             return redirect('usage_details', pk=self.object.pk)
         return super().post(request, *args, **kwargs)
 
@@ -902,9 +939,12 @@ def usage_pricing_context(request):
     except (Subscription.DoesNotExist, ValueError):
         return JsonResponse({'error': 'invalid_parameters'}, status=400)
 
+    is_auto_created = Usage.objects.filter(pk=usage_id, is_auto_created=True).exists() if usage_id else False
+
     context = get_previous_usage_context(subscription, period, exclude_usage_id=usage_id)
-    context['linked_restroom_usage_context'] = serialize_linked_restroom_usage_context(
-        get_linked_restroom_usage_context(subscription, period)
+    context['linked_restroom_usage_context'] = (
+        None if is_auto_created
+        else serialize_linked_restroom_usage_context(get_linked_restroom_usage_context(subscription, period))
     )
     return JsonResponse(context)
 

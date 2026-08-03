@@ -290,6 +290,21 @@ class SubscriptionForm(StyledModelForm):
         label=_('Remove existing media'),
         widget=forms.CheckboxSelectMultiple,
     )
+    start_date = forms.DateField(
+        label=_('Rental start date'),
+        help_text=_('Format: dd/mm/yyyy'),
+        input_formats=['%d/%m/%Y'],
+        widget=forms.DateInput(
+            format='%d/%m/%Y',
+            attrs={
+                'placeholder': 'dd/mm/yyyy',
+                'autocomplete': 'off',
+                'inputmode': 'numeric',
+                'pattern': r'\d{2}/\d{2}/\d{4}',
+                'maxlength': '10',
+            },
+        ),
+    )
 
     class Meta:
         model = Subscription
@@ -315,7 +330,6 @@ class SubscriptionForm(StyledModelForm):
         labels = {
             'description': _('Description'),
             'room': _('Room'),
-            'start_date': _('Rental start date'),
             'tenant_count': _('Number of tenants'),
             'deposit_amount': _('Deposit amount (VND)'),
             'start_electricity_reading': _('Start electricity reading'),
@@ -334,7 +348,6 @@ class SubscriptionForm(StyledModelForm):
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
             'room': forms.Select(attrs={'class': 'form-select'}),
-            'start_date': forms.DateInput(attrs={'type': 'date'}),
             'tenant_count': forms.NumberInput(attrs={'min': '1', 'step': '1'}),
             'start_electricity_reading': forms.NumberInput(attrs={'min': '0', 'step': '1'}),
             'start_water_reading': forms.NumberInput(attrs={'min': '0', 'step': '1'}),
@@ -386,6 +399,13 @@ class SubscriptionForm(StyledModelForm):
             str(room.pk): Subscription.get_restroom_linked_tenant_count(room)
             for room in room_queryset
             if room.type == Room.RoomType.REST
+        }
+        self.room_latest_readings_by_id = {
+            str(room.pk): {
+                'electricity': room.latest_electricity_reading,
+                'water': room.latest_water_reading,
+            }
+            for room in room_queryset
         }
         existing_paths = self.instance.image_paths or []
         self.fields['remove_image_paths'].choices = [(path, Path(path).name) for path in existing_paths]
